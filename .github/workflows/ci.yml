@@ -1,0 +1,126 @@
+# CI — 质量门禁
+#
+# 触发条件：push / PR 到 main
+# 职责：
+#   1. 前端：npm ci（lock 可复现）→ vue-tsc 类型检查 → 生产构建（vite）→ vitest 单元测试
+#   2. 后端：go vet + go build（-tags production），三平台矩阵验证
+#   3. bindings 由 wails3 CLI 重新生成，保证与最新 Go 服务代码同步（不依赖已提交的 bindings）
+#
+# 说明：
+#   - SQLite 使用纯 Go 驱动 modernc.org/sqlite，Windows 无需 CGO（CGO_ENABLED=0），不需要 mingw
+#   - Linux 的 Wails GUI 后端编译需要 WebKit2GTK/GTK 开发库（cgo 链接）
+#   - macOS 用 runner 自带 Xcode 工具链（CGO_ENABLED=1）
+#   - 产物以 artifact 形式上传，PR 调试时可下载
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: "1.25"
+  NODE_VERSION: "22"
+  # wails3 CLI 最新版（2026-08-27 发布）。与 go.mod 中的库版本解耦；
+  # 若后续生成 bindings 出现兼容问题，可改回 go.mod 中的库版本
+  WAILS_VERSION: v3.0.0-beta.15
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-amd64
+            os: ubuntu-latest
+            output: bin/hitool
+            cgo: "1"
+          - name: macos-arm64
+            os: macos-14
+            output: bin/hitool
+            cgo: "1"
+          - name: windows-amd64
+            os: windows-latest
+            output: bin/hitool.exe
+            cgo: "0"
+            ldflags: -H windowsgui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: go.sum
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # Linux 需要两套 GTK/WebKit 开发库：
+      #   - gtk4 + webkitgtk-6.0：wails3 CLI 自身编译（internal/operatingsystem 经 pkg-config 链接）
+      #   - gtk3 + webkit2gtk-4.1：项目 go.mod 的 Wails 库版本编译 GUI 后端
+      - name: Install WebKit/GTK dev packages (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config \
+            libgtk-3-dev libwebkit2gtk-4.1-dev \
+            libgtk-4-dev libwebkitgtk-6.0-dev
+
+      - name: Install wails3 CLI
+        run: |
+          go install github.com/wailsapp/wails/v3/cmd/wails3@${{ env.WAILS_VERSION }}
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Generate bindings (production)
+        run: wails3 generate bindings -f '-tags production' -clean=true -ts -i
+
+      - name: Type-check frontend
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Build frontend (production)
+        working-directory: frontend
+        env:
+          PRODUCTION: 'true'
+        run: npm run build
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Vet Go code
+        run: go vet -tags production ./...
+
+      - name: Build Go binary
+        env:
+          CGO_ENABLED: ${{ matrix.cgo }}
+        run: go build -tags production -trimpath -buildvcs=false -ldflags="-w -s ${{ matrix.ldflags }}" -o ${{ matrix.output }} .
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.output }}
+          if-no-files-found: error

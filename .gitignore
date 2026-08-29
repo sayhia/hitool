@@ -1,0 +1,74 @@
+# ============================================================
+# HiTool .gitignore
+# ============================================================
+
+# ---------- Build tooling / caches ----------
+.task
+bin
+
+# ---------- Frontend (Wails/Vite) ----------
+frontend/dist
+frontend/node_modules
+frontend/.vite/
+
+# Root-level node_modules (some tooling installs deps at repo root)
+node_modules/
+
+# ---------- Linux / Windows packaging ----------
+build/linux/appimage/build
+build/windows/nsis/MicrosoftEdgeWebview2Setup.exe
+
+# ---------- Mobile generated ----------
+# Per-machine; overlays hold absolute paths
+build/ios/xcode/overlay.json
+build/ios/xcode/gen/
+build/android/overlay.json
+build/android/gen/
+
+# ---------- Installer / package artifacts (defensive) ----------
+*.dmg
+*.pkg
+*.AppImage
+*.deb
+*.rpm
+*.exe
+*.msi
+*.zip
+
+# ---------- macOS system files ----------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon?
+
+# ---------- Tool runtime data (agent workspace state) ----------
+.workbuddy/
+.claude/
+
+# ---------- Editor / IDE ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---------- Environment / secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Go test / coverage ----------
+coverage.out
+coverage.html
+coverage/
+*.test
+*.prof
+
+# ---------- Logs / temp ----------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
