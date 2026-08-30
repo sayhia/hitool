@@ -24,8 +24,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 900,
     rolldownOptions: {
       output: {
-        // Icon.vue resolves lucide names at runtime, so the whole icon set
-        // ships; keep it (and other deps) out of the app chunk.
+        // lib/icons.ts names the icons the app draws, so only those ship;
+        // keep them (and other deps) out of the app chunk regardless.
         manualChunks(id: string) {
           if (id.includes("lucide-vue-next")) return "vendor-icons";
           if (id.includes("pdfjs-dist")) return "vendor-pdfjs";

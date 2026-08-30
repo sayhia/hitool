@@ -4,7 +4,8 @@
  * the small in-house EXIF reader, then re-encodes through a canvas so the
  * clean copy holds nothing but pixels.
  */
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { useWindowKeydown } from "../../lib/useWindowKeydown";
 import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import OutputList from "../../work/OutputList.vue";
@@ -55,10 +56,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(async () => {
   outDir.value = await outputDir("Images");
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 async function inspect() {
   rows.value = [];

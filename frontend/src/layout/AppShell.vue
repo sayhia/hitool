@@ -13,11 +13,11 @@ import { installProgressBridge, useJobs } from "../stores/jobs";
 import { activateAt, closeActive, cycleTab, persistTabs, restoreTabs, syncFromRoute, useTabs } from "../stores/tabs";
 import { toggleInspector } from "../stores/inspector";
 import { toggleSidebar } from "../stores/sidebar";
-import { openSettings } from "../stores/settings";
+import { openSettings, settingsOpen } from "../stores/settings";
 import { toast } from "../stores/toast";
 import { t } from "../lib/i18n";
 import { inWails } from "../lib/backend";
-import { checkForUpdates, releaseInfo, updateState } from "../stores/update";
+import { autoCheckForUpdates, releaseInfo, updateState } from "../stores/update";
 import { CATEGORIES } from "../lib/tools";
 import {
   DEFAULT_COMBOS,
@@ -137,19 +137,22 @@ onMounted(() => {
   silentCheckUpdate();
 });
 
-// Quiet launch-time update probe: never blocks startup, never errors out.
-// When a newer release is found the download starts in the background right
-// away (autoInstall), so by the time the user opens About it is usually
-// staged and one click from a restart.
+// Quiet launch-time update probe: never blocks startup, never errors out, and
+// does nothing at all when automatic updates are switched off. When a newer
+// release is found the download starts in the background right away, so by the
+// time the user opens About it is usually staged and one click from a restart.
 async function silentCheckUpdate() {
   if (!inWails()) return;
   await new Promise((r) => setTimeout(r, 1500));
-  await checkForUpdates(true);
+  await autoCheckForUpdates();
 }
 
 // Surface the completed background download as a toast so the user knows a
-// restart is all that's left — they may never open the About panel.
+// restart is all that's left — they may never open the About panel. With the
+// panel already open there is nothing to surface: it shows the same state in
+// more detail, and a toast on top of it just says everything twice.
 watch(updateState, (s) => {
+  if (settingsOpen.value) return;
   if (s === "ready" && releaseInfo.value) {
     toast(t("update.downloadedReady", { v: releaseInfo.value.latest }), "ok", 6000);
   } else if (s === "available" && releaseInfo.value) {

@@ -91,7 +91,12 @@ export function startJob(init: {
     replay: init.replay,
   });
   jobs.push(job);
-  if (jobs.length > 60) jobs.splice(0, jobs.length - 60);
+  // Trim the oldest finished jobs only. Dropping a running one would cut it off
+  // from the progress bridge, and the dock would show it frozen forever.
+  for (let i = 0; jobs.length > 60 && i < jobs.length; ) {
+    if (jobs[i].state === "running") i++;
+    else jobs.splice(i, 1);
+  }
   activeId.value = job.id;
   return job;
 }

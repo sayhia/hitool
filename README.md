@@ -1,7 +1,7 @@
 # HiTool
 
 多功能桌面工具箱，整合文档、图片、文本、开发与 AI 常用工具，使用 **Go + Wails3 + Vite + Vue 3 + SQLite** 构建。
-85+ 个工具全部本地运行，文件不出本机。
+99 个工具全部本地运行，文件不出本机。
 
 ## 界面骨架
 
@@ -140,8 +140,8 @@ wails3 dev      # 开发模式（热重载）
 wails3 build    # 构建，产物 bin/hitool
 wails3 package  # 打包 macOS .app
 go test ./services
-npm test --prefix frontend        # 前端回归（939 项）
-npx vue-tsc --noEmit --project frontend  # vue-tsc，零错误
+npm test --prefix frontend        # 前端回归（985 项 + 3 跳过）
+npm run typecheck --prefix frontend      # vue-tsc，零错误
 ```
 
 改动 Go 服务签名后需重新生成 bindings：
@@ -152,7 +152,7 @@ wails3 generate bindings -clean=true -ts -i
 
 ## 技术栈与实现要点
 
-- **Go + Wails3 + Vue 3**；85+ 工具按声明式清单注册，Vue 组件化渲染
+- **Go + Wails3 + Vue 3**；99 个工具按声明式清单注册，Vue 组件化渲染
 - 设置、收藏、使用记录、AI 密钥、主题持久化在 **SQLite**
 - PDF 处理用 Go 侧 pdfcpu（加解密为 AES-256）
 - 拖放拿到的是**真实文件路径**而非浏览器 File 对象，可直接交给 Go 服务，不必读进内存再传回

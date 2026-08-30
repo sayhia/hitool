@@ -4,6 +4,7 @@ import ToolFrame from "../../work/ToolFrame.vue";
 import InspectorSection from "../../work/InspectorSection.vue";
 import Icon from "../../components/Icon.vue";
 import { t } from "../../lib/i18n";
+import { writeClipboard } from "../../stores/toast";
 import {
   FIELDS,
   ORDER,
@@ -101,7 +102,9 @@ function applyPreset(expr: string) {
 }
 
 async function copy() {
-  await navigator.clipboard.writeText(expression.value);
+  // The button label is the only acknowledgement, so it may only change once
+  // the clipboard actually took the text.
+  if (!(await writeClipboard(expression.value))) return;
   copied.value = true;
   setTimeout(() => (copied.value = false), 1200);
 }

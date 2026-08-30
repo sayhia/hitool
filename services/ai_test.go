@@ -8,10 +8,10 @@ import (
 
 func TestModelsURLFor(t *testing.T) {
 	cases := map[string]string{
-		"https://api.deepseek.com/v1/chat/completions":        "https://api.deepseek.com/v1/models",
-		"https://api.example.com/v1/chat/completions?x=1":     "https://api.example.com/v1/models",
-		"https://proxy.example.com/v1":                        "https://proxy.example.com/v1/models",
-		"https://proxy.example.com/v1/":                       "https://proxy.example.com/v1/models",
+		"https://api.deepseek.com/v1/chat/completions":    "https://api.deepseek.com/v1/models",
+		"https://api.example.com/v1/chat/completions?x=1": "https://api.example.com/v1/models",
+		"https://proxy.example.com/v1":                    "https://proxy.example.com/v1/models",
+		"https://proxy.example.com/v1/":                   "https://proxy.example.com/v1/models",
 	}
 	for in, want := range cases {
 		if got := modelsURLFor(in); got != want {
@@ -26,8 +26,8 @@ func TestNormalizeBaseURL(t *testing.T) {
 		"https://api.x.com/v1/":                   "https://api.x.com/v1",
 		"https://api.x.com/v1/chat/completions":   "https://api.x.com/v1",
 		"https://api.x.com/v1/chat/completions//": "https://api.x.com/v1",
-		"  https://proxy.local/v1  ":               "https://proxy.local/v1",
-		"": "",
+		"  https://proxy.local/v1  ":              "https://proxy.local/v1",
+		"":                                        "",
 	}
 	for in, want := range cases {
 		if got := normalizeBaseURL(in); got != want {

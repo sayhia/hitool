@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import * as icons from "lucide-vue-next";
+import { iconByName } from "../lib/icons";
 
 const props = defineProps<{ name: string }>();
 
-// Resolve a lucide component from its exported name; fall back to a box.
-const comp = computed(() => {
-  const c = (icons as Record<string, unknown>)[props.name];
-  return (c as object) ?? icons.Box;
-});
+// Resolve a lucide component from its exported name; the registry falls back to
+// a box. Names come from lib/icons.ts rather than a barrel import so the
+// bundler can drop the ~5000 icons this app never draws.
+const comp = computed(() => iconByName(props.name));
 </script>
 
 <template>

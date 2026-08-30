@@ -4,7 +4,8 @@
  * horizontally, with a configurable gap and background. Everything is drawn
  * onto a single canvas and exported as PNG.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useWindowKeydown } from "../../lib/useWindowKeydown";
 import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import OutputList from "../../work/OutputList.vue";
@@ -37,10 +38,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(async () => {
   outDir.value = await outputDir("Images");
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 async function run() {
   if (!canRun.value) return;

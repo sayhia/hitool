@@ -345,3 +345,58 @@ func TestApplySkipsUnchangedRows(t *testing.T) {
 		t.Errorf("names changed unexpectedly: %v", got)
 	}
 }
+
+func TestPlanRefusesRenamingOntoAnUnchangedBatchFile(t *testing.T) {
+	dir := t.TempDir()
+	// Both files are selected, but the rule only touches b.txt — and it aims
+	// straight at the name a.txt is still sitting on.
+	paths := touch(t, dir, "a.txt", "b.txt")
+	plan, _ := NewRenameService(nil).Plan(paths, RenameRule{
+		Find: "b", Replace: "a", CaseSensitive: true,
+	})
+	if plan.Conflicts != 1 || plan.Items[1].Problem == "" {
+		t.Fatalf("a file that stays put is still an obstacle: %+v", plan.Items)
+	}
+}
+
+func TestApplyNeverClobbersAnUnchangedBatchFile(t *testing.T) {
+	dir := t.TempDir()
+	paths := touch(t, dir, "a.txt", "b.txt")
+	if _, err := NewRenameService(nil).Apply(paths, RenameRule{
+		Find: "b", Replace: "a", CaseSensitive: true,
+	}); err == nil {
+		t.Fatal("expected apply to refuse the batch")
+	}
+	if got := dirNames(t, dir); len(got) != 2 {
+		t.Fatalf("a file was destroyed: %v", got)
+	}
+	// a.txt must still hold its own content, not b.txt's.
+	body, err := os.ReadFile(filepath.Join(dir, "a.txt"))
+	if err != nil || string(body) != "a.txt" {
+		t.Fatalf("a.txt = %q, %v", body, err)
+	}
+}
+
+func TestPlanTreatsDotfilesAsWholeNames(t *testing.T) {
+	dir := t.TempDir()
+	// filepath.Ext(".gitignore") is the whole name, so the stem comes out empty
+	// and only affixes can reach a dotfile. That is fine — what must not happen
+	// is the empty stem being read as an empty name and refusing the batch.
+	paths := touch(t, dir, ".gitignore")
+	plan, _ := NewRenameService(nil).Plan(paths, RenameRule{Prefix: "old-"})
+	if plan.Items[0].Problem != "" {
+		t.Fatalf("dotfile flagged: %+v", plan.Items[0])
+	}
+	if plan.Items[0].NewName != "old-.gitignore" {
+		t.Errorf("newName = %q", plan.Items[0].NewName)
+	}
+}
+
+func TestPlanRejectsIllegalExtension(t *testing.T) {
+	dir := t.TempDir()
+	paths := touch(t, dir, "a.txt")
+	plan, _ := NewRenameService(nil).Plan(paths, RenameRule{Extension: "b/c"})
+	if plan.Items[0].Problem != "illegal character" {
+		t.Errorf("an extension can smuggle a path separator: %+v", plan.Items[0])
+	}
+}

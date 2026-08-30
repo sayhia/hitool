@@ -591,3 +591,98 @@ describe("toHtml", () => {
     expect(html).toContain("&nbsp;");
   });
 });
+
+describe("diffLines alignment invariants", () => {
+  /**
+   * The LCS matrix only spans what lies between the identical head and tail, so
+   * the rows outside that window are numbered by arithmetic rather than by the
+   * walk. An off-by-one there is invisible in the diff *text* and only shows up
+   * as a wrong line number in the gutter, which no fixed-case test above would
+   * notice. These two properties pin it down:
+   *
+   *  - reconstruction: dropping the additions must give back the left document
+   *    line for line, dropping the deletions the right one, with the numbers
+   *    counting 1..n on each side;
+   *  - maximality: trimming must not cost alignment quality, so the number of
+   *    matched rows has to equal the true LCS length from a plain full matrix.
+   */
+  function referenceLcsLength(a: string[], b: string[]): number {
+    let prev = new Uint32Array(b.length + 1);
+    for (let i = a.length - 1; i >= 0; i--) {
+      const cur = new Uint32Array(b.length + 1);
+      for (let j = b.length - 1; j >= 0; j--) {
+        cur[j] = a[i] === b[j] ? prev[j + 1] + 1 : Math.max(prev[j], cur[j + 1]);
+      }
+      prev = cur;
+    }
+    return prev[0];
+  }
+
+  function check(a: string[], b: string[]) {
+    const res = diffLines(a.join("\n"), b.join("\n"), { context: 0 });
+    const left: string[] = [];
+    const right: string[] = [];
+    let ln = 0;
+    let rn = 0;
+    for (const r of res.rows) {
+      if (r.kind !== "add") {
+        expect(r.leftNo).toBe(++ln);
+        left.push(r.text);
+      } else {
+        expect(r.leftNo).toBeNull();
+      }
+      if (r.kind !== "del") {
+        expect(r.rightNo).toBe(++rn);
+        right.push(r.text);
+      } else {
+        expect(r.rightNo).toBeNull();
+      }
+    }
+    const label = `${a.join("|")} vs ${b.join("|")}`;
+    expect(left, label).toEqual(a);
+    expect(right, label).toEqual(b);
+    expect(res.rows.filter((r) => r.kind === "same").length, label).toBe(
+      referenceLcsLength(a, b),
+    );
+  }
+
+  it("holds across every short sequence over a two-line alphabet", () => {
+    // Exhaustive up to length 3 a side: 4 + 16 + 64 = 84 pairs, every
+    // combination of shared head, shared tail and neither.
+    const seqs: string[][] = [];
+    for (const n of [1, 2, 3]) {
+      for (let mask = 0; mask < 1 << n; mask++) {
+        seqs.push(Array.from({ length: n }, (_, k) => ((mask >> k) & 1 ? "x" : "y")));
+      }
+    }
+    for (const a of seqs) for (const b of seqs) check(a, b);
+  });
+
+  it("holds for a long document with a shared head and tail", () => {
+    // A seeded generator, so a failure is reproducible rather than flaky.
+    let s = 7;
+    const rnd = (n: number) => ((s = (s * 1103515245 + 12345) & 0x7fffffff), s % n);
+    const base = Array.from({ length: 60 }, (_, i) => `line ${i}`);
+    for (let round = 0; round < 40; round++) {
+      const b = [...base];
+      for (let e = 0; e < 1 + rnd(4); e++) {
+        const at = 5 + rnd(50);
+        if (rnd(3) === 0) b.splice(at, 1);
+        else if (rnd(3) === 0) b.splice(at, 0, `inserted ${round}`);
+        else b[at] = `changed ${round}`;
+      }
+      check(base, b);
+      check(b, base);
+    }
+  });
+
+  it("holds when one side is entirely a prefix or a suffix of the other", () => {
+    const base = ["a", "b", "c", "d", "e"];
+    check(base, base.slice(0, 3));
+    check(base.slice(0, 3), base);
+    check(base, base.slice(2));
+    check(base.slice(2), base);
+    check(base, [...base, "f", "g"]);
+    check([...base, "f", "g"], base);
+  });
+});

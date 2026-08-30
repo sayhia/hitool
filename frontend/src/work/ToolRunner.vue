@@ -4,7 +4,8 @@
  * flow is identical: fill the tray, adjust settings, run, watch the output —
  * with the job itself living in the global store so it survives navigation.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useWindowKeydown } from "../lib/useWindowKeydown";
 import { useRoute } from "vue-router";
 import ToolFrame from "./ToolFrame.vue";
 import SourceTray from "./SourceTray.vue";
@@ -129,10 +130,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(() => {
   load(route.params.id as string);
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 </script>
 

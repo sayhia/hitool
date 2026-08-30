@@ -61,6 +61,10 @@ const fetching = ref(false);
 const modelOptions = ref<string[]>([]);
 const cliAgents = ref<CLIAgent[]>([]);
 const scanning = ref(false);
+/** False until the first load() settles. Without it the "you have no CLI
+ *  installed" copy renders during the very first round-trip and is then
+ *  replaced by the agent grid — a flash of the wrong answer. */
+const loaded = ref(false);
 const rescanNotice = ref<"ok" | "fail" | "">("");
 const testLine = ref("");
 const testOk = ref(false);
@@ -415,7 +419,10 @@ async function fetchModels() {
 }
 
 async function load() {
-  if (!inWails()) return;
+  if (!inWails()) {
+    loaded.value = true;
+    return;
+  }
   if (dirty.value) return;
   try {
     providers.value = (await AIService.Providers()) ?? [];
@@ -425,7 +432,11 @@ async function load() {
     if (cur) loadDraft(cur);
     else draft.value = blankApi("deepseek");
   } catch (e) {
-    toast(errText(e), "fail");
+    // A failed *refresh* leaves the panel showing the data it already had, so
+    // don't stack a red toast on top of it every time the tab is re-entered.
+    if (!loaded.value) toast(errText(e), "fail");
+  } finally {
+    loaded.value = true;
   }
 }
 
@@ -501,7 +512,7 @@ watch(
         </div>
       </div>
 
-      <div v-if="scanning && !cliAgents.length" class="skel" aria-hidden="true">
+      <div v-if="(scanning || !loaded) && !cliAgents.length" class="skel" aria-hidden="true">
         <span /><span /><span />
       </div>
       <div v-else-if="installedAgents.length" class="agent-grid">
@@ -553,7 +564,7 @@ watch(
         </div>
       </details>
 
-      <ol v-if="!installedAgents.length && !scanning" class="install-steps">
+      <ol v-if="loaded && !installedAgents.length && !scanning" class="install-steps">
         <li>{{ t("ai.settings.agentInstall.stepOpenLinks") }}</li>
         <li>{{ t("ai.settings.agentInstall.stepAuth") }}</li>
         <li>{{ t("ai.settings.agentInstall.stepRescan") }}</li>

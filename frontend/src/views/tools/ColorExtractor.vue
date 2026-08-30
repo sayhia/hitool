@@ -5,6 +5,7 @@ import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import Icon from "../../components/Icon.vue";
 import { t } from "../../lib/i18n";
+import { writeClipboard } from "../../stores/toast";
 import { fileToBlobURL } from "../../lib/backend";
 import { IMAGE_EXT } from "../../lib/tools";
 import type { FileInfo } from "@bindings/hitool/services/models";
@@ -93,14 +94,16 @@ async function extract() {
   }
 }
 
+// The inline "copied" label is the only acknowledgement these two get, so it
+// may only appear once the clipboard actually took the text.
 async function copy(c: string) {
-  await navigator.clipboard.writeText(c);
+  if (!(await writeClipboard(c))) return;
   copied.value = c;
   setTimeout(() => (copied.value = ""), 1200);
 }
 
 async function copyAll() {
-  await navigator.clipboard.writeText(palette.value.join("\n"));
+  if (!(await writeClipboard(palette.value.join("\n")))) return;
   copied.value = "all";
   setTimeout(() => (copied.value = ""), 1200);
 }

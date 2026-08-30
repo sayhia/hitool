@@ -239,47 +239,78 @@ export function diffLines(a: string, b: string, opts: DiffOptions = {}): DiffRes
   const na = A.map((l) => normalise(l, opts));
   const nb = B.map((l) => normalise(l, opts));
 
-  // lcs[i][j] = length of the longest common subsequence of A[i:] and B[j:]
-  const lcs: Uint32Array[] = Array.from(
-    { length: A.length + 1 },
-    () => new Uint32Array(B.length + 1),
-  );
-  for (let i = A.length - 1; i >= 0; i--) {
-    for (let j = B.length - 1; j >= 0; j--) {
-      lcs[i][j] =
-        na[i] === nb[j] ? lcs[i + 1][j + 1] + 1 : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+  // The identical head and tail need no LCS: greedily matching a common prefix
+  // or suffix never shortens the longest common subsequence, so the matrix only
+  // has to span what lies between them. This is what the cost is actually
+  // proportional to — editing a paragraph of a 4000-line file leaves the other
+  // 3990 lines aligned, and the full matrix would have been 16M cells to say so.
+  let head = 0;
+  while (head < A.length && head < B.length && na[head] === nb[head]) head++;
+  let tail = 0;
+  while (
+    tail < A.length - head &&
+    tail < B.length - head &&
+    na[A.length - 1 - tail] === nb[B.length - 1 - tail]
+  ) {
+    tail++;
+  }
+
+  // The window still to be aligned. Either side can be empty — an insertion at
+  // the end leaves nothing of A between head and tail.
+  const m = A.length - tail - head;
+  const n = B.length - tail - head;
+
+  // lcs[p][q] = LCS length of the two windows from p and q onward, held flat:
+  // one allocation instead of m+1 typed arrays, and rows land next to each
+  // other in memory. Uint16 is enough because a subsequence cannot be longer
+  // than the shorter window, and LIMIT caps that far below 65535.
+  const stride = n + 1;
+  const lcs = new Uint16Array((m + 1) * stride);
+  for (let p = m - 1; p >= 0; p--) {
+    const row = p * stride;
+    const next = row + stride;
+    for (let q = n - 1; q >= 0; q--) {
+      lcs[row + q] =
+        na[head + p] === nb[head + q]
+          ? lcs[next + q + 1] + 1
+          : Math.max(lcs[next + q], lcs[row + q + 1]);
     }
   }
 
   const rows: DiffRow[] = [];
   let added = 0;
   let removed = 0;
-  let i = 0;
-  let j = 0;
-  while (i < A.length && j < B.length) {
-    if (na[i] === nb[j]) {
-      rows.push({ kind: "same", leftNo: i + 1, rightNo: j + 1, text: A[i] });
-      i++;
-      j++;
-    } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
-      rows.push({ kind: "del", leftNo: i + 1, rightNo: null, text: A[i] });
+  for (let k = 0; k < head; k++) {
+    rows.push({ kind: "same", leftNo: k + 1, rightNo: k + 1, text: A[k] });
+  }
+  let p = 0;
+  let q = 0;
+  while (p < m && q < n) {
+    if (na[head + p] === nb[head + q]) {
+      rows.push({ kind: "same", leftNo: head + p + 1, rightNo: head + q + 1, text: A[head + p] });
+      p++;
+      q++;
+    } else if (lcs[(p + 1) * stride + q] >= lcs[p * stride + q + 1]) {
+      rows.push({ kind: "del", leftNo: head + p + 1, rightNo: null, text: A[head + p] });
       removed++;
-      i++;
+      p++;
     } else {
-      rows.push({ kind: "add", leftNo: null, rightNo: j + 1, text: B[j] });
+      rows.push({ kind: "add", leftNo: null, rightNo: head + q + 1, text: B[head + q] });
       added++;
-      j++;
+      q++;
     }
   }
-  while (i < A.length) {
-    rows.push({ kind: "del", leftNo: i + 1, rightNo: null, text: A[i] });
+  for (; p < m; p++) {
+    rows.push({ kind: "del", leftNo: head + p + 1, rightNo: null, text: A[head + p] });
     removed++;
-    i++;
   }
-  while (j < B.length) {
-    rows.push({ kind: "add", leftNo: null, rightNo: j + 1, text: B[j] });
+  for (; q < n; q++) {
+    rows.push({ kind: "add", leftNo: null, rightNo: head + q + 1, text: B[head + q] });
     added++;
-    j++;
+  }
+  for (let k = 0; k < tail; k++) {
+    const i = A.length - tail + k;
+    rows.push({ kind: "same", leftNo: i + 1, rightNo: B.length - tail + k + 1, text: A[i] });
   }
 
   // Before collapsing: `collapse` only ever folds unchanged rows, but pairing

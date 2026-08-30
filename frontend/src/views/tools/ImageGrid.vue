@@ -3,7 +3,8 @@
  * Slices one image into a cols×rows grid — the classic 3×3 social post —
  * writing each tile as its own PNG, numbered left-to-right, top-to-bottom.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useWindowKeydown } from "../../lib/useWindowKeydown";
 import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import OutputList from "../../work/OutputList.vue";
@@ -43,10 +44,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(async () => {
   outDir.value = await outputDir("Images");
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 async function run() {
   if (!canRun.value) return;

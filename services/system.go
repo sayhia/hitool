@@ -230,6 +230,9 @@ func StatPaths(paths []string) []FileInfo {
 	out := make([]FileInfo, 0, len(paths))
 	remaining := maxDropFiles
 	for _, p := range paths {
+		if remaining <= 0 {
+			break
+		}
 		st, err := os.Stat(p)
 		if err != nil {
 			continue
@@ -242,9 +245,6 @@ func StatPaths(paths []string) []FileInfo {
 		}
 		out = append(out, FileInfo{Path: p, Name: filepath.Base(p), Size: st.Size()})
 		remaining--
-		if remaining <= 0 {
-			break
-		}
 	}
 	return out
 }
@@ -293,7 +293,11 @@ type FilesDropped struct {
 func UniqueOutputPath(dir, stem, ext string) string {
 	p := filepath.Join(dir, stem+ext)
 	for i := 1; ; i++ {
-		if _, err := os.Stat(p); os.IsNotExist(err) {
+		// Only a successful stat proves the name is taken. Testing for
+		// IsNotExist instead would spin forever on a directory we cannot stat
+		// into at all; handing the name back lets the caller's write report
+		// that far more clearly than a hung export would.
+		if _, err := os.Stat(p); err != nil {
 			return p
 		}
 		p = filepath.Join(dir, fmt.Sprintf("%s_%d%s", stem, i, ext))

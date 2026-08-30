@@ -4,7 +4,8 @@
  * page-separated. Scanned pages have no text layer; the tool says so rather
  * than handing back a blank file with no explanation.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useWindowKeydown } from "../../lib/useWindowKeydown";
 import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import OutputList from "../../work/OutputList.vue";
@@ -34,10 +35,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(async () => {
   outDir.value = await outputDir("Text");
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 async function run() {
   if (!canRun.value) return;

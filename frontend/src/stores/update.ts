@@ -23,8 +23,49 @@ export const releaseInfo = ref<ReleaseInfo | null>(null);
 export const updateProgress = ref(0); // 0..1
 export const updateError = ref("");
 
+/**
+ * When the last check actually reached the release feed, so About can say
+ * "checked at 14:02" instead of leaving "up to date" undated — the one claim
+ * that is worthless without a timestamp. Deliberately not persisted: it
+ * describes this session's knowledge, and a day-old answer restored from disk
+ * would read as fresh.
+ */
+export const lastCheckedAt = ref<Date | null>(null);
+
 const SKIPPED_KEY = "update.skippedVersion";
+const AUTO_KEY = "update.auto";
 let progressOff: (() => void) | null = null;
+
+/**
+ * Whether the launch-time probe runs at all. On means what the app did before
+ * this switch existed: check on boot, download in the background, offer the
+ * restart. Off means nothing reaches the network until the user presses
+ * "check for updates" in About.
+ */
+export const autoUpdate = ref(true);
+
+/**
+ * Read the stored preference once, at boot. Only an explicit "0" turns it off:
+ * a key that was never written — first launch — and a store that failed to
+ * answer must both read as the default, never as "the user said no".
+ */
+export async function initAutoUpdate(): Promise<void> {
+  if (!inWails()) return;
+  try {
+    autoUpdate.value = (await StoreService.GetSetting(AUTO_KEY)) !== "0";
+  } catch {
+    /* keep the default */
+  }
+}
+
+export async function setAutoUpdate(on: boolean): Promise<void> {
+  autoUpdate.value = on;
+  try {
+    if (inWails()) await StoreService.SetSetting(AUTO_KEY, on ? "1" : "0");
+  } catch {
+    /* persistence is best-effort; the session still honours the choice */
+  }
+}
 
 async function getSkipped(): Promise<string> {
   try {
@@ -64,6 +105,7 @@ export async function checkForUpdates(autoInstall = false): Promise<void> {
   updateError.value = "";
   try {
     const info = await checkUpdate();
+    lastCheckedAt.value = new Date();
     if (!info.hasNew) {
       updateState.value = "idle";
       releaseInfo.value = null;
@@ -82,6 +124,16 @@ export async function checkForUpdates(autoInstall = false): Promise<void> {
     updateState.value = "error";
     updateError.value = e instanceof Error ? e.message : String(e);
   }
+}
+
+/**
+ * The launch-time path. Gated here rather than at the call site so that
+ * "automatic updates are off" can only ever mean one thing: nothing reaches
+ * the network unless the user asked for it.
+ */
+export async function autoCheckForUpdates(): Promise<void> {
+  if (!autoUpdate.value) return;
+  await checkForUpdates(true);
 }
 
 /** Download + verify + stage. Subscribes to progress events for the bar. */

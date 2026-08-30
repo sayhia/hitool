@@ -54,6 +54,7 @@
     "done": "Done",
     "copy": "Copy",
     "copied": "Copied",
+    "copyFailed": "Copy failed",
     "openFolder": "Open output folder",
     "revealFile": "Reveal in folder",
     "dropHint": "Click to select files",
@@ -957,10 +958,15 @@
     "openData": "Open data folder",
     "history": "History",
     "historyEmpty": "No records yet",
+    "historyNoMatch": "No matching records",
+    "clearSearch": "Clear search",
     "historySearch": "Search tool or details…",
     "clearHistory": "Clear history",
     "about": "About",
-    "aboutText": "HiTool is a local-first multi-tool workbench built with Go + Wails3 + Vite + Vue + SQLite. Everything runs locally.",
+    "aboutTag": "A toolbox that lives on your machine — documents, images, text, dev work and quick maths, always a click away.",
+    "aboutLocal": "Nothing is uploaded; the work happens on this device. The only time it reaches the network is when you ask for AI or check for updates.",
+    "repo": "Project page",
+    "feedback": "Report an issue",
     "version": "Version",
     "theme": "Appearance",
     "themeLight": "Light",
@@ -969,6 +975,7 @@
     "themeSchedule": "By time of day",
     "darkFrom": "Switch to dark from",
     "loadFailed": "Some settings failed to load: {what}",
+    "updates": "Software update",
     "tabAi": "AI"
   },
   "notify": {
@@ -979,6 +986,7 @@
     "title": "Keyboard Shortcuts",
     "reset": "Restore Defaults",
     "recording": "Press a combo (Esc to cancel)",
+    "hint": "Click a combo, then press the new keys. If another action already uses them the two swap, so nothing is left without a shortcut.",
     "action": {
       "palette": "Open command palette",
       "closeTab": "Close current tab",
@@ -1009,7 +1017,12 @@
     "notesLabel": "Release notes",
     "downloadedReady": "v{v} downloaded — restart the app to finish",
     "downloading": "Downloading v{v}…",
-    "readyBrief": "v{v} ready to install"
+    "readyBrief": "v{v} ready to install",
+    "auto": "Automatic updates",
+    "autoDesc": "Check at launch and download in the background, then offer to restart.",
+    "autoOffDesc": "Off. Nothing is fetched until you press Check for updates.",
+    "lastChecked": "Last checked: {when}",
+    "neverChecked": "Not checked yet this session"
   },
   "onb": {
     "replay": "Replay tour",

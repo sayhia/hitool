@@ -108,21 +108,12 @@ func (r *RenameService) Plan(paths []string, rule RenameRule) (*RenamePlan, erro
 		re = compiled
 	}
 
-	// Names already present in each directory but not part of this batch —
-	// renaming onto one of those would silently destroy a file.
-	batch := map[string]bool{}
-	for _, p := range paths {
-		batch[strings.ToLower(p)] = true
-	}
-
-	seen := map[string]int{} // dir+newname -> count, for in-batch collisions
 	pad := rule.Padding
 	if pad < 1 {
 		pad = 1
 	}
 
 	for i, p := range paths {
-		dir := filepath.Dir(p)
 		old := filepath.Base(p)
 		ext := filepath.Ext(old)
 		stem := strings.TrimSuffix(old, ext)
@@ -165,32 +156,57 @@ func (r *RenameService) Plan(paths []string, rule RenameRule) (*RenamePlan, erro
 		switch {
 		case strings.TrimSpace(stem) == "":
 			item.Problem = "empty name"
-		case illegalName.MatchString(stem):
+		// The whole name, not just the stem: a replacement extension is user
+		// input too, and "b/c" would otherwise aim the rename at a subdirectory.
+		case illegalName.MatchString(item.NewName):
 			item.Problem = "illegal character"
 		case len(item.NewName) > 255:
 			item.Problem = "name too long"
 		}
 
-		if item.Problem == "" && item.Changed {
-			target := filepath.Join(dir, item.NewName)
-			key := strings.ToLower(target)
-			seen[key]++
-			if seen[key] > 1 {
-				item.Problem = "duplicate target"
-			} else if !batch[key] {
-				// Only an issue when the target is a file we are not renaming.
-				if _, err := os.Stat(target); err == nil {
-					item.Problem = "target exists"
-				}
+		plan.Items = append(plan.Items, item)
+	}
+
+	// Collisions can only be judged once every new name is known: a name is
+	// free if the file sitting on it is one this batch actually moves away.
+	// Being in the selection is not enough — a selected file whose name the
+	// rule leaves alone stays exactly where it is, and renaming another file
+	// onto it would destroy it.
+	vacating := map[string]bool{}
+	for _, it := range plan.Items {
+		if it.Changed && it.Problem == "" {
+			vacating[strings.ToLower(it.Path)] = true
+		}
+	}
+
+	seen := map[string]int{} // target path -> count, for in-batch collisions
+	for i := range plan.Items {
+		it := &plan.Items[i]
+		if it.Problem != "" || !it.Changed {
+			continue
+		}
+		target := filepath.Join(filepath.Dir(it.Path), it.NewName)
+		key := strings.ToLower(target)
+		seen[key]++
+		switch {
+		case seen[key] > 1:
+			it.Problem = "duplicate target"
+		case vacating[key]:
+			// The occupant leaves in the same batch; the two-phase apply in
+			// Apply() is what makes the ordering safe.
+		default:
+			if _, err := os.Stat(target); err == nil {
+				it.Problem = "target exists"
 			}
 		}
+	}
 
-		if item.Problem != "" {
+	for _, it := range plan.Items {
+		if it.Problem != "" {
 			plan.Conflicts++
-		} else if item.Changed {
+		} else if it.Changed {
 			plan.Changed++
 		}
-		plan.Items = append(plan.Items, item)
 	}
 
 	return plan, nil

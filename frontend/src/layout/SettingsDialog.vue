@@ -1,10 +1,15 @@
 <script setup lang="ts">
 /**
- * Settings as a modal: the tab row up top switches between the sections,
- * and opening it never disturbs the tab stack or the current route. The
- * sections load independently so one failing probe can't blank the rest.
+ * Settings as a modal: the source list down the left switches between the
+ * sections, and opening it never disturbs the tab stack or the current route.
+ * The sections load independently so one failing probe can't blank the rest.
+ *
+ * Each section is a list of rows — name and explanation on the left, the one
+ * control that changes it on the right — rather than a wrapped grid of
+ * labelled widgets, so a section can grow without the eye having to work out
+ * which caption belongs to which control.
  */
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { t, lang, setLang } from "../lib/i18n";
 import { theme, setTheme, nightHour, setNightHour, type Theme } from "../lib/theme";
 import {
@@ -25,7 +30,12 @@ import { settingsOpen, settingsTab, closeSettings, type SettingsTab } from "../s
 import { toast } from "../stores/toast";
 import { errText } from "../lib/err";
 import Icon from "../components/Icon.vue";
+import Switch from "../components/Switch.vue";
+import SettingRow from "../components/SettingRow.vue";
 import AiSettings from "./AiSettings.vue";
+
+// Same repo the updater polls (main.go, github.Config.Repository).
+const REPO_URL = "https://github.com/sayhia/hitool";
 
 // 版本号来自 Go 侧编译期注入（services.Version），本地 dev 构建显示 "dev"。
 // 获取失败时退回占位值，不让整个设置面板受网络/绑定影响。
@@ -51,7 +61,10 @@ import {
   releaseInfo,
   updateProgress,
   updateError,
+  autoUpdate,
+  lastCheckedAt,
   checkForUpdates,
+  setAutoUpdate,
   startInstall,
   restartApp,
   skipVersion,
@@ -59,10 +72,32 @@ import {
 } from "../stores/update";
 
 const checking = computed(() => updateState.value === "checking");
+const busy = computed(() => checking.value || updateState.value === "downloading");
 
 async function doCheckUpdate() {
   await checkForUpdates(false);
 }
+
+/**
+ * Turning the switch back on checks straight away. Deferring to the next
+ * launch would leave the user staring at a panel that says nothing happened,
+ * with no way to tell the setting from a broken one.
+ */
+async function onAutoUpdate(on: boolean) {
+  await setAutoUpdate(on);
+  if (on && updateState.value === "idle") void checkForUpdates(true);
+}
+
+/** "Up to date" is worthless undated; say when we last actually asked. */
+const lastCheckedText = computed(() => {
+  const at = lastCheckedAt.value;
+  if (!at) return t("update.neverChecked");
+  const when = at.toLocaleTimeString(lang.value === "zh" ? "zh-CN" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return t("update.lastChecked", { when });
+});
 
 const updateErr = computed(() =>
   updateError.value
@@ -123,6 +158,10 @@ function onRecordKey(e: KeyboardEvent) {
   if (!recording.value) return;
   if (e.key === "Escape") {
     e.preventDefault();
+    // Escape cancels the recording and nothing else. Letting it reach the
+    // dialog's own handler would close Settings outright, which is not what
+    // "cancel this one combo" should ever mean.
+    e.stopPropagation();
     recording.value = "";
     return;
   }
@@ -151,6 +190,7 @@ watch(recording, (v) => {
 
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", onRecordKey, true);
+  window.removeEventListener("keydown", onKey);
 });
 
 function resetShortcuts() {
@@ -187,14 +227,90 @@ onMounted(async () => {
   if (failed.length) toast(t("settings.loadFailed", { what: failed.join(", ") }), "fail");
 });
 
-// ESC dismisses the dialog while it is on screen.
-function onKey(e: KeyboardEvent) {
-  if (e.key === "Escape") closeSettings();
+// ---- focus & keyboard -----------------------------------------------------
+const panel = ref<HTMLElement | null>(null);
+const nav = ref<HTMLElement | null>(null);
+const body = ref<HTMLElement | null>(null);
+/** Whatever had focus when the dialog opened, so closing can hand it back. */
+let returnFocus: HTMLElement | null = null;
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]),' +
+  ' textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+
+function focusables(): HTMLElement[] {
+  if (!panel.value) return [];
+  // offsetParent is null for anything display:none — the inactive sections are
+  // v-if'd away, but a collapsed row inside one that is shown would otherwise
+  // become an invisible stop on the Tab path.
+  return [...panel.value.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
+    (el) => el.offsetParent !== null,
+  );
 }
 
-watch(settingsOpen, (v) => {
-  if (v) window.addEventListener("keydown", onKey);
-  else window.removeEventListener("keydown", onKey);
+function onKey(e: KeyboardEvent) {
+  if (e.key === "Escape") {
+    closeSettings();
+    return;
+  }
+  if (e.key !== "Tab") return;
+  // A modal that lets Tab walk into the page behind it is only modal to the
+  // mouse: wrap at both ends, and pull focus back in if it has already left.
+  const items = focusables();
+  if (!items.length) return;
+  const active = document.activeElement as HTMLElement | null;
+  const inside = !!active && !!panel.value?.contains(active);
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (e.shiftKey ? !inside || active === first : !inside || active === last) {
+    e.preventDefault();
+    (e.shiftKey ? last : first).focus();
+  }
+}
+
+function focusSelectedTab() {
+  nav.value?.querySelector<HTMLElement>(".set-tab.on")?.focus();
+}
+
+/**
+ * Arrow keys move between sections, the way a source list is expected to
+ * behave. The list is a roving tabindex, so Tab treats it as one stop rather
+ * than four on the way to the settings themselves.
+ */
+function onNavKey(e: KeyboardEvent) {
+  const i = TABS.findIndex((x) => x.id === settingsTab.value);
+  let next = -1;
+  if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (i + 1) % TABS.length;
+  else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = (i - 1 + TABS.length) % TABS.length;
+  else if (e.key === "Home") next = 0;
+  else if (e.key === "End") next = TABS.length - 1;
+  if (next < 0) return;
+  e.preventDefault();
+  settingsTab.value = TABS[next].id;
+  void nextTick(focusSelectedTab);
+}
+
+watch(settingsOpen, async (v) => {
+  if (v) {
+    returnFocus = document.activeElement as HTMLElement | null;
+    window.addEventListener("keydown", onKey);
+    await nextTick();
+    // Land on the section list, not the close button: choosing a section is
+    // what a keyboard user came to do, and it puts the arrows within reach.
+    focusSelectedTab();
+  } else {
+    window.removeEventListener("keydown", onKey);
+    recording.value = "";
+    returnFocus?.focus?.();
+    returnFocus = null;
+  }
+});
+
+// A section switch keeps the previous section's scroll offset otherwise, so a
+// short panel can open already scrolled past its own heading.
+watch(settingsTab, () => {
+  recording.value = "";
+  void nextTick(() => body.value?.scrollTo({ top: 0 }));
 });
 
 async function clearHistory() {
@@ -218,9 +334,15 @@ async function openDataDir() {
 <template>
   <transition name="fade">
     <div v-if="settingsOpen" class="set-veil" @click.self="closeSettings()">
-      <div class="set-panel" :class="{ ai: settingsTab === 'ai' }" role="dialog" aria-modal="true">
+      <div
+        ref="panel"
+        class="set-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="set-title"
+      >
         <header class="set-head">
-          <h1>{{ t("settings.title") }}</h1>
+          <h1 id="set-title">{{ t("settings.title") }}</h1>
           <span class="lab mono">{{ displayVersion }}</span>
           <button class="btn btn-icon close" :title="t('common.close')" @click="closeSettings()">
             <Icon name="X" />
@@ -228,176 +350,282 @@ async function openDataDir() {
         </header>
 
         <div class="set-main">
-        <nav class="set-side">
-          <button
-            v-for="tab in TABS"
-            :key="tab.id"
-            class="set-tab"
-            :class="{ on: settingsTab === tab.id }"
-            @click="settingsTab = tab.id"
+          <nav
+            ref="nav"
+            class="set-side"
+            role="tablist"
+            aria-orientation="vertical"
+            @keydown="onNavKey"
           >
-            <Icon :name="tab.icon" />
-            <span class="truncate">{{ t(tab.label) }}</span>
-          </button>
-        </nav>
+            <button
+              v-for="tab in TABS"
+              :key="tab.id"
+              :id="`set-tab-${tab.id}`"
+              class="set-tab"
+              :class="{ on: settingsTab === tab.id }"
+              role="tab"
+              :aria-selected="settingsTab === tab.id"
+              :tabindex="settingsTab === tab.id ? 0 : -1"
+              @click="settingsTab = tab.id"
+            >
+              <Icon :name="tab.icon" />
+              <span class="truncate">{{ t(tab.label) }}</span>
+            </button>
+          </nav>
 
-        <div class="set-body" :class="{ flush: settingsTab === 'ai', 'scroll-y': settingsTab !== 'ai' }">
-          <!-- General: language & appearance -->
-          <section v-if="settingsTab === 'general'" class="block">
-            <div class="block-head"><span class="lab">{{ t("settings.general") }}</span></div>
-            <div class="block-body">
-              <div class="pair">
-                <div class="field">
-                  <span class="lab">{{ t("settings.language") }}</span>
-                  <div class="seg">
-                    <button :class="{ on: lang === 'zh' }" @click="setLang('zh')">中文</button>
-                    <button :class="{ on: lang === 'en' }" @click="setLang('en')">English</button>
-                  </div>
+          <div
+            ref="body"
+            class="set-body"
+            :class="{ flush: settingsTab === 'ai', 'scroll-y': settingsTab !== 'ai' }"
+            role="tabpanel"
+            :aria-labelledby="`set-tab-${settingsTab}`"
+          >
+            <!-- General: language & appearance -->
+            <template v-if="settingsTab === 'general'">
+              <section class="block">
+                <div class="block-head">
+                  <span class="lab">{{ t("settings.general") }}</span>
                 </div>
-                <div class="field">
-                  <span class="lab">{{ t("settings.theme") }}</span>
-                  <div class="seg">
-                    <button
-                      v-for="th in THEMES"
-                      :key="th.id"
-                      :class="{ on: theme === th.id }"
-                      @click="setTheme(th.id)"
-                    >
-                      {{ t(th.label) }}
-                    </button>
-                  </div>
-                  <div v-if="theme === 'schedule'" class="night-row">
-                    <span class="hint">{{ t("settings.darkFrom") }}</span>
-                    <select
-                      class="input hour"
-                      :value="nightHour"
-                      @change="setNightHour(Number(($event.target as HTMLSelectElement).value))"
-                    >
-                      <option v-for="h in NIGHT_HOURS" :key="h" :value="h">{{ h }}:00</option>
-                    </select>
-                  </div>
+                <div class="rows">
+                  <SettingRow :title="t('settings.language')">
+                    <div class="seg">
+                      <button :class="{ on: lang === 'zh' }" @click="setLang('zh')">中文</button>
+                      <button :class="{ on: lang === 'en' }" @click="setLang('en')">English</button>
+                    </div>
+                  </SettingRow>
+                  <SettingRow :title="t('settings.theme')">
+                    <div class="theme-ctl">
+                      <div class="seg">
+                        <button
+                          v-for="th in THEMES"
+                          :key="th.id"
+                          :class="{ on: theme === th.id }"
+                          @click="setTheme(th.id)"
+                        >
+                          {{ t(th.label) }}
+                        </button>
+                      </div>
+                      <div v-if="theme === 'schedule'" class="night-row">
+                        <span class="hint">{{ t("settings.darkFrom") }}</span>
+                        <select
+                          class="input hour"
+                          :value="nightHour"
+                          @change="
+                            setNightHour(Number(($event.target as HTMLSelectElement).value))
+                          "
+                        >
+                          <option v-for="h in NIGHT_HOURS" :key="h" :value="h">{{ h }}:00</option>
+                        </select>
+                      </div>
+                    </div>
+                  </SettingRow>
                 </div>
-                <div class="field">
-                  <div class="keys-head">
-                    <span class="lab">{{ t("keys.title") }}</span>
-                    <button class="btn btn-sm btn-quiet" @click="resetShortcuts">
-                      {{ t("keys.reset") }}
-                    </button>
-                  </div>
-                  <div v-for="a in SHORTCUT_ACTIONS" :key="a" class="keyrow">
-                    <span class="keyname">{{ t(`keys.action.${a}`) }}</span>
+              </section>
+
+              <section class="block">
+                <div class="block-head">
+                  <span class="lab">{{ t("keys.title") }}</span>
+                  <button class="btn btn-sm btn-quiet spread" @click="resetShortcuts">
+                    {{ t("keys.reset") }}
+                  </button>
+                </div>
+                <div class="rows">
+                  <SettingRow v-for="a in SHORTCUT_ACTIONS" :key="a" :title="t(`keys.action.${a}`)">
                     <button
                       class="combo mono"
                       :class="{ rec: recording === a }"
+                      :aria-label="t(`keys.action.${a}`)"
                       @click="startRecord(a)"
                     >
                       {{ recording === a ? t("keys.recording") : comboText(bindings[a]) }}
                     </button>
+                  </SettingRow>
+                </div>
+                <p class="block-foot hint">{{ t("keys.hint") }}</p>
+              </section>
+            </template>
+
+            <!-- Kept alive: a plain v-if destroys the panel on every tab switch,
+                 so coming back re-mounts it and re-runs the PATH scan — the panel
+                 blinks through its empty state before the agents reappear. -->
+            <KeepAlive>
+              <AiSettings v-if="settingsTab === 'ai'" />
+            </KeepAlive>
+
+            <!-- Data: history & data directory -->
+            <section v-if="settingsTab === 'data'" class="block">
+              <div class="block-head">
+                <span class="lab">{{ t("settings.history") }}</span>
+                <span class="lab count">{{ filteredHistory.length }}/{{ history.length }}</span>
+              </div>
+              <div class="block-body">
+                <div class="actions">
+                  <div class="search-wrap">
+                    <Icon name="Search" class="search-icon" />
+                    <input
+                      v-model="historyQuery"
+                      class="input history-search"
+                      :placeholder="t('settings.historySearch')"
+                      spellcheck="false"
+                    />
+                    <button
+                      v-if="historyQuery"
+                      class="clear-search"
+                      :title="t('settings.clearSearch')"
+                      :aria-label="t('settings.clearSearch')"
+                      @click="historyQuery = ''"
+                    >
+                      <Icon name="X" />
+                    </button>
+                  </div>
+                  <button class="btn btn-sm" @click="openDataDir">
+                    <Icon name="FolderOpen" /> {{ t("settings.openData") }}
+                  </button>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    :disabled="!history.length"
+                    @click="clearHistory"
+                  >
+                    <Icon name="Eraser" /> {{ t("settings.clearHistory") }}
+                  </button>
+                </div>
+
+                <!-- An empty log and a filter that matched nothing are different
+                     problems: one is "nothing has run yet", the other is "your
+                     search is wrong", and only one of them has a fix. -->
+                <p v-if="!history.length" class="hint">{{ t("settings.historyEmpty") }}</p>
+                <p v-else-if="!filteredHistory.length" class="hint">
+                  {{ t("settings.historyNoMatch") }}
+                </p>
+                <div v-else class="log scroll-y">
+                  <div v-for="h in filteredHistory" :key="h.id" class="logrow">
+                    <span class="tag mono">{{ h.tool }}</span>
+                    <span class="truncate detail">{{ h.detail }}</span>
+                    <span class="lab time mono">{{ h.createdAt }}</span>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <AiSettings v-if="settingsTab === 'ai'" />
-
-          <!-- Data: history & data directory -->
-          <section v-if="settingsTab === 'data'" class="block">
-            <div class="block-head">
-              <span class="lab">{{ t("settings.history") }}</span>
-              <span class="lab count">{{ filteredHistory.length }}/{{ history.length }}</span>
-            </div>
-            <div class="block-body">
-              <div class="actions">
-                <input
-                  v-model="historyQuery"
-                  class="input history-search"
-                  :placeholder="t('settings.historySearch')"
-                  spellcheck="false"
-                />
-                <button class="btn btn-sm" @click="openDataDir">
-                  <Icon name="FolderOpen" /> {{ t("settings.openData") }}
-                </button>
-                <button class="btn btn-sm btn-danger" :disabled="!history.length" @click="clearHistory">
-                  <Icon name="Eraser" /> {{ t("settings.clearHistory") }}
-                </button>
-              </div>
-
-              <p v-if="!filteredHistory.length" class="hint">{{ t("settings.historyEmpty") }}</p>
-              <div v-else class="log scroll-y">
-                <div v-for="h in filteredHistory" :key="h.id" class="logrow">
-                  <span class="tag mono">{{ h.tool }}</span>
-                  <span class="truncate detail">{{ h.detail }}</span>
-                  <span class="lab time mono">{{ h.createdAt }}</span>
+            <!-- About -->
+            <template v-if="settingsTab === 'about'">
+              <section class="block">
+                <div class="block-head">
+                  <span class="lab">{{ t("settings.about") }}</span>
                 </div>
-              </div>
-            </div>
-          </section>
+                <div class="block-body about-body">
+                  <div class="about-hero">
+                    <img
+                      class="about-logo"
+                      src="/hitool.png"
+                      alt="HiTool"
+                      width="60"
+                      height="60"
+                    />
+                    <div class="about-id">
+                      <h2 class="about-name">
+                        HiTool
+                        <span class="about-ver mono">{{ displayVersion }}</span>
+                      </h2>
+                      <p class="hint about-tag">{{ t("settings.aboutTag") }}</p>
+                    </div>
+                  </div>
 
-          <!-- About -->
-          <section v-if="settingsTab === 'about'" class="block">
-            <div class="block-head"><span class="lab">{{ t("settings.about") }}</span></div>
-            <div class="block-body">
-              <div class="about-brand">
-                <img class="about-logo" src="/hitool.png" alt="HiTool" width="56" height="56" />
-                <div>
-                  <p class="hint about">{{ t("settings.aboutText") }}</p>
-                  <p class="lab mono stack-line">Go · Wails3 · Vite · Vue 3 · SQLite · {{ displayVersion }}</p>
-                </div>
-              </div>
+                  <p class="hint about-local">{{ t("settings.aboutLocal") }}</p>
 
-              <div class="about-row">
-                <button class="btn" :disabled="checking" @click="doCheckUpdate()">
-                  <Icon name="RefreshCw" :class="{ spin: checking }" />
-                  {{ checking ? t("update.checking") : t("update.check") }}
-                </button>
-                <button class="btn" @click="replayOnboarding()">
-                  <Icon name="PlayCircle" />
-                  {{ t("onb.replay") }}
-                </button>
-              </div>
+                  <div class="about-row">
+                    <button class="btn btn-sm" @click="openRelease(REPO_URL)">
+                      <Icon name="Github" />
+                      {{ t("settings.repo") }}
+                    </button>
+                    <button class="btn btn-sm" @click="openRelease(`${REPO_URL}/issues`)">
+                      <Icon name="MessageSquare" />
+                      {{ t("settings.feedback") }}
+                    </button>
+                    <button class="btn btn-sm" @click="replayOnboarding()">
+                      <Icon name="PlayCircle" />
+                      {{ t("onb.replay") }}
+                    </button>
+                  </div>
+                </div>
+              </section>
 
-              <p v-if="updateErr" class="hint update-err">{{ updateErr }}</p>
-              <div v-else-if="updateState === 'ready'" class="update-res">
-                <p class="hint"><strong>{{ t("update.ready") }}</strong></p>
-                <div class="update-actions">
-                  <button class="btn btn-sm" @click="restartApp()">
-                    <Icon name="RotateCw" />
-                    {{ t("update.restartNow") }}
-                  </button>
-                  <button class="btn link" @click="dismissUpdate()">{{ t("update.later") }}</button>
+              <section class="block">
+                <div class="block-head">
+                  <span class="lab">{{ t("settings.updates") }}</span>
                 </div>
-              </div>
-              <div v-else-if="updateState === 'downloading'" class="update-res">
-                <p class="hint">{{ t("update.installing") }}</p>
-                <progress class="upd-bar" :value="Math.round(updateProgress * 100)" max="100" />
-              </div>
-              <div v-else-if="updateState === 'available' && releaseInfo" class="update-res">
-                <p class="hint">
-                  <strong>{{ t("update.available", { v: releaseInfo.latest }) }}</strong>
-                </p>
-                <details v-if="releaseInfo.notes" class="upd-notes">
-                  <summary>{{ t("update.notesLabel") }}</summary>
-                  <pre class="upd-notes-body">{{ releaseInfo.notes }}</pre>
-                </details>
-                <div class="update-actions">
-                  <button class="btn btn-sm" @click="startInstall()">
-                    <Icon name="Download" />
-                    {{ t("update.install") }}
-                  </button>
-                  <button class="btn link" @click="skipVersion(releaseInfo.latest)">
-                    {{ t("update.skipVersion") }}
-                  </button>
-                  <button class="btn link" @click="openRelease(releaseInfo.url)">
-                    {{ t("update.open") }}
-                  </button>
+                <div class="rows">
+                  <SettingRow
+                    :title="t('update.auto')"
+                    :desc="autoUpdate ? t('update.autoDesc') : t('update.autoOffDesc')"
+                  >
+                    <Switch
+                      :model-value="autoUpdate"
+                      :label="t('update.auto')"
+                      @update:model-value="onAutoUpdate"
+                    />
+                  </SettingRow>
                 </div>
-              </div>
-              <p v-else-if="updateState === 'checking'" class="hint">{{ t("update.checking") }}</p>
-              <p v-else-if="updateState === 'idle'" class="hint">{{ t("update.latest") }}</p>
-            </div>
-          </section>
-        </div>
+                <div class="block-body upd-body">
+                  <div class="about-row">
+                    <button class="btn btn-sm" :disabled="busy" @click="doCheckUpdate()">
+                      <Icon name="RefreshCw" :class="{ spin: checking }" />
+                      {{ checking ? t("update.checking") : t("update.check") }}
+                    </button>
+                    <span class="hint checked">{{ lastCheckedText }}</span>
+                  </div>
+
+                  <p v-if="updateErr" class="hint update-err">{{ updateErr }}</p>
+                  <div v-else-if="updateState === 'ready'" class="update-res">
+                    <p class="hint">
+                      <strong>{{ t("update.ready") }}</strong>
+                    </p>
+                    <div class="update-actions">
+                      <button class="btn btn-sm btn-primary" @click="restartApp()">
+                        <Icon name="RotateCw" />
+                        {{ t("update.restartNow") }}
+                      </button>
+                      <button class="btn link" @click="dismissUpdate()">
+                        {{ t("update.later") }}
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else-if="updateState === 'downloading'" class="update-res">
+                    <p class="hint">
+                      {{ t("update.installing") }}
+                      <span class="mono pct">{{ Math.round(updateProgress * 100) }}%</span>
+                    </p>
+                    <progress class="upd-bar" :value="Math.round(updateProgress * 100)" max="100" />
+                  </div>
+                  <div v-else-if="updateState === 'available' && releaseInfo" class="update-res">
+                    <p class="hint">
+                      <strong>{{ t("update.available", { v: releaseInfo.latest }) }}</strong>
+                    </p>
+                    <details v-if="releaseInfo.notes" class="upd-notes">
+                      <summary>{{ t("update.notesLabel") }}</summary>
+                      <pre class="upd-notes-body">{{ releaseInfo.notes }}</pre>
+                    </details>
+                    <div class="update-actions">
+                      <button class="btn btn-sm btn-primary" @click="startInstall()">
+                        <Icon name="Download" />
+                        {{ t("update.install") }}
+                      </button>
+                      <button class="btn link" @click="skipVersion(releaseInfo.latest)">
+                        {{ t("update.skipVersion") }}
+                      </button>
+                      <button class="btn link" @click="openRelease(releaseInfo.url)">
+                        {{ t("update.open") }}
+                      </button>
+                    </div>
+                  </div>
+                  <p v-else-if="updateState === 'checking'" class="hint">
+                    {{ t("update.checking") }}
+                  </p>
+                  <p v-else class="hint">{{ t("update.latest") }}</p>
+                </div>
+              </section>
+            </template>
+          </div>
         </div>
       </div>
     </div>
@@ -418,6 +646,10 @@ async function openDataDir() {
   padding: 32px;
 }
 
+/* One size for every tab. The panel used to grow for the AI tab, which made the
+   dialog jump and reflow under the pointer on a plain tab switch — the AI grids
+   are auto-fill and lay out fine at this width, so the extra room bought a
+   resize animation and nothing else. */
 .set-panel {
   width: min(820px, calc(100vw - 48px));
   height: min(620px, calc(100vh - 72px));
@@ -428,12 +660,6 @@ async function openDataDir() {
   border-radius: var(--r-xl);
   box-shadow: var(--e-3);
   overflow: hidden;
-  transition: width 0.18s var(--ease-out), height 0.18s var(--ease-out);
-}
-
-.set-panel.ai {
-  width: min(920px, calc(100vw - 40px));
-  height: min(680px, calc(100vh - 56px));
 }
 
 .set-head {
@@ -526,6 +752,11 @@ async function openDataDir() {
 
 /* inset grouped: white cards floating on the grey panel, hairline seams */
 .block {
+  /* The body is a flex column, so a block would otherwise shrink to share the
+     visible height with its siblings — and `overflow: hidden` turns that into
+     a card cut off mid-row rather than a scroll. Blocks keep their height; the
+     body scrolls. */
+  flex-shrink: 0;
   border: 1px solid var(--line-2);
   border-radius: var(--r-lg);
   background: var(--s-1);
@@ -542,7 +773,8 @@ async function openDataDir() {
 }
 
 .state,
-.count {
+.count,
+.spread {
   margin-left: auto;
   text-transform: none;
 }
@@ -554,25 +786,30 @@ async function openDataDir() {
   gap: 11px;
 }
 
-.pair {
+/* A row list sets its own padding, so the block gives it none. */
+.rows {
   display: flex;
-  gap: 11px;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
-/* Size to content so multi-option segments aren't clipped, with a floor. */
-.pair > .field {
-  flex: 0 0 auto;
-  min-width: 160px;
+/* Anything after a row list is a second register — separate it the same way
+   the rows separate from each other. */
+.rows + .block-body {
+  border-top: 1px solid var(--line-2);
 }
 
-.pair > .field.grow {
-  flex: 1;
+.block-foot {
+  margin: 0;
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--line-2);
+  line-height: 1.55;
 }
 
-.keyrow {
+.theme-ctl {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .actions {
@@ -582,9 +819,53 @@ async function openDataDir() {
   flex-wrap: wrap;
 }
 
-.history-search {
+/* The field owns the icon and the clear button so they travel with it when
+   the row wraps. */
+.search-wrap {
+  position: relative;
   flex: 1;
-  min-width: 140px;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 9px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.search-wrap :deep(svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.history-search {
+  width: 100%;
+  padding-left: 27px;
+  padding-right: 26px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.clear-search:hover {
+  background: var(--s-3);
+  color: var(--ink);
 }
 
 /* Usage log reads as a printout: fixed columns, hairline separators. */
@@ -626,29 +907,64 @@ async function openDataDir() {
   font-size: 10px;
 }
 
-.about-brand {
+.about-body {
+  gap: 16px;
+}
+
+.about-hero {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
 }
 
 .about-logo {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
   border-radius: var(--r-lg);
   display: block;
 }
 
-.about {
+.about-id {
+  min-width: 0;
+}
+
+.about-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.about-ver {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  background: var(--acc-wash);
+  border-radius: var(--r-pill);
+  padding: 2px 8px;
+}
+
+.about-tag {
+  margin-top: 3px;
+  line-height: 1.6;
+  max-width: 52ch;
+}
+
+.about-local {
   line-height: 1.7;
-  max-width: 62ch;
+  max-width: 58ch;
+  padding-left: 10px;
+  border-left: 2px solid var(--line-2);
 }
 
 .about-row {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .about-row .spin {
@@ -661,12 +977,19 @@ async function openDataDir() {
   }
 }
 
+.checked {
+  font-variant-numeric: tabular-nums;
+}
+
+.upd-body {
+  gap: 10px;
+}
+
 .update-res {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-top: 8px;
 }
 
 .update-actions {
@@ -674,6 +997,11 @@ async function openDataDir() {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.pct {
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
 }
 
 .upd-notes {
@@ -721,7 +1049,6 @@ async function openDataDir() {
 }
 
 .update-err {
-  margin-top: 8px;
   color: var(--fail);
 }
 
@@ -731,11 +1058,6 @@ async function openDataDir() {
   box-shadow: none;
   color: var(--acc);
   padding: 0 6px;
-}
-
-.stack-line {
-  text-transform: none;
-  letter-spacing: 0.06em;
 }
 
 /* Mirrors the palette's rise-and-fade so the two overlays feel related. */
@@ -763,7 +1085,6 @@ async function openDataDir() {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 8px;
 }
 
 .night-row .hour {
@@ -771,39 +1092,16 @@ async function openDataDir() {
   height: 30px;
 }
 
-.keys-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.keys-head .btn {
-  margin-left: auto;
-}
-
-.keyrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-}
-
-.keyname {
-  flex: 1;
-  font-size: var(--t-sm);
-  color: var(--ink-2);
-}
-
 .combo {
-  min-width: 96px;
-  padding: 4px 12px;
+  min-width: 116px;
+  padding: 5px 12px;
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   background: var(--s-2);
   color: var(--ink);
   font-size: var(--t-xs);
   cursor: pointer;
+  transition: border-color 0.14s var(--ease), color 0.14s var(--ease);
 }
 
 .combo:hover {

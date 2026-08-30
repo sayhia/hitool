@@ -56,6 +56,17 @@ const names = computed(() => ({
   rightName: meta.value.right?.name || "b",
 }));
 
+/**
+ * Whether an export would produce anything — the same question `toUnified`
+ * answers by returning "", but without running a second LCS. Reading `unified`
+ * to disable a button would rebuild the whole diff on every render, doubling
+ * the cost of every keystroke; this reads counters the visible diff already
+ * produced. A row is either same, add or del, so a non-zero total means at
+ * least one line differs, which is exactly toUnified's own emptiness test.
+ */
+const hasChanges = computed(() => result.value.added + result.value.removed > 0);
+
+/** Lazy on purpose: only the copy and export handlers may read this. */
 const unified = computed(() =>
   toUnified(left.value, right.value, {
     ignoreCase: ignoreCase.value,
@@ -248,7 +259,7 @@ function swap() {
         </span>
         <button
           class="btn btn-sm btn-quiet"
-          :disabled="!unified"
+          :disabled="!hasChanges"
           :title="t('diff.copyUnified')"
           @click="copyText(unified, t('common.copied'))"
         >
@@ -308,7 +319,7 @@ function swap() {
 
       <InspectorSection :title="t('diff.export')" icon="Download">
         <div class="exports">
-          <button class="btn btn-sm" :disabled="!unified || exporting" @click="save('diff')">
+          <button class="btn btn-sm" :disabled="!hasChanges || exporting" @click="save('diff')">
             <Icon name="FileCode2" /> {{ t("diff.exportDiff") }}
           </button>
           <button

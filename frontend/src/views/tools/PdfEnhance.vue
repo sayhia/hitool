@@ -4,7 +4,8 @@
  * rebuilds a PDF with pdf-lib. Runs in the webview because that is where a
  * page rasteriser already lives; progress is reported per page.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useWindowKeydown } from "../../lib/useWindowKeydown";
 import WorkBench from "../../work/WorkBench.vue";
 import SourceTray from "../../work/SourceTray.vue";
 import OutputList from "../../work/OutputList.vue";
@@ -44,10 +45,9 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(async () => {
   outDir.value = await outputDir("PDF");
-  window.addEventListener("keydown", onKey);
 });
 
-onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
+useWindowKeydown(onKey);
 
 /** Percentile contrast stretch followed by an unsharp mask. */
 function enhance(data: Uint8ClampedArray, w: number, h: number, lvl: string) {
