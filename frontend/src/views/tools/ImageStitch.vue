@@ -116,7 +116,7 @@ async function browse() {
 </script>
 
 <template>
-  <WorkBench tool-id="image-stitch" :files="files">
+  <WorkBench tool-id="image-stitch" :files="files" wide>
     <template #source>
       <SourceTray v-model="files" :accept="IMAGE_EXT" filter-name="Images" :multiple="true" :ordered="true" :disabled="busy" />
     </template>
