@@ -7,6 +7,7 @@ import {
   closeTab,
   moveTab,
   persistTabs,
+  restoreTabs,
   syncFromRoute,
   tabTitle,
   useTabs,
@@ -16,10 +17,17 @@ import {
 // (no _wails) so persistence cleanly takes the localStorage path.
 (globalThis as Record<string, unknown>).window = {};
 
+const store: Record<string, string> = {};
+vi.stubGlobal("localStorage", {
+  setItem: (k: string, v: string) => (store[k] = v),
+  getItem: (k: string) => store[k] ?? "",
+});
+
 const router = { push: vi.fn() } as unknown as Router;
 const { tabs, activePath } = useTabs();
 
 beforeEach(() => {
+  for (const k of Object.keys(store)) delete store[k];
   tabs.value = [];
   activePath.value = "";
   lang.value = "zh";
@@ -67,15 +75,18 @@ describe("home tab", () => {
   });
 
   it("persistTabs omits home", () => {
-    const store: Record<string, string> = {};
-    vi.stubGlobal("localStorage", {
-      setItem: (k: string, v: string) => (store[k] = v),
-      getItem: (k: string) => store[k] ?? "",
-    });
     syncFromRoute("/t/json-format");
     persistTabs();
     const saved = JSON.parse(store["layout.tabs"]);
     expect(saved.map((x: { path: string }) => x.path)).toEqual(["/t/json-format"]);
-    vi.unstubAllGlobals();
+  });
+
+  it("restoreTabs re-docks home first and excludes it from the round-trip", async () => {
+    syncFromRoute("/t/json-format");
+    persistTabs();
+    tabs.value = [];
+    await restoreTabs();
+    expect(tabs.value.map((x) => x.path)).toEqual(["/", "/t/json-format"]);
+    expect(tabs.value[0].toolId).toBe("");
   });
 });
