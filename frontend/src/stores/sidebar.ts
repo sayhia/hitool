@@ -1,6 +1,6 @@
 /**
- * The tool tree lives in a slide-out drawer over the content, toggled from
- * the top bar or ⌘B. It defaults to closed; the last state persists so the
+ * The tool tree lives in a permanent sidebar beside the content. It can be
+ * collapsed (⌘B or the strip's reveal button) and the state persists so the
  * app comes back the way it was left.
  */
 import { ref } from "vue";
@@ -9,7 +9,7 @@ import { inWails } from "../lib/backend";
 
 const KEY = "layout.sidebar";
 
-export const sidebarOpen = ref(false);
+export const sidebarOpen = ref(true);
 
 /** Category the number keys asked the tree to reveal ("" = none). */
 export const focusedCat = ref("");
@@ -44,6 +44,6 @@ export async function initSidebar() {
   } catch {
     /* fall through to default */
   }
-  // Closed unless the session explicitly left it open.
-  sidebarOpen.value = saved === "1";
+  // Unset keeps the expanded default; only an explicit "0" collapses.
+  sidebarOpen.value = saved !== "0";
 }
