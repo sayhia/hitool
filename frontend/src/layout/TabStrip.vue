@@ -80,6 +80,8 @@ const ctxItems = computed<MenuItem[]>(() => {
 function openCtx(e: MouseEvent, path: string) {
   e.preventDefault();
   e.stopPropagation();
+  // Home is permanent: pin/close/others are all no-ops for it, so no menu.
+  if (path === "/") return;
   ctx.value = { x: e.clientX, y: e.clientY, path };
 }
 
@@ -163,7 +165,7 @@ function onListSelect(id: string) {
           class="tab"
           :class="[tab.cat, { on: activePath === tab.path, pinned: tab.pinned }]"
           :title="tab.title"
-          draggable="true"
+          :draggable="tab.path !== '/'"
           @click="router.push(tab.path)"
           @auxclick="onAux($event, tab.path)"
           @dragstart="dragFrom = i"
@@ -173,9 +175,9 @@ function onListSelect(id: string) {
         >
           <Icon :name="tab.icon" class="tab-icon" />
           <span class="tab-name">{{ tab.title }}</span>
-          <Icon v-if="tab.pinned" name="Pin" class="pin-mark" />
+          <Icon v-if="tab.pinned && tab.path !== '/'" name="Pin" class="pin-mark" />
           <button
-            v-else
+            v-else-if="tab.path !== '/'"
             class="tab-x"
             :title="t('tabs.close')"
             @click.stop="closeTab(tab.path, router)"
