@@ -24,10 +24,10 @@ export const PDF_EXT = ["pdf"];
 export const IMAGE_EXT = ["jpg", "jpeg", "png", "webp", "bmp", "gif", "tif", "tiff"];
 
 export const CATEGORIES: { id: CategoryId; icon: string }[] = [
+  { id: "dev", icon: "Code2" },
   { id: "pdf", icon: "FileText" },
   { id: "image", icon: "Image" },
   { id: "text", icon: "Type" },
-  { id: "dev", icon: "Code2" },
   { id: "calculator", icon: "Calculator" },
   { id: "creative", icon: "Wrench" },
   { id: "ai", icon: "Sparkles" },
@@ -53,23 +53,17 @@ export const TOOLS: ToolDef[] = [
   { id: "image-crop", category: "image", icon: "Crop", accept: IMAGE_EXT },
   { id: "image-bg-remove", category: "image", icon: "Wand2", accept: IMAGE_EXT },
   { id: "image-grid", category: "image", icon: "Grid3x3", accept: IMAGE_EXT },
-  { id: "image-compare", category: "image", icon: "Scale", accept: IMAGE_EXT },
   { id: "image-compress", category: "image", icon: "Shrink", accept: IMAGE_EXT },
   { id: "image-diff", category: "image", icon: "Diff", accept: IMAGE_EXT },
   { id: "svg-tool", category: "image", icon: "Spline", accept: ["svg"] },
   { id: "icon-gen", category: "image", icon: "AppWindow", accept: IMAGE_EXT },
   { id: "image-resize", category: "image", icon: "Scaling", accept: IMAGE_EXT },
   { id: "image-watermark", category: "image", icon: "Stamp", accept: IMAGE_EXT },
-  { id: "color-extractor", category: "image", icon: "Palette", accept: IMAGE_EXT },
 
   { id: "text-stats", category: "text", icon: "ChartNoAxesColumn", accept: [] },
-  { id: "text-replace", category: "text", icon: "Replace", accept: ["txt", "log", "md"] },
-  { id: "typing-test", category: "text", icon: "Keyboard", accept: [] },
   { id: "text-diff", category: "text", icon: "GitCompare", accept: [] },
   { id: "markdown-preview", category: "text", icon: "FileText", accept: ["md", "markdown"] },
   { id: "line-tool", category: "text", icon: "ListOrdered", accept: [] },
-  { id: "lorem", category: "text", icon: "TextQuote", accept: [] },
-  { id: "slug-tool", category: "text", icon: "Link2", accept: [] },
 
   // Developer tools — ported from panda-dev-toolkit. Kept in the
   // CATEGORY_GROUPS order below so the rail's sibling list and the
@@ -80,16 +74,13 @@ export const TOOLS: ToolDef[] = [
   { id: "data-convert", category: "dev", icon: "FileJson", accept: ["json", "yaml", "yml", "toml"] },
   { id: "csv-tool", category: "dev", icon: "Table2", accept: ["csv", "tsv", "json"] },
 
-  { id: "base64-tool", category: "dev", icon: "Binary", accept: [] },
-  { id: "url-tool", category: "dev", icon: "Link", accept: [] },
+  { id: "codec", category: "dev", icon: "Binary", accept: [] },
   { id: "jwt-decode", category: "dev", icon: "KeyRound", accept: [] },
-  { id: "html-entities", category: "dev", icon: "CodeXml", accept: [] },
 
   { id: "regex-test", category: "dev", icon: "Regex", accept: [] },
   { id: "xpath-test", category: "dev", icon: "FileCode2", accept: ["html", "htm", "xml", "svg"] },
   { id: "cron-builder", category: "dev", icon: "CalendarClock", accept: [] },
   { id: "curl-parse", category: "dev", icon: "Terminal", accept: [] },
-  { id: "http-ref", category: "dev", icon: "Globe", accept: [] },
 
   { id: "id-gen", category: "dev", icon: "Fingerprint", accept: [] },
   { id: "fake-data", category: "dev", icon: "Users", accept: [] },
@@ -109,7 +100,6 @@ export const TOOLS: ToolDef[] = [
   { id: "radix-calc", category: "calculator", icon: "Binary", accept: [] },
   { id: "date-calc", category: "calculator", icon: "CalendarDays", accept: [] },
   { id: "iit-calc", category: "calculator", icon: "Receipt", accept: [] },
-  { id: "countdown", category: "calculator", icon: "CalendarHeart", accept: [] },
   { id: "percent-calc", category: "calculator", icon: "Percent", accept: [] },
   { id: "aspect-calc", category: "calculator", icon: "RectangleHorizontal", accept: [] },
 
@@ -119,13 +109,11 @@ export const TOOLS: ToolDef[] = [
   { id: "qr-code", category: "creative", icon: "QrCode", accept: IMAGE_EXT },
   // Takes anything — renaming does not care what is inside the file.
   { id: "batch-rename", category: "creative", icon: "PenLine", accept: [] },
-  { id: "raffle", category: "creative", icon: "Dices", accept: [] },
 
   { id: "ai-polish", category: "ai", icon: "Wand2", accept: [] },
   { id: "ai-translate", category: "ai", icon: "Languages", accept: [] },
   { id: "ai-table", category: "ai", icon: "Table", accept: [] },
   { id: "ai-summarize", category: "ai", icon: "ListTree", accept: [] },
-  { id: "ai-doc", category: "ai", icon: "FileText", accept: [] },
   { id: "ai-explain", category: "ai", icon: "Code2", accept: [] },
 ];
 
@@ -144,6 +132,20 @@ export const TOOL_ALIASES: Record<string, { id: string; query?: Record<string, s
   // The one-shot text formatter folded into the line pipeline — every one of
   // its operations is a step there now.
   "text-format": { id: "line-tool" },
+  // Find/replace is a pipeline step; the slug is two more naming-style rows.
+  "text-replace": { id: "line-tool" },
+  "slug-tool": { id: "case-convert" },
+  // The palette extractor lives inside the colour tool's inspector now.
+  "color-extractor": { id: "color-tool" },
+  // The four-file quality shoot-out became a live preview inside compress.
+  "image-compare": { id: "image-compress" },
+  // Base64 / URL / HTML entities are one codec bench with a mode switch now.
+  "base64-tool": { id: "codec" },
+  "url-tool": { id: "codec" },
+  "html-entities": { id: "codec" },
+  // The generic document assistant folded into the three focused AI tools
+  // that each cover one of its modes better than it did.
+  "ai-doc": { id: "ai-summarize" },
 };
 
 export function canonicalToolId(id: string): string {
@@ -181,8 +183,8 @@ export function toolsInCategory(cat: CategoryId): ToolDef[] {
 export const CATEGORY_GROUPS: Partial<Record<CategoryId, { id: string; tools: string[] }[]>> = {
   dev: [
     { id: "data", tools: ["json-format", "json-diff", "json-to-code", "data-convert", "csv-tool"] },
-    { id: "codec", tools: ["base64-tool", "url-tool", "jwt-decode", "html-entities"] },
-    { id: "debug", tools: ["regex-test", "xpath-test", "cron-builder", "curl-parse", "http-ref"] },
+    { id: "codec", tools: ["codec", "jwt-decode"] },
+    { id: "debug", tools: ["regex-test", "xpath-test", "cron-builder", "curl-parse"] },
     { id: "gen", tools: ["id-gen", "fake-data", "hash-calc"] },
     { id: "sys", tools: ["case-convert", "sql-format", "html-preview", "chmod-calc", "ip-calc"] },
   ],

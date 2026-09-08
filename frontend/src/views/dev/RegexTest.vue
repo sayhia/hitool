@@ -10,6 +10,11 @@ import InspectorSection from "../../work/InspectorSection.vue";
 import Icon from "../../components/Icon.vue";
 import { t } from "../../lib/i18n";
 import { copyText, toast } from "../../stores/toast";
+import { errText } from "../../lib/err";
+import { pickFiles, readFileBytes, formatBytes, baseName } from "../../lib/backend";
+import { onFilesDropped, dragActive, useFileHandoff, extOf } from "../../lib/drop";
+import { decodeText, MAX_TEXT_BYTES } from "../../lib/textfile";
+import type { FileInfo } from "@bindings/hitool/services/models";
 import { FLAG_DESC, explain } from "../../lib/regexExplain";
 import { replaceAll } from "../../lib/regexReplace";
 import {
@@ -245,6 +250,56 @@ async function del(s: Snippet) {
   await removeSnippet(s.id);
   toast(t("regex.snippetDeleted"), "ok");
 }
+
+// ---------- file loading for test text ----------
+
+async function loadTextFile(f: FileInfo) {
+  if (f.size > MAX_TEXT_BYTES) {
+    toast(t("regex.fileTooBig", { name: f.name, max: formatBytes(MAX_TEXT_BYTES) }), "fail");
+    return;
+  }
+  try {
+    const d = decodeText(await readFileBytes(f.path));
+    if (d.binary) {
+      toast(t("regex.fileNotText", { name: f.name }), "fail");
+      return;
+    }
+    text.value = d.text;
+  } catch (e) {
+    toast(errText(e), "fail");
+  }
+}
+
+async function pickTextFile() {
+  const paths = await pickFiles(t("regex.loadFile"), "Text", ["txt", "csv", "tsv", "json", "xml", "html", "log", "md"], false);
+  if (!paths[0]) return;
+  void loadTextFile({ path: paths[0], name: baseName(paths[0]), size: 0 });
+}
+
+onFilesDropped((files) => {
+  if (files[0]) void loadTextFile(files[0]);
+});
+useFileHandoff((files) => {
+  if (files[0]) void loadTextFile(files[0]);
+});
+
+// ---------- CSV export ----------
+
+function csvEscape(v: string): string {
+  if (v.includes(",") || v.includes('"') || v.includes("\n")) {
+    return `"${v.replace(/"/g, '""')}"`;
+  }
+  return v;
+}
+
+function copyMatchesCsv() {
+  const header = "index,match,groups";
+  const rows = result.value.matches.map((m) => {
+    const groups = m.groups.length ? m.groups.join("; ") : "";
+    return [String(m.index), csvEscape(m.full), csvEscape(groups)].join(",");
+  });
+  copyText([header, ...rows].join("\n"), t("common.copied"));
+}
 </script>
 
 <template>
@@ -290,6 +345,9 @@ async function del(s: Snippet) {
 
     <div class="row">
       <button class="chip" @click="text = SAMPLE_TEXT">{{ t("regex.loadSample") }}</button>
+      <button class="chip" @click="pickTextFile">
+        <Icon name="FolderOpen" /> {{ t("regex.loadFile") }}
+      </button>
       <button class="chip" :disabled="!pattern" @click="copyText(`/${pattern}/${flags}`, t('common.copied'))">
         <Icon name="Copy" /> {{ t("regex.copyPattern") }}
       </button>
@@ -301,7 +359,7 @@ async function del(s: Snippet) {
       </button>
     </div>
 
-    <div class="field grow-field">
+    <div class="field grow-field" :class="{ hot: dragActive }" data-file-drop-target="regex-test">
       <span class="lab">{{ t("regex.text") }}</span>
       <textarea
         v-model="text"
@@ -339,6 +397,13 @@ async function del(s: Snippet) {
             @click="copyMatchesJson"
           >
             <Icon name="Copy" /> {{ t("regex.copyJson") }}
+          </button>
+          <button
+            v-if="resultView === 'match' && result.matches.length"
+            class="btn btn-sm btn-quiet"
+            @click="copyMatchesCsv"
+          >
+            <Icon name="Copy" /> {{ t("regex.copyCsv") }}
           </button>
           <button
             v-if="resultView === 'replace'"
@@ -608,6 +673,11 @@ async function del(s: Snippet) {
   min-height: 0;
 }
 
+.grow-field.hot {
+  box-shadow: 0 0 0 2px var(--acc);
+  border-radius: var(--r);
+}
+
 .subject {
   flex: 1;
   min-height: 220px;
@@ -615,13 +685,9 @@ async function del(s: Snippet) {
 
 /* result pane */
 .res-head {
-  display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 9px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res-head .btn {

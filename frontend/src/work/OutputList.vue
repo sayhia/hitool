@@ -70,8 +70,8 @@ function onChainSelect(toolId: string) {
 </script>
 
 <template>
-  <div v-if="!props.job" class="idle">
-    <Icon name="Inbox" />
+  <div v-if="!props.job" class="empty idle">
+    <span class="plate"><Icon name="Inbox" /></span>
     <p class="hint">{{ t("bench.outputIdle") }}</p>
   </div>
 
@@ -176,13 +176,8 @@ function onChainSelect(toolId: string) {
 .mini {
   width: 26px;
   height: 26px;
-  display: grid;
-  place-items: center;
   border: 1px solid var(--line);
-  border-radius: var(--r-sm);
   background: var(--s-1);
-  color: var(--ink-3);
-  cursor: pointer;
   transition: color 0.14s, border-color 0.14s;
 }
 
@@ -191,32 +186,16 @@ function onChainSelect(toolId: string) {
   border-color: var(--acc-line);
 }
 
-.mini :deep(svg) {
-  width: 13px;
-  height: 13px;
-}
-
 .eta-line {
   text-transform: none;
   letter-spacing: 0.03em;
 }
 
+/* Base .empty supplies the centered layout and category plate; the output
+   pane just needs the idle state to fill the column. */
 .idle {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  color: var(--ink-3);
-  padding: 24px 12px;
-  text-align: center;
-}
-
-.idle :deep(svg) {
-  width: 22px;
-  height: 22px;
-  opacity: 0.55;
+  flex: 1 1 auto;
+  min-height: 160px;
 }
 
 .running {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Compact update indicator that lives in the CommandBar next to the theme
+ * Compact update indicator that lives in the tool-tree footer
  * toggle. Stays out of the way until something is happening:
  *   - checking   spinning refresh icon
  *   - available  download icon + dot (click → Settings → About)

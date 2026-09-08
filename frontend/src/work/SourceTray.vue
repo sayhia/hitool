@@ -110,14 +110,17 @@ defineExpose({ choose });
       </button>
     </div>
 
-    <button
-      class="drop"
-      :class="{ hot: dragActive }"
-      :disabled="props.disabled"
-      @click="choose"
-    >
+    <!-- Empty tray: an inviting category-washed hero instead of a bare
+         dashed strip. The whole tray stays a drop target either way. -->
+    <button v-if="!files.length" class="empty invite" :disabled="props.disabled" @click="choose">
+      <span class="plate"><Icon name="Files" /></span>
+      <span class="etitle">{{ t("bench.dropHere") }}</span>
+      <span class="hint">{{ t("bench.emptyHint") }}</span>
+      <KbdCombo combo="mod+o" />
+    </button>
+    <button v-else class="drop" :class="{ hot: dragActive }" :disabled="props.disabled" @click="choose">
       <Icon name="Plus" />
-      <span>{{ files.length ? t("bench.addMore") : t("bench.dropHere") }}</span>
+      <span>{{ t("bench.addMore") }}</span>
       <KbdCombo combo="mod+o" />
     </button>
 
@@ -150,8 +153,8 @@ defineExpose({ choose });
   font-size: 9px;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  background: var(--acc-wash);
-  color: var(--acc);
+  background: var(--cat-wash);
+  color: var(--cat);
   font-weight: 700;
   padding: 2px 5px;
   border-radius: var(--r-pill);
@@ -171,19 +174,11 @@ defineExpose({ choose });
 .mini {
   width: 18px;
   height: 18px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
 }
 
 .mini:hover:not(:disabled) {
-  background: var(--acc-wash);
-  color: var(--acc);
+  background: var(--cat-wash);
+  color: var(--cat);
 }
 
 .mini:disabled {
@@ -220,14 +215,41 @@ defineExpose({ choose });
 
 .drop:hover:not(:disabled),
 .drop.hot {
-  border-color: var(--acc);
-  background: var(--acc-wash);
-  color: var(--acc);
+  border-color: var(--cat);
+  background: var(--cat-wash);
+  color: var(--cat);
 }
 
-.drop:disabled {
+.drop:disabled,
+.invite:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* The empty-tray hero: keeps the dashed drop-strip frame, filled with the
+   base .empty structure whose plate picks up the tool's category hue. */
+.invite {
+  border: 1.5px dashed var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  font-family: var(--f-ui);
+  padding: 26px 12px;
+  transition: border-color 0.16s var(--ease), background 0.16s var(--ease);
+}
+
+.invite:hover:not(:disabled) {
+  border-color: var(--cat-line);
+  background: var(--cat-wash);
+}
+
+.invite .hint {
+  max-width: 210px;
+}
+
+.invite kbd {
+  margin-top: 6px;
+  font-size: 9px;
+  padding: 0 3px;
 }
 
 .drop :deep(svg) {

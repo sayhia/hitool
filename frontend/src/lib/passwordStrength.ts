@@ -117,3 +117,108 @@ export function crackLabel(seconds: number): "instant" | "seconds" | "minutes" |
   if (seconds < 31536000 * 1e6) return "years";
   return "ages";
 }
+
+/** Compact word list for Diceware-style passphrases — 256 words, all distinct,
+    4–7 letters, no offensive terms. Enough for ~8 bits per word. */
+const WORDLIST = [
+  "able", "acid", "aged", "also", "area", "army", "away", "baby", "back", "bake",
+  "ball", "band", "bank", "base", "bath", "bead", "beam", "bean", "bear", "beat",
+  "bell", "belt", "bend", "bike", "bill", "bird", "bite", "blue", "blur", "boat",
+  "body", "bold", "bolt", "bomb", "bone", "book", "boot", "bore", "born", "boss",
+  "both", "bowl", "bulk", "burn", "busy", "cake", "call", "calm", "camp", "card",
+  "care", "cart", "case", "cash", "cast", "cave", "cell", "chat", "chip", "city",
+  "clad", "clam", "clan", "clay", "clip", "club", "clue", "coal", "coat", "code",
+  "coil", "coin", "cold", "come", "cook", "cool", "cope", "copy", "cord", "core",
+  "cork", "corn", "cost", "cozy", "crew", "crop", "cube", "cure", "curl", "cute",
+  "dale", "dame", "damn", "dare", "dark", "dart", "dash", "data", "date", "dawn",
+  "dead", "deaf", "deal", "dear", "debt", "deck", "deed", "deem", "deep", "deer",
+  "demo", "dent", "deny", "desk", "dial", "dice", "diet", "dirt", "disc", "dock",
+  "does", "dome", "done", "doom", "door", "dose", "down", "drag", "draw", "drip",
+  "drop", "drug", "drum", "duck", "duel", "duke", "dull", "dumb", "dump", "dune",
+  "dusk", "dust", "duty", "each", "earn", "ease", "east", "edge", "edit", "else",
+  "emit", "envy", "epic", "even", "ever", "evil", "exam", "exit", "face", "fact",
+  "fade", "fail", "fair", "fake", "fall", "fame", "fang", "fare", "farm", "fast",
+  "fate", "fear", "feat", "feed", "feel", "feet", "fell", "felt", "file", "fill",
+  "film", "find", "fine", "fire", "firm", "fish", "flag", "flat", "flaw", "flee",
+  "flow", "foam", "fold", "folk", "fond", "font", "food", "fool", "foot", "ford",
+  "fork", "form", "fort", "foul", "four", "free", "from", "fuel", "full", "fund",
+  "fury", "fuse", "gain", "gale", "game", "gang", "gate", "gave", "gaze", "gear",
+  "gene", "gift", "girl", "give", "glad", "glow", "glue", "goal", "goat", "goes",
+  "gold", "golf", "gone", "good", "grab", "gray", "grew", "grid", "grin", "grip",
+  "grow", "gulf", "hack", "hair", "half", "hall", "halt", "hand", "hang", "hard",
+  "harm", "hate", "haul", "have", "haze", "head", "heal", "heap", "hear", "heat",
+  "held", "help", "here", "hero", "hide", "high", "hike", "hill", "hint", "hire",
+  "hold", "hole", "holy", "home", "hook", "hope", "horn", "host", "hour", "huge",
+];
+
+/** Generate a Diceware-style passphrase. */
+export function generatePassphrase(wordCount: number, separator = "-"): string {
+  if (wordCount < 1) return "";
+  const indices = new Uint32Array(wordCount);
+  crypto.getRandomValues(indices);
+  return Array.from(indices, (i) => WORDLIST[i % WORDLIST.length]).join(separator);
+}
+
+export interface PasswordOptions {
+  length: number;
+  upper: boolean;
+  lower: boolean;
+  digits: boolean;
+  symbols: boolean;
+  custom?: string;
+  excludeSimilar?: boolean;
+}
+
+const SETS = {
+  upper: "ABCDEFGHJKLMNPQRSTUVWXYZ",
+  lower: "abcdefghijkmnopqrstuvwxyz",
+  digits: "23456789",
+  symbols: "!@#$%^&*_-+=?",
+};
+
+const SIMILAR = new Set(["O", "o", "0", "l", "I", "1", "|"]);
+
+/** Generate a numeric PIN of the given length. */
+export function generatePIN(length: number): string {
+  if (length < 1) return "";
+  const rnd = new Uint32Array(length);
+  crypto.getRandomValues(rnd);
+  return Array.from(rnd, (i) => String(i % 10)).join("");
+}
+
+/** Generate a single password from the given options. */
+export function generatePassword(opts: PasswordOptions): string {
+  const pools: string[] = [];
+  if (opts.upper) pools.push(SETS.upper);
+  if (opts.lower) pools.push(SETS.lower);
+  if (opts.digits) pools.push(SETS.digits);
+  if (opts.symbols) pools.push(SETS.symbols);
+  if (opts.custom) pools.push(opts.custom);
+  if (!pools.length) return "";
+
+  const filter = opts.excludeSimilar ? (c: string) => !SIMILAR.has(c) : () => true;
+  const filtered = pools.map((p) => [...p].filter(filter).join(""));
+  if (filtered.every((p) => p.length === 0)) return "";
+
+  const all = filtered.join("");
+  const rnd = new Uint32Array(opts.length);
+  crypto.getRandomValues(rnd);
+  const chars: string[] = [];
+  filtered.forEach((p, i) => {
+    if (p.length) chars.push(p[rnd[i] % p.length]);
+  });
+  for (let i = chars.length; i < opts.length; i++) chars.push(all[rnd[i] % all.length]);
+
+  const rnd2 = new Uint32Array(chars.length);
+  crypto.getRandomValues(rnd2);
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = rnd2[i] % (i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join("");
+}
+
+/** Generate multiple passwords at once. */
+export function generateBatch(count: number, opts: PasswordOptions): string[] {
+  return Array.from({ length: count }, () => generatePassword(opts));
+}

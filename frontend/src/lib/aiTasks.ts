@@ -1,6 +1,6 @@
 /**
- * Prompt builders for the six AI tools. Shared by the transform bench
- * (polish / translate / table) and the chat bench (summarize / doc / explain).
+ * Prompt builders for the five AI tools. Shared by the transform bench
+ * (polish / translate / table) and the chat bench (summarize / explain).
  */
 import { lang } from "./i18n";
 
@@ -21,25 +21,6 @@ const POLISH: Record<string, { zh: string; en: string }> = {
   formal: { zh: "语言正式、书面化，逻辑严谨", en: "formal, written style with rigorous logic" },
   concise: { zh: "语言简洁凝练，删除冗余表达", en: "concise and tight, removing redundancy" },
   vivid: { zh: "语言生动活泼，更有感染力", en: "vivid and engaging" },
-};
-
-const DOC: Record<string, { zh: string; en: string }> = {
-  summary: {
-    zh: "请总结以下文档的核心要点，用条理清晰的列表输出，保留关键数据。",
-    en: "Summarize the key points of the document as a clear bullet list, keeping important figures.",
-  },
-  outline: {
-    zh: "请为以下内容生成层级化提纲（Markdown 标题 + 列表）。",
-    en: "Generate a hierarchical outline (Markdown headings + lists) for the content.",
-  },
-  rewrite: {
-    zh: "请改写以下文本，使结构更清晰、表达更流畅，保持原意。",
-    en: "Rewrite the text with clearer structure and smoother flow, preserving meaning.",
-  },
-  explain: {
-    zh: "请用通俗易懂的语言解释以下内容，适合非专业读者。",
-    en: "Explain the content in plain language for a non-expert reader.",
-  },
 };
 
 const FMT: Record<string, { zh: string; en: string }> = {
@@ -112,16 +93,6 @@ export function tableMessages(input: string, instruction: string): ChatMsg[] {
   return [
     { role: "system", content: system },
     { role: "user", content: `${zh ? "指令" : "Instruction"}: ${instr}\n\n${zh ? "数据" : "Data"}:\n${input}` },
-  ];
-}
-
-export function docMessages(input: string, mode: string): ChatMsg[] {
-  const zh = loc() === "zh";
-  const system = zh ? "你是一名专业文档助手，输出使用 Markdown。" : "You are a professional document assistant. Answer in Markdown.";
-  const ask = DOC[mode]?.[loc()] ?? DOC.summary[loc()];
-  return [
-    { role: "system", content: system },
-    { role: "user", content: `${ask}\n\n---\n\n${input}` },
   ];
 }
 

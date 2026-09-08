@@ -180,6 +180,8 @@ function applyTemplate(tpl: { id: string; body: string; name: string; builtin?: 
 
       <div ref="threadEl" class="thread scroll-y">
         <div v-if="!visible.length && !busy" class="empty">
+          <span class="plate"><Icon name="Sparkles" /></span>
+          <p class="etitle">{{ t(`tools.${props.toolId}.name`) }}</p>
           <p class="hint">{{ props.placeholder }}</p>
         </div>
         <template v-else>

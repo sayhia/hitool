@@ -26,23 +26,6 @@
     },
     "misc": "Other"
   },
-  "trep": {
-    "find": "Find",
-    "findPh": "Text or pattern to find…",
-    "replaceWith": "Replace with",
-    "replacePh": "Replacement text; empty deletes the matches",
-    "modePlain": "Text",
-    "modeRegex": "Regex",
-    "caseSensitive": "Match case",
-    "wholeWord": "Whole words",
-    "hintPlain": "Finds the literal text — regex characters are not interpreted; $& is the whole match",
-    "source": "Source text",
-    "sourcePh": "Paste text, or drop a txt / log / md file…",
-    "pick": "Open text file",
-    "result": "Result",
-    "empty": "Paste or drop the text to process",
-    "noQuery": "Enter what to find on the left"
-  },
   "common": {
     "selectFiles": "Select files",
     "selectFile": "Select file",
@@ -151,10 +134,6 @@
       "name": "Grid Split",
       "desc": "Slice an image into 2×2 up to 4×4 equal tiles"
     },
-    "image-compare": {
-      "name": "Compress Compare",
-      "desc": "Four JPEG quality steps side by side by size"
-    },
     "svg-batch": {
       "name": "SVG Batch",
       "desc": "Clean metadata and redundant coordinates in bulk"
@@ -163,10 +142,6 @@
       "name": "Icon Generator",
       "desc": "Full app icon set from one image (PNG/ICO/ICNS)"
     },
-    "color-extractor": {
-      "name": "Color Extractor",
-      "desc": "Extract a color palette from an image"
-    },
     "ai-polish": {
       "name": "Polish",
       "desc": "Polish text in a formal, concise or vivid style, keeping meaning and format"
@@ -174,10 +149,6 @@
     "ai-translate": {
       "name": "AI Translate",
       "desc": "Translate between languages, keep formatting"
-    },
-    "ai-doc": {
-      "name": "AI Document",
-      "desc": "Summarize, outline or rewrite long text"
     },
     "ai-table": {
       "name": "AI Table",
@@ -194,18 +165,6 @@
     "text-stats": {
       "name": "Text Stats",
       "desc": "Count characters, words, lines and paragraphs"
-    },
-    "text-replace": {
-      "name": "Find & Replace",
-      "desc": "Literal or regex find, replace all at once, changes highlighted"
-    },
-    "typing-test": {
-      "name": "Typing Test",
-      "desc": "One-minute typing speed test (WPM)"
-    },
-    "bmi-calc": {
-      "name": "BMI Calculator",
-      "desc": "Body mass index and healthy range"
     },
     "timestamp-calc": {
       "name": "Timestamp",
@@ -247,14 +206,6 @@
     "hash-calc": {
       "name": "Checksum",
       "desc": "MD5 / SHA / CRC32 digests for text or files"
-    },
-    "base64-tool": {
-      "name": "Base64",
-      "desc": "Base64 for text and files, URL-safe variant and data URIs"
-    },
-    "url-tool": {
-      "name": "URL Tools",
-      "desc": "Encode/decode URLs and take query strings apart"
     },
     "jwt-decode": {
       "name": "JWT",
@@ -316,10 +267,6 @@
       "name": "Batch Rename",
       "desc": "Regex, affixes, numbering and case — previewed before it runs"
     },
-    "raffle": {
-      "name": "Raffle",
-      "desc": "Draw random winners from a list — multiple picks and rounds"
-    },
     "pass-strength": {
       "name": "Password Strength",
       "desc": "Estimate password entropy and crack time, computed locally"
@@ -352,10 +299,6 @@
       "name": "Image Diff",
       "desc": "Compare two images pixel by pixel and mark what moved"
     },
-    "http-ref": {
-      "name": "HTTP Reference",
-      "desc": "Status codes, headers and MIME types at a glance"
-    },
     "markdown-preview": {
       "name": "Markdown Preview",
       "desc": "Live preview, and export as a standalone HTML page"
@@ -384,25 +327,9 @@
       "name": "Income Tax",
       "desc": "Estimate individual income tax on a salary"
     },
-    "countdown": {
-      "name": "Countdown",
-      "desc": "Days left until your important dates, with yearly repeats"
-    },
     "json-csv": {
       "name": "JSON ⇄ CSV",
       "desc": "Records to CSV and back; nested keys flatten to dot paths"
-    },
-    "lorem": {
-      "name": "Lorem",
-      "desc": "Generate Latin or Chinese placeholder paragraphs"
-    },
-    "slug-tool": {
-      "name": "Slug",
-      "desc": "Turn a title into a URL slug and a safe filename"
-    },
-    "html-entities": {
-      "name": "HTML Entities",
-      "desc": "Encode and decode HTML entities, named or numeric"
     },
     "html-preview": {
       "name": "HTML Preview",
@@ -423,6 +350,14 @@
     "aspect-calc": {
       "name": "Aspect Ratio",
       "desc": "Simplify a resolution and scale 16:9 (and other) presets"
+    },
+    "bmi-calc": {
+      "name": "BMI Calculator",
+      "desc": "Body mass index and healthy range"
+    },
+    "codec": {
+      "name": "Encode & Decode",
+      "desc": "Base64, URL and HTML entity codecs with an editable query table"
     }
   },
   "pdf": {
@@ -580,7 +515,6 @@
     "task": "Task",
     "taskPolish": "Polish",
     "taskTranslate": "Translate",
-    "taskDoc": "Document",
     "taskTable": "Table",
     "taskSummarize": "Summarise",
     "taskExplain": "Code",
@@ -601,14 +535,6 @@
     "translate": {
       "target": "Target language",
       "placeholder": "Paste text to translate…"
-    },
-    "doc": {
-      "mode": "Mode",
-      "modeSummary": "Summarize",
-      "modeOutline": "Outline",
-      "modeRewrite": "Rewrite",
-      "modeExplain": "Explain simply",
-      "placeholder": "Paste document content…"
     },
     "table": {
       "instruction": "Instruction",
@@ -783,16 +709,6 @@
       "none": "—"
     }
   },
-  "typing": {
-    "start": "Start test",
-    "restart": "Restart",
-    "timeLeft": "Time left",
-    "wpm": "WPM",
-    "accuracy": "Accuracy",
-    "typed": "Typed",
-    "hint": "Click start, type the words shown above, confirm with space",
-    "finish": "Test finished!"
-  },
   "calc": {
     "bmi": {
       "height": "Height (cm)",
@@ -869,16 +785,6 @@
       "afterTax": "Annual take-home",
       "hint": "Based on the 2019 comprehensive-income annual brackets; excludes year-end bonuses."
     },
-    "countdown": {
-      "namePh": "Name, e.g. “Birthday”",
-      "yearly": "Every year",
-      "add": "Add",
-      "today": "Today",
-      "daysLeft": "days left",
-      "daysAgo": "days ago",
-      "empty": "No countdowns yet — add a date that matters.",
-      "remove": "Remove"
-    },
     "password": {
       "length": "Length",
       "upper": "Uppercase",
@@ -897,17 +803,21 @@
       "hint1": "Length matters more than complexity — aim for 16+ characters.",
       "hint2": "Use a different password per system so one leak stays contained.",
       "hint3": "Store them in a password manager and turn on two-factor auth.",
-      "hint4": "History lives in memory for this session only and is never written to disk."
+      "hint4": "History lives in memory for this session only and is never written to disk.",
+      "modePw": "Password",
+      "modePhrase": "Passphrase",
+      "custom": "Custom chars",
+      "customPh": "Add extra characters…",
+      "wordCount": "Words",
+      "separator": "Separator",
+      "sepSpace": "Space",
+      "batch": "Batch",
+      "batchGen": "Generate",
+      "batchCopyAll": "Copy all",
+      "modePin": "PIN",
+      "pinLength": "PIN length",
+      "excludeSimilar": "Exclude similar"
     }
-  },
-  "raffle": {
-    "pool": "Pool (one per line)",
-    "poolPh": "Alice\nBob\nCarol…",
-    "poolCount": "{n} entries in the pool",
-    "count": "Winners to draw",
-    "unique": "No repeat winners",
-    "draw": "Draw",
-    "history": "History"
   },
   "pstr": {
     "input": "Password",
@@ -1031,7 +941,7 @@
     "next": "Next",
     "start": "Get Started",
     "s1Title": "Welcome to HiTool",
-    "s1Body": "85+ tools, all running locally — your files never leave this machine: conversions, dev utilities, image & document tools, and AI assistants.",
+    "s1Body": "70+ tools, all running locally — your files never leave this machine: conversions, dev utilities, image & document tools, and AI assistants.",
     "s2Title": "Drop files to get things done",
     "s2Body": "Drop files (or whole folders) into the window and matching tools are suggested instantly. Press ⌘O to add files manually.",
     "s3Title": "⌘K reaches everything",
@@ -1055,6 +965,7 @@
     "settings": "Settings",
     "output": "Output",
     "dropHere": "Drop files, or click to choose",
+    "emptyHint": "Drop files anywhere in the window",
     "addMore": "Add more",
     "outputDir": "Output folder",
     "chooseOutput": "Choose output folder",
@@ -1089,11 +1000,7 @@
   "land": {
     "title": "Local workbench",
     "sub": "Files never leave this machine — everything runs here",
-    "dropHint": "Drop files on the window",
     "searchHint": "to search tools",
-    "dropped": "{n} files dropped",
-    "openWith": "Open with",
-    "noHandler": "No tool handles this file type",
     "recent": "Recent",
     "removeRecent": "Remove from recent"
   },
@@ -1148,7 +1055,11 @@
     "replaceHint": "Same grammar as String.replace: $1 for a capture group, $<name> for a named one, $& for the whole match, $$ for a literal $",
     "copyResult": "Copy result",
     "copyJson": "Copy as JSON",
-    "locate": "Click to locate this match in the highlight"
+    "locate": "Click to locate this match in the highlight",
+    "loadFile": "Load from file",
+    "copyCsv": "Copy as CSV",
+    "fileTooBig": "File {name} exceeds {max}, skipped",
+    "fileNotText": "File {name} is not a text file"
   },
   "xpath": {
     "source": "Document",
@@ -1191,7 +1102,11 @@
     "pick": "Open document file",
     "copyHits": "Copy hit values",
     "truncated": "{n} hits total — showing the first {limit}",
-    "nsHint": "A default XML namespace makes //tag miss — try //*[local-name()='tag'] or keep the prefix form"
+    "nsHint": "A default XML namespace makes //tag miss — try //*[local-name()='tag'] or keep the prefix form",
+    "history": "Recent expressions",
+    "clearHistory": "Clear history",
+    "noHistory": "No expressions used yet",
+    "copyJson": "Copy as JSON"
   },
   "json": {
     "input": "Input",
@@ -1388,21 +1303,6 @@
     "decoded": "Decoded",
     "idle": "Results appear here"
   },
-  "lorem": {
-    "lang": "Language",
-    "paragraphs": "Paragraphs",
-    "sentences": "Sentences each",
-    "redraw": "Shuffle",
-    "output": "Output"
-  },
-  "slug": {
-    "input": "Title or filename",
-    "inputPh": "Hello, world — draft v2",
-    "lower": "Lowercase",
-    "max": "Max length",
-    "slug": "URL slug",
-    "file": "Safe filename"
-  },
   "pct": {
     "of": "Percent of",
     "is": "What percent",
@@ -1431,6 +1331,9 @@
     "x": "Execute",
     "octal": "Octal",
     "symbolic": "Symbolic",
+    "special": "Special",
+    "fullOctal": "Full octal",
+    "binary": "Binary",
     "hint": "chmod {octal}  means  {symbolic}"
   },
   "ipcalc": {
@@ -1445,18 +1348,30 @@
     "broadcast": "Broadcast",
     "first": "First host",
     "last": "Last host",
-    "hosts": "Usable hosts"
+    "hosts": "Usable hosts",
+    "classLabel": "Class",
+    "private": "Private",
+    "public": "Public",
+    "copyAll": "Copy all",
+    "binary": "Binary"
   },
   "htmlprev": {
     "source": "HTML",
     "preview": "Preview",
     "run": "Refresh",
-    "pick": "Open file"
+    "pick": "Open file",
+    "autoRefresh": "Auto refresh",
+    "full": "Desktop",
+    "tablet": "Tablet",
+    "mobile": "Mobile"
   },
   "aspect": {
     "width": "Width",
     "height": "Height",
-    "ratio": "Ratio"
+    "ratio": "Ratio",
+    "landscape": "Landscape",
+    "portrait": "Portrait",
+    "square": "Square"
   },
   "diff": {
     "left": "Original",
@@ -1764,6 +1679,7 @@
     "largeText": "Judge as large text",
     "largeHint": "Large means 18pt, or 14pt bold, where the bar is 3:1 / 4.5:1 instead of 4.5:1 / 7:1. Heavier strokes hold up at lower contrast; applying this to body text only fools you.",
     "harmony": "Harmonies",
+    "extract": "Extract from image",
     "complement": "Complement",
     "triadA": "Triad A",
     "triadB": "Triad B",
@@ -1776,7 +1692,8 @@
     "p_tailwind": "Tailwind",
     "p_json": "JSON",
     "p_swift": "Swift",
-    "p_android": "Android"
+    "p_android": "Android",
+    "extractHint": "Click a swatch to inspect it above"
   },
   "unit": {
     "family": "Family",
@@ -1906,68 +1823,6 @@
     "o_onlyDiff": "Changes only",
     "overlayHint": "\"Mark changes\" fades image B in underneath, so you can see where on the picture the changes are."
   },
-  "http": {
-    "section": "Section",
-    "tabStatus": "Status",
-    "tabHeader": "Headers",
-    "tabMime": "MIME",
-    "search": "Search",
-    "searchPh": "404, gateway, not allowed, .png…",
-    "result": "Results",
-    "none": "Nothing matches",
-    "searchHint": "The notes are searched too — typing \"not allowed\" finds 403.",
-    "filter": "Filter by class",
-    "tips": "The ones people mix up",
-    "tip401": "401 means no credentials or bad ones; 403 means valid credentials without permission. The name Unauthorized actually describes unauthenticated.",
-    "tip307": "301/302 were historically rewritten from POST to GET by clients; 307/308 explicitly keep the method and body.",
-    "tip422": "400 is a malformed request; 422 is a well-formed one whose content fails validation.",
-    "s100": "Go ahead and send the body",
-    "s101": "Switching protocols, e.g. upgrading to WebSocket",
-    "s200": "OK",
-    "s201": "Created; Location points at it",
-    "s202": "Accepted, not finished yet",
-    "s204": "Succeeded with no body",
-    "s206": "Partial content, paired with Range",
-    "s301": "Permanent redirect; old clients may turn POST into GET",
-    "s302": "Temporary redirect; may also rewrite the method",
-    "s303": "Fetch the other URL with GET, typically after a POST",
-    "s304": "Not modified, use the cache; carries no body",
-    "s307": "Temporary redirect keeping method and body",
-    "s308": "Permanent redirect keeping method and body",
-    "s400": "The request itself is wrong, e.g. malformed",
-    "s401": "Unauthenticated: no credentials, or invalid ones",
-    "s403": "Authenticated but not allowed",
-    "s404": "Not found; also used to avoid revealing whether it exists",
-    "s405": "Method not supported here; the response must carry Allow",
-    "s409": "Conflicts with the current state, e.g. concurrent edits",
-    "s410": "Deliberately gone for good",
-    "s412": "A precondition failed, e.g. If-Match",
-    "s413": "Body too large",
-    "s415": "Content-Type not supported",
-    "s422": "Well-formed but fails validation",
-    "s428": "Send a precondition so you do not overwrite someone else",
-    "s429": "Rate limited; pair with Retry-After",
-    "s500": "Unhandled server error",
-    "s501": "The server does not implement the method",
-    "s502": "Upstream returned something invalid",
-    "s503": "Temporarily unavailable, e.g. overload or maintenance",
-    "s504": "Upstream timed out",
-    "hAccept": "Media types the client will take",
-    "hAuthorization": "Credentials, e.g. Bearer <token>",
-    "hCacheControl": "Caching policy, e.g. no-store, max-age=3600",
-    "hContentDisposition": "inline or attachment, and the download filename",
-    "hContentEncoding": "Body encoding, e.g. gzip, br",
-    "hContentType": "Media type of the body, with charset",
-    "hETag": "Version of the resource, paired with If-None-Match",
-    "hIfNoneMatch": "Send the ETag you have; 304 if unchanged",
-    "hLocation": "Redirect target, or where the new resource lives",
-    "hRange": "Ask for part of it, e.g. bytes=0-1023",
-    "hRetryAfter": "How long to wait, in seconds or as a date",
-    "hSetCookie": "Sets a cookie; mind SameSite and Secure",
-    "hVary": "Which request headers the cache key depends on",
-    "hXff": "Original client IP through a proxy; forgeable",
-    "hCors": "Which origins may read the response; cannot be * with credentials"
-  },
   "md": {
     "source": "Markdown",
     "sourcePh": "Paste or drop Markdown…",
@@ -2034,7 +1889,9 @@
     "k_dropMatching": "Drop matching",
     "k_number": "Number",
     "k_affix": "Prefix / suffix",
-    "k_slice": "Slice"
+    "k_slice": "Slice",
+    "k_replace": "find & replace",
+    "replacement": "replace with"
   },
   "semver": {
     "compare": "Compare versions",
@@ -2053,7 +1910,10 @@
     "user": "Auth",
     "body": "Body",
     "other": "Other flags",
-    "idle": "Paste a curl command to see the request"
+    "idle": "Paste a curl command to see the request",
+    "fetch": "Fetch",
+    "axios": "Axios",
+    "json": "JSON"
   },
   "jwte": {
     "header": "Header (JSON)",
@@ -2072,6 +1932,8 @@
     "source": "SQL",
     "sourcePh": "Paste SQL, e.g. SELECT id, name FROM users WHERE active = 1…",
     "upper": "Uppercase keywords",
+    "minify": "Minify",
+    "indent": "Indent",
     "result": "Formatted",
     "idle": "Add some SQL to see it formatted"
   },
@@ -2088,7 +1950,9 @@
     "inputPh": "Paste an identifier, e.g. userId / user_id…",
     "words": "Words",
     "styles": "Styles",
-    "empty": "Add some text to see every naming style"
+    "empty": "Add some text to see every naming style",
+    "lower": "lowercase",
+    "max": "Max length"
   },
   "csv": {
     "source": "Delimited text",
@@ -2242,10 +2106,7 @@
     "saved": "{before} → {after} · −{pct}%"
   },
   "cmp": {
-    "hint": "Outputs JPEG versions at quality {list} for comparison",
-    "encoding": "Encoding q{q}…",
-    "detail": "{size} · −{pct}% vs original",
-    "original": "Original (reference)",
-    "run": "Generate comparison"
+    "preview": "Quality preview",
+    "previewIdle": "Pick an image to compare four JPEG levels live"
   }
 }

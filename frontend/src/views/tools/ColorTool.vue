@@ -27,6 +27,8 @@ import {
   wcagLevel,
   type RGB,
 } from "../../lib/color";
+import { fileToBlobURL, pickFiles } from "../../lib/backend";
+import { IMAGE_EXT } from "../../lib/tools";
 
 const input = ref("#3376fb");
 const against = ref("#ffffff");
@@ -89,6 +91,93 @@ function swap() {
   const a = input.value;
   input.value = against.value;
   against.value = a;
+}
+
+// ---------- extract from image ----------
+// Median-cut quantisation over a downsampled canvas — no backend involved.
+// A clicked swatch becomes the inspected colour; the old standalone tool
+// only copied, and "inspect it" is the reason you extracted it.
+const imgPreview = ref("");
+const exCount = ref(6);
+const exPalette = ref<string[]>([]);
+const exBusy = ref(false);
+
+async function pickImage() {
+  const paths = await pickFiles(t("common.selectFile"), "Images", IMAGE_EXT.map((e) => `*.${e}`), false);
+  if (!paths.length) return;
+  if (imgPreview.value) URL.revokeObjectURL(imgPreview.value);
+  imgPreview.value = "";
+  exPalette.value = [];
+  imgPreview.value = await fileToBlobURL(paths[0], "image/*");
+  await extract();
+}
+
+async function extract() {
+  if (!imgPreview.value || exBusy.value) return;
+  exBusy.value = true;
+  try {
+    const img = new Image();
+    img.src = imgPreview.value;
+    await img.decode();
+    const canvas = document.createElement("canvas");
+    const scale = Math.min(1, 220 / Math.max(img.width, img.height));
+    canvas.width = Math.max(1, Math.round(img.width * scale));
+    canvas.height = Math.max(1, Math.round(img.height * scale));
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    const px: number[][] = [];
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 128) continue;
+      px.push([data[i], data[i + 1], data[i + 2]]);
+    }
+
+    let boxes: number[][][] = [px];
+    while (boxes.length < exCount.value) {
+      let bi = 0;
+      let bc = 0;
+      let br = -1;
+      for (let b = 0; b < boxes.length; b++) {
+        if (boxes[b].length < 2) continue;
+        for (let c = 0; c < 3; c++) {
+          let mn = 255;
+          let mx = 0;
+          for (const p of boxes[b]) {
+            if (p[c] < mn) mn = p[c];
+            if (p[c] > mx) mx = p[c];
+          }
+          if (mx - mn > br) {
+            br = mx - mn;
+            bi = b;
+            bc = c;
+          }
+        }
+      }
+      if (br <= 0) break;
+      const box = boxes[bi];
+      box.sort((a, b) => a[bc] - b[bc]);
+      const mid = box.length >> 1;
+      boxes.splice(bi, 1, box.slice(0, mid), box.slice(mid));
+    }
+
+    exPalette.value = boxes
+      .filter((b) => b.length)
+      .map((b) => {
+        let r = 0;
+        let g = 0;
+        let bl = 0;
+        for (const p of b) {
+          r += p[0];
+          g += p[1];
+          bl += p[2];
+        }
+        const hex = (v: number) => Math.round(v / b.length).toString(16).padStart(2, "0");
+        return `#${hex(r)}${hex(g)}${hex(bl)}`.toUpperCase();
+      });
+  } finally {
+    exBusy.value = false;
+  }
 }
 </script>
 
@@ -203,6 +292,37 @@ function swap() {
     </template>
 
     <template #inspector>
+      <InspectorSection :title="t('color.extract')" icon="FileImage">
+        <button class="btn btn-sm" :disabled="exBusy" @click="pickImage">
+          <Icon name="FileImage" /> {{ t("image.color.action") }}
+        </button>
+        <div class="exseg">
+          <button
+            v-for="n in [4, 6, 8, 12]"
+            :key="n"
+            class="chip"
+            :class="{ on: exCount === n }"
+            @click="exCount = n; extract()"
+          >
+            {{ n }}
+          </button>
+        </div>
+        <img v-if="imgPreview" :src="imgPreview" alt="" class="exprev" />
+        <div v-if="exPalette.length" class="exgrid">
+          <button
+            v-for="c in exPalette"
+            :key="c"
+            class="exsw"
+            :style="{ background: c }"
+            :title="`${c} · ${t('color.input')}`"
+            @click="use(c)"
+          >
+            <span class="exhex mono">{{ c }}</span>
+          </button>
+        </div>
+        <p v-if="exPalette.length" class="hint">{{ t("color.extractHint") }}</p>
+      </InspectorSection>
+
       <InspectorSection :title="t('color.wcag')" icon="Contrast">
         <button class="chip" :class="{ on: largeText }" @click="largeText = !largeText">
           {{ t("color.largeText") }}
@@ -247,6 +367,52 @@ function swap() {
 </template>
 
 <style scoped>
+/* ---- extract from image ---- */
+.exseg {
+  display: flex;
+  gap: 4px;
+}
+
+.exprev {
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--s-2);
+}
+
+.exgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 5px;
+}
+
+.exsw {
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  padding: 2px 3px;
+  transition: transform 0.14s var(--ease-out);
+}
+
+.exsw:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--e-1);
+}
+
+.exhex {
+  font-size: 8.5px;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #161b27;
+  user-select: text;
+}
+
 .row {
   display: flex;
   align-items: flex-end;
@@ -346,12 +512,7 @@ function swap() {
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res {

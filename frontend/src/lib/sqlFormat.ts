@@ -199,3 +199,26 @@ export function formatSql(sql: string, opts: SqlOptions = {}): string {
   flush();
   return lines.map((l) => l.trimEnd()).join("\n");
 }
+
+/** Collapse SQL to a single line — strips comments, normalises whitespace. */
+export function minifySql(sql: string): string {
+  const tokens = tokenizeSql(sql);
+  let out = "";
+  let prevType = "";
+  for (const tk of tokens) {
+    if (tk.type === "comment") continue;
+    if (tk.type === "comma") { out += ","; prevType = "comma"; continue; }
+    if (tk.type === "lparen") { out += "("; prevType = "lparen"; continue; }
+    if (tk.type === "rparen") { out += ")"; prevType = "rparen"; continue; }
+    if (tk.type === "op") {
+      if (prevType && !["lparen", "comma"].includes(prevType)) out += " ";
+      out += tk.text;
+      prevType = "op";
+      continue;
+    }
+    if (prevType && prevType !== "lparen") out += " ";
+    out += tk.text;
+    prevType = tk.type;
+  }
+  return out.replace(/\s+/g, " ").trim();
+}

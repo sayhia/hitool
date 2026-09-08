@@ -125,25 +125,6 @@ function toggleIn(list: number[], v: number) {
 </template>
 
 <style scoped>
-.dir {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 4px 0 9px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--s-2);
-}
-
-.dir-path {
-  flex: 1;
-  min-width: 0;
-  font-size: 11px;
-  color: var(--ink-2);
-  direction: rtl;
-  text-align: left;
-}
 
 .switch {
   display: flex;

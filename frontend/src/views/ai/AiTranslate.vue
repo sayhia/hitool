@@ -32,14 +32,3 @@ function buildMessages(input: string) {
   </AiToolBase>
 </template>
 
-<style scoped>
-.optlist { display: flex; flex-direction: column; gap: 3px; }
-.opt {
-  display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 11px;
-  border: 1px solid transparent; border-radius: var(--r-sm); background: transparent;
-  color: var(--ink-2); font-family: var(--f-ui); font-size: var(--t-sm); font-weight: 550;
-  cursor: pointer; text-align: left;
-}
-.opt:hover:not(.on) { background: var(--s-3); color: var(--ink); }
-.opt.on { background: var(--acc-wash); border-color: var(--acc-line); color: var(--acc); }
-</style>

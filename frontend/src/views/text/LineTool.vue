@@ -39,15 +39,17 @@ const KINDS: StepKind[] = [
   "pangu",
   "keepMatching",
   "dropMatching",
+  "replace",
   "number",
   "affix",
   "slice",
 ];
 
 /** Which extra controls a step shows. */
-const NEEDS_PATTERN: StepKind[] = ["keepMatching", "dropMatching"];
+const NEEDS_PATTERN: StepKind[] = ["keepMatching", "dropMatching", "replace"];
+const NEEDS_REPLACEMENT: StepKind[] = ["replace"];
 const NEEDS_DESC: StepKind[] = ["sort", "sortNatural", "sortLength"];
-const NEEDS_CASE: StepKind[] = ["dedupe", "dedupeAdjacent", "keepDuplicates", "sort", "keepMatching", "dropMatching"];
+const NEEDS_CASE: StepKind[] = ["dedupe", "dedupeAdjacent", "keepDuplicates", "sort", "keepMatching", "dropMatching", "replace"];
 
 const src = ref("");
 const name = ref("");
@@ -153,6 +155,14 @@ async function choose() {
           >
             .*
           </button>
+          <input
+            v-if="NEEDS_REPLACEMENT.includes(s.kind)"
+            :value="s.replacement ?? ''"
+            class="input mono tiny"
+            :placeholder="t('lines.replacement')"
+            spellcheck="false"
+            @input="update(i, { replacement: ($event.target as HTMLInputElement).value })"
+          />
 
           <template v-if="s.kind === 'affix'">
             <input
@@ -366,19 +376,6 @@ async function choose() {
 .mini {
   width: 20px;
   height: 20px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.mini:hover:not(:disabled) {
-  background: var(--s-3);
-  color: var(--ink);
 }
 
 .mini:disabled {
@@ -397,12 +394,7 @@ async function choose() {
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res-head .btn {

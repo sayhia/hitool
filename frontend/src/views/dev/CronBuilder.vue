@@ -408,8 +408,6 @@ function specOf(id: FieldId): FieldSpec {
 
 .res-head {
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .runs {

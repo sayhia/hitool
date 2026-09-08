@@ -6,7 +6,7 @@
  * end-to-end tests are written against whichever of the two the tool at hand
  * speaks, and people rarely get to pick, so both belong here.
  */
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import ToolFrame from "../../work/ToolFrame.vue";
 import InspectorSection from "../../work/InspectorSection.vue";
 import Icon from "../../components/Icon.vue";
@@ -305,6 +305,48 @@ function copyHits() {
   copyText(outcome.value.hits.map((h) => h.value).join("\n"), t("common.copied"));
 }
 
+/** Copy all hits as structured JSON — scraping pipelines want kind/name/value,
+ *  not just the flat text the plain copy gives. */
+function copyHitsJson() {
+  const data = outcome.value.hits.map((h) => ({
+    kind: h.kind,
+    ...(h.name ? { name: h.name } : {}),
+    value: h.value,
+  }));
+  copyText(JSON.stringify(data, null, 2), t("common.copied"));
+}
+
+// ---------- expression history ----------
+
+const HISTORY_MAX = 12;
+const historyXpath = ref<string[]>([]);
+const historyCss = ref<string[]>([]);
+
+function recordHistory() {
+  const e = expr.value.trim();
+  if (!e) return;
+  if (outcome.value.error) return;
+  const buf = lang.value === "css" ? historyCss : historyXpath;
+  buf.value = [e, ...buf.value.filter((x) => x !== e)].slice(0, HISTORY_MAX);
+}
+
+watch(outcome, (o) => {
+  if (!o.error && expr.value.trim()) recordHistory();
+});
+
+function useHistory(e: string) {
+  expr.value = e;
+}
+
+function clearHistory() {
+  if (lang.value === "css") historyCss.value = [];
+  else historyXpath.value = [];
+}
+
+const currentHistory = computed(() =>
+  lang.value === "css" ? historyCss.value : historyXpath.value,
+);
+
 function nodeKind(n: Node): string {
   switch (n.nodeType) {
     case Node.ELEMENT_NODE:
@@ -449,6 +491,9 @@ async function pick() {
         <button v-if="outcome.hits.length" class="btn btn-sm btn-quiet rescopy" @click="copyHits">
           <Icon name="Copy" /> {{ t("xpath.copyHits") }}
         </button>
+        <button v-if="outcome.hits.length" class="btn btn-sm btn-quiet" @click="copyHitsJson">
+          <Icon name="Copy" /> {{ t("xpath.copyJson") }}
+        </button>
       </div>
       <div class="results scroll-y">
         <p v-if="outcome.error" class="banner fail">{{ outcome.error }}</p>
@@ -471,6 +516,24 @@ async function pick() {
     </template>
 
     <template #inspector>
+      <InspectorSection :title="t('xpath.history')" icon="History" :count="currentHistory.length">
+        <div v-if="currentHistory.length" class="chips">
+          <button
+            v-for="(e, i) in currentHistory"
+            :key="i"
+            class="chip mono"
+            :title="e"
+            @click="useHistory(e)"
+          >
+            {{ e.length > 28 ? e.slice(0, 28) + '…' : e }}
+          </button>
+        </div>
+        <p v-else class="hint">{{ t("xpath.noHistory") }}</p>
+        <button v-if="currentHistory.length" class="btn btn-sm btn-quiet hist-clear" @click="clearHistory">
+          <Icon name="Trash2" /> {{ t("xpath.clearHistory") }}
+        </button>
+      </InspectorSection>
+
       <InspectorSection :title="t('xpath.templates')" icon="Bookmark">
         <div class="chips">
           <button
@@ -563,12 +626,8 @@ async function pick() {
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
   gap: 9px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .rescopy {
@@ -653,5 +712,9 @@ async function pick() {
 .refitem span {
   font-size: var(--t-xs);
   color: var(--ink-2);
+}
+
+.hist-clear {
+  margin-top: 6px;
 }
 </style>

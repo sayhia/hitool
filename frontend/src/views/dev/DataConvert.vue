@@ -122,26 +122,6 @@ const result = computed<{ text: string; error: string }>(() => {
 
 .mini {
   margin-left: auto;
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.mini:hover {
-  background: var(--s-3);
-  color: var(--ink);
-}
-
-.mini :deep(svg) {
-  width: 13px;
-  height: 13px;
 }
 
 .doc {
@@ -157,12 +137,7 @@ const result = computed<{ text: string; error: string }>(() => {
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res-head .btn {

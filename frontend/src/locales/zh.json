@@ -26,23 +26,6 @@
     },
     "misc": "其他"
   },
-  "trep": {
-    "find": "查找",
-    "findPh": "输入要查找的内容…",
-    "replaceWith": "替换为",
-    "replacePh": "替换成的内容，留空表示删除",
-    "modePlain": "文本",
-    "modeRegex": "正则",
-    "caseSensitive": "区分大小写",
-    "wholeWord": "全字匹配",
-    "hintPlain": "按字面查找，正则符号不生效；$& 代表整个匹配",
-    "source": "源文本",
-    "sourcePh": "粘贴文本，或拖入 txt / log / md 文件…",
-    "pick": "打开文本文件",
-    "result": "替换结果",
-    "empty": "粘贴或拖入要处理的文本",
-    "noQuery": "在左侧输入要查找的内容"
-  },
   "common": {
     "selectFiles": "选择文件",
     "selectFile": "选择文件",
@@ -151,10 +134,6 @@
       "name": "九宫格切图",
       "desc": "一张图切成 2×2 到 4×4 的等分图块"
     },
-    "image-compare": {
-      "name": "压缩对比",
-      "desc": "四个 JPEG 质量档位同屏对比体积"
-    },
     "svg-batch": {
       "name": "SVG 批量优化",
       "desc": "批量清理 SVG 元数据与冗余坐标"
@@ -163,10 +142,6 @@
       "name": "图标生成",
       "desc": "一张图生成全套应用图标（PNG/ICO/ICNS）"
     },
-    "color-extractor": {
-      "name": "颜色提取",
-      "desc": "从图片提取主色调配色方案"
-    },
     "ai-polish": {
       "name": "润色",
       "desc": "按正式、简洁或生动风格润色文本，保持原意与格式"
@@ -174,10 +149,6 @@
     "ai-translate": {
       "name": "AI 翻译",
       "desc": "多语言互译，保留原文格式"
-    },
-    "ai-doc": {
-      "name": "AI 文档",
-      "desc": "总结、提纲、改写长文本"
     },
     "ai-table": {
       "name": "AI 表格",
@@ -194,18 +165,6 @@
     "text-stats": {
       "name": "文本统计",
       "desc": "统计字数、词数、行数、段落数"
-    },
-    "text-replace": {
-      "name": "查找替换",
-      "desc": "文本或正则查找，一键全部替换，改动处高亮"
-    },
-    "typing-test": {
-      "name": "打字测试",
-      "desc": "一分钟打字速度练习（WPM）"
-    },
-    "bmi-calc": {
-      "name": "BMI 计算器",
-      "desc": "计算身体质量指数与健康区间"
     },
     "timestamp-calc": {
       "name": "时间戳转换",
@@ -247,14 +206,6 @@
     "hash-calc": {
       "name": "哈希校验",
       "desc": "计算文本或文件的 MD5 / SHA / CRC32 校验值"
-    },
-    "base64-tool": {
-      "name": "Base64 编解码",
-      "desc": "文本与文件的 Base64，支持 URL 安全变体与 data URI"
-    },
-    "url-tool": {
-      "name": "URL 工具",
-      "desc": "URL 编解码，查询参数可视化拆解与重组"
     },
     "jwt-decode": {
       "name": "JWT",
@@ -316,10 +267,6 @@
       "name": "批量重命名",
       "desc": "正则替换、前后缀、序号与大小写，先预览再执行"
     },
-    "raffle": {
-      "name": "抽奖",
-      "desc": "名单里随机抽人，支持多人多轮"
-    },
     "pass-strength": {
       "name": "密码强度",
       "desc": "估算密码熵与破解耗时，本地计算不上传"
@@ -352,10 +299,6 @@
       "name": "图片对比",
       "desc": "逐像素比较两张图，标出差异区域"
     },
-    "http-ref": {
-      "name": "HTTP 速查",
-      "desc": "状态码、请求头与 MIME 类型速查"
-    },
     "markdown-preview": {
       "name": "Markdown 预览",
       "desc": "实时预览 Markdown，可导出独立 HTML"
@@ -384,25 +327,9 @@
       "name": "个税计算器",
       "desc": "工资薪金个人所得税估算"
     },
-    "countdown": {
-      "name": "倒数日",
-      "desc": "重要日子还剩几天，支持每年重复"
-    },
     "json-csv": {
       "name": "JSON ⇄ CSV",
       "desc": "对象数组与 CSV 互转，嵌套键扁平为点路径"
-    },
-    "lorem": {
-      "name": "占位文本",
-      "desc": "生成拉丁文或中文占位段落，方便排版预览"
-    },
-    "slug-tool": {
-      "name": "短链接名",
-      "desc": "把标题变成 URL slug，并清洗文件名非法字符"
-    },
-    "html-entities": {
-      "name": "HTML 实体",
-      "desc": "HTML 特殊字符编解码，支持命名与数字实体"
     },
     "html-preview": {
       "name": "HTML 预览",
@@ -423,6 +350,14 @@
     "aspect-calc": {
       "name": "画面比例",
       "desc": "分辨率化简为比例，按 16:9 等预设推算边长"
+    },
+    "bmi-calc": {
+      "name": "BMI 计算器",
+      "desc": "计算身体质量指数与健康区间"
+    },
+    "codec": {
+      "name": "编码解码",
+      "desc": "Base64、URL 与 HTML 实体编解码，参数表可拆解重排"
     }
   },
   "pdf": {
@@ -580,7 +515,6 @@
     "task": "任务",
     "taskPolish": "润色",
     "taskTranslate": "翻译",
-    "taskDoc": "文档",
     "taskTable": "表格",
     "taskSummarize": "总结",
     "taskExplain": "代码",
@@ -601,14 +535,6 @@
     "translate": {
       "target": "目标语言",
       "placeholder": "粘贴需要翻译的文本…"
-    },
-    "doc": {
-      "mode": "处理模式",
-      "modeSummary": "总结要点",
-      "modeOutline": "生成提纲",
-      "modeRewrite": "改写重组",
-      "modeExplain": "通俗解释",
-      "placeholder": "粘贴文档内容…"
     },
     "table": {
       "instruction": "处理指令",
@@ -783,16 +709,6 @@
       "none": "—"
     }
   },
-  "typing": {
-    "start": "开始测试",
-    "restart": "重新开始",
-    "timeLeft": "剩余时间",
-    "wpm": "WPM",
-    "accuracy": "准确率",
-    "typed": "已输入",
-    "hint": "点击开始，输入上方显示的单词，用空格确认",
-    "finish": "测试完成！"
-  },
   "calc": {
     "bmi": {
       "height": "身高（cm）",
@@ -869,16 +785,6 @@
       "afterTax": "年税后收入",
       "hint": "按 2019 年起综合所得年度税率表估算，不含年终奖单独计税。"
     },
-    "countdown": {
-      "namePh": "名称，如「生日」",
-      "yearly": "每年重复",
-      "add": "添加",
-      "today": "就是今天",
-      "daysLeft": "天后",
-      "daysAgo": "天前",
-      "empty": "还没有倒数日，添加一个重要的日子吧。",
-      "remove": "删除"
-    },
     "password": {
       "length": "长度",
       "upper": "大写字母",
@@ -897,17 +803,21 @@
       "hint1": "优先看长度，其次才是复杂度；建议至少 16 位。",
       "hint2": "每个系统用不同密码，避免一处泄露波及全部。",
       "hint3": "配合密码管理器保存，并尽量启用双重验证。",
-      "hint4": "历史仅保留在本次会话内存中，关闭窗口即消失。"
+      "hint4": "历史仅保留在本次会话内存中，关闭窗口即消失。",
+      "modePw": "密码",
+      "modePhrase": "词组",
+      "custom": "自定义字符",
+      "customPh": "追加额外字符…",
+      "wordCount": "词数",
+      "separator": "分隔符",
+      "sepSpace": "空格",
+      "batch": "批量生成",
+      "batchGen": "生成",
+      "batchCopyAll": "复制全部",
+      "modePin": "PIN",
+      "pinLength": "PIN 长度",
+      "excludeSimilar": "排除易混字符"
     }
-  },
-  "raffle": {
-    "pool": "名单（每行一个）",
-    "poolPh": "张三\n李四\n王五…",
-    "poolCount": "共 {n} 张签",
-    "count": "抽取人数",
-    "unique": "不重复中奖",
-    "draw": "开始抽奖",
-    "history": "抽奖记录"
   },
   "pstr": {
     "input": "密码",
@@ -1031,7 +941,7 @@
     "next": "下一步",
     "start": "开始使用",
     "s1Title": "欢迎使用 HiTool",
-    "s1Body": "85+ 个工具全部本地运行，文件不出本机：格式转换、开发调试、图文处理、AI 助手一应俱全。",
+    "s1Body": "70+ 个工具全部本地运行，文件不出本机：格式转换、开发调试、图文处理、AI 助手一应俱全。",
     "s2Title": "拖文件进来就能干活",
     "s2Body": "把文件（或整个文件夹）拖进窗口，自动推荐能处理它的工具；也可以按 ⌘O 手动添加。",
     "s3Title": "⌘K 直达一切",
@@ -1055,6 +965,7 @@
     "settings": "参数",
     "output": "输出",
     "dropHere": "拖入文件，或点击选择",
+    "emptyHint": "把文件拖进窗口也能加入",
     "addMore": "继续添加",
     "outputDir": "输出目录",
     "chooseOutput": "选择输出目录",
@@ -1089,11 +1000,7 @@
   "land": {
     "title": "本地工具台",
     "sub": "文件不出本机，处理全部在这台设备上完成",
-    "dropHint": "把文件拖进窗口",
     "searchHint": "搜索工具",
-    "dropped": "拖入了 {n} 个文件",
-    "openWith": "可用工具",
-    "noHandler": "没有能处理这类文件的工具",
     "recent": "最近使用",
     "removeRecent": "从最近使用移除"
   },
@@ -1148,7 +1055,11 @@
     "replaceHint": "与 String.replace 语义一致：$1 引用捕获组，$<name> 引用命名组，$& 是整个匹配，$$ 是字面量 $",
     "copyResult": "复制结果",
     "copyJson": "复制为 JSON",
-    "locate": "点击定位到高亮中的该匹配"
+    "locate": "点击定位到高亮中的该匹配",
+    "loadFile": "从文件载入",
+    "copyCsv": "复制为 CSV",
+    "fileTooBig": "文件 {name} 超过 {max}，已跳过",
+    "fileNotText": "文件 {name} 不是文本文件"
   },
   "xpath": {
     "source": "源文档",
@@ -1191,7 +1102,11 @@
     "pick": "打开文档文件",
     "copyHits": "复制命中值",
     "truncated": "共 {n} 个命中，仅显示前 {limit} 个",
-    "nsHint": "XML 默认命名空间会让 //tag 落空：改用 //*[local-name()='tag']，或带前缀书写"
+    "nsHint": "XML 默认命名空间会让 //tag 落空：改用 //*[local-name()='tag']，或带前缀书写",
+    "history": "最近表达式",
+    "clearHistory": "清空历史",
+    "noHistory": "还没有使用过的表达式",
+    "copyJson": "复制为 JSON"
   },
   "json": {
     "input": "输入",
@@ -1388,21 +1303,6 @@
     "decoded": "解码",
     "idle": "输入后这里显示结果"
   },
-  "lorem": {
-    "lang": "语言",
-    "paragraphs": "段数",
-    "sentences": "每段句数",
-    "redraw": "换一批",
-    "output": "结果"
-  },
-  "slug": {
-    "input": "标题或文件名",
-    "inputPh": "Hello, 世界 — 草稿 v2",
-    "lower": "小写",
-    "max": "最长",
-    "slug": "URL slug",
-    "file": "安全文件名"
-  },
   "pct": {
     "of": "求百分比的值",
     "is": "求占比",
@@ -1431,6 +1331,9 @@
     "x": "执行",
     "octal": "八进制",
     "symbolic": "符号",
+    "special": "特殊位",
+    "fullOctal": "完整八进制",
+    "binary": "二进制",
     "hint": "chmod {octal}  即  {symbolic}"
   },
   "ipcalc": {
@@ -1445,18 +1348,30 @@
     "broadcast": "广播地址",
     "first": "首个主机",
     "last": "末个主机",
-    "hosts": "可用主机数"
+    "hosts": "可用主机数",
+    "classLabel": "类别",
+    "private": "私有地址",
+    "public": "公网地址",
+    "copyAll": "复制全部",
+    "binary": "二进制"
   },
   "htmlprev": {
     "source": "HTML",
     "preview": "预览",
     "run": "刷新预览",
-    "pick": "打开文件"
+    "pick": "打开文件",
+    "autoRefresh": "自动刷新",
+    "full": "桌面",
+    "tablet": "平板",
+    "mobile": "手机"
   },
   "aspect": {
     "width": "宽",
     "height": "高",
-    "ratio": "比例"
+    "ratio": "比例",
+    "landscape": "横版",
+    "portrait": "竖版",
+    "square": "正方"
   },
   "diff": {
     "left": "原文",
@@ -1764,6 +1679,7 @@
     "largeText": "按大字号判定",
     "largeHint": "大字号指 18pt 或 14pt 粗体，门槛是 3:1 / 4.5:1；正文用的是 4.5:1 / 7:1。笔画更粗才撑得住更低的对比度，把这个开关用在正文上就是自欺。",
     "harmony": "配色",
+    "extract": "从图片提取",
     "complement": "互补色",
     "triadA": "三角配色 A",
     "triadB": "三角配色 B",
@@ -1776,7 +1692,8 @@
     "p_tailwind": "Tailwind",
     "p_json": "JSON",
     "p_swift": "Swift",
-    "p_android": "Android"
+    "p_android": "Android",
+    "extractHint": "点击色块作为当前颜色检视"
   },
   "unit": {
     "family": "类别",
@@ -1906,68 +1823,6 @@
     "o_onlyDiff": "仅差异",
     "overlayHint": "「标记差异」会把 B 图淡化垫在下面，便于看出差异在画面的哪个位置。"
   },
-  "http": {
-    "section": "分类",
-    "tabStatus": "状态码",
-    "tabHeader": "请求头",
-    "tabMime": "MIME",
-    "search": "搜索",
-    "searchPh": "404、gateway、无权限、.png…",
-    "result": "结果",
-    "none": "没有匹配项",
-    "searchHint": "说明文字也参与搜索——按「无权限」能直接找到 403。",
-    "filter": "按类别筛选",
-    "tips": "容易搞混的几处",
-    "tip401": "401 是「没带凭证或凭证无效」，403 是「凭证有效但不允许」。名字里的 Unauthorized 其实说的是未认证。",
-    "tip307": "301/302 历史上会被客户端把 POST 改写成 GET；307/308 明确要求保持原方法与请求体。",
-    "tip422": "400 是请求本身语法不对，422 是语法没问题但内容通不过校验。",
-    "s100": "继续发送请求体",
-    "s101": "切换协议，如升级到 WebSocket",
-    "s200": "成功",
-    "s201": "已创建资源，Location 指向它",
-    "s202": "已接受，尚未处理完",
-    "s204": "成功但没有响应体",
-    "s206": "部分内容，配合 Range 使用",
-    "s301": "永久重定向；旧客户端可能把 POST 改成 GET",
-    "s302": "临时重定向；同样可能改写方法",
-    "s303": "改用 GET 去取另一个地址，常用于 POST 之后",
-    "s304": "未修改，用缓存即可；不带响应体",
-    "s307": "临时重定向，保持原方法与请求体",
-    "s308": "永久重定向，保持原方法与请求体",
-    "s400": "请求本身有问题，如语法错误",
-    "s401": "未认证：没带凭证或凭证无效",
-    "s403": "已认证但无权限",
-    "s404": "找不到；也用于不想暴露资源是否存在时",
-    "s405": "方法不被该资源支持，响应须带 Allow",
-    "s409": "与当前状态冲突，如并发编辑",
-    "s410": "资源已永久删除",
-    "s412": "前置条件不满足，如 If-Match 失败",
-    "s413": "请求体过大",
-    "s415": "不支持的 Content-Type",
-    "s422": "语法正确但内容校验不通过",
-    "s428": "要求带上前置条件，防止覆盖他人修改",
-    "s429": "请求过多，配合 Retry-After",
-    "s500": "服务端内部错误",
-    "s501": "服务端不支持该方法",
-    "s502": "上游返回了无效响应",
-    "s503": "暂时不可用，如过载或维护",
-    "s504": "上游超时",
-    "hAccept": "客户端能接受的媒体类型",
-    "hAuthorization": "认证凭证，如 Bearer <token>",
-    "hCacheControl": "缓存策略，如 no-store、max-age=3600",
-    "hContentDisposition": "inline 或 attachment，可指定下载文件名",
-    "hContentEncoding": "内容编码，如 gzip、br",
-    "hContentType": "响应体的媒体类型，含 charset",
-    "hETag": "资源版本标识，配合 If-None-Match",
-    "hIfNoneMatch": "带上已有 ETag，未变则返回 304",
-    "hLocation": "重定向目标，或新建资源的地址",
-    "hRange": "请求部分内容，如 bytes=0-1023",
-    "hRetryAfter": "多久之后再试，秒数或日期",
-    "hSetCookie": "下发 Cookie，注意 SameSite 与 Secure",
-    "hVary": "缓存键还要看哪些请求头，如 Accept-Encoding",
-    "hXff": "经过代理时的原始客户端 IP，可伪造",
-    "hCors": "允许哪些源跨域访问；带凭证时不能用 *"
-  },
   "md": {
     "source": "Markdown",
     "sourcePh": "粘贴或拖入 Markdown…",
@@ -2034,7 +1889,9 @@
     "k_dropMatching": "删除匹配行",
     "k_number": "加行号",
     "k_affix": "加前后缀",
-    "k_slice": "截取范围"
+    "k_slice": "截取范围",
+    "k_replace": "查找替换",
+    "replacement": "替换为"
   },
   "semver": {
     "compare": "版本比较",
@@ -2053,7 +1910,10 @@
     "user": "认证",
     "body": "请求体",
     "other": "其他参数",
-    "idle": "粘贴 curl 命令后显示解析结果"
+    "idle": "粘贴 curl 命令后显示解析结果",
+    "fetch": "Fetch",
+    "axios": "Axios",
+    "json": "JSON"
   },
   "jwte": {
     "header": "Header（JSON）",
@@ -2072,6 +1932,8 @@
     "source": "SQL 语句",
     "sourcePh": "粘贴 SQL，如 SELECT id, name FROM users WHERE active = 1…",
     "upper": "关键字大写",
+    "minify": "压缩",
+    "indent": "缩进",
     "result": "格式化结果",
     "idle": "填入 SQL 后显示格式化结果"
   },
@@ -2088,7 +1950,9 @@
     "inputPh": "粘贴标识符，如 userId / user_id / 用户 Id…",
     "words": "分词",
     "styles": "命名风格",
-    "empty": "填入内容后显示各种命名风格"
+    "empty": "填入内容后显示各种命名风格",
+    "lower": "小写",
+    "max": "最大长度"
   },
   "csv": {
     "source": "表格文本",
@@ -2242,10 +2106,7 @@
     "saved": "{before} → {after} · −{pct}%"
   },
   "cmp": {
-    "hint": "将输出质量 {list} 四个 JPEG 版本供对比",
-    "encoding": "编码 q{q}…",
-    "detail": "{size} · 较原图 −{pct}%",
-    "original": "原图（参考）",
-    "run": "生成对比"
+    "preview": "质量对比",
+    "previewIdle": "选一张图后这里实时对比四档 JPEG 质量"
   }
 }

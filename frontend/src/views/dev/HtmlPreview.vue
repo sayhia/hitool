@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch, computed } from "vue";
 import ToolFrame from "../../work/ToolFrame.vue";
 import Icon from "../../components/Icon.vue";
 import { t } from "../../lib/i18n";
@@ -22,10 +22,34 @@ const SAMPLE = `<!doctype html>
 
 const src = ref(SAMPLE);
 const frame = ref(SAMPLE);
+const autoRefresh = ref(true);
+const darkPreview = ref(false);
+
+type DevicePreset = { id: string; width: string; icon: string };
+const DEVICES: DevicePreset[] = [
+  { id: "full", width: "100%", icon: "Monitor" },
+  { id: "tablet", width: "768px", icon: "Tablet" },
+  { id: "mobile", width: "375px", icon: "Smartphone" },
+];
+const device = ref("full");
+const deviceWidth = computed(() => DEVICES.find((d) => d.id === device.value)?.width ?? "100%");
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 function run() {
   frame.value = src.value;
 }
+
+watch(src, () => {
+  if (!autoRefresh.value) return;
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => { frame.value = src.value; }, 300);
+});
+
+const wrappedFrame = computed(() => {
+  if (!darkPreview.value) return frame.value;
+  return `<style>html{background:#1a1a1a;color:#e0e0e0;}</style>${frame.value}`;
+});
 
 async function load(f: FileInfo) {
   if (f.size > MAX_TEXT_BYTES) {
@@ -66,7 +90,7 @@ async function pick() {
         <span class="lab">{{ t("htmlprev.source") }}</span>
         <button class="chip" @click="pick">{{ t("htmlprev.pick") }}</button>
         <button class="chip" @click="src = SAMPLE">{{ t("json.sample") }}</button>
-        <button class="btn btn-sm btn-primary" @click="run">
+        <button v-if="!autoRefresh" class="btn btn-sm btn-primary" @click="run">
           <Icon name="Play" /> {{ t("htmlprev.run") }}
         </button>
       </div>
@@ -79,8 +103,44 @@ async function pick() {
     </div>
     <template #result>
       <div class="preview">
-        <span class="lab">{{ t("htmlprev.preview") }}</span>
-        <iframe class="frame" sandbox="allow-scripts" :srcdoc="frame" title="preview" />
+        <div class="preview-toolbar">
+          <span class="lab">{{ t("htmlprev.preview") }}</span>
+          <div class="toolbar-right">
+            <label class="chk-lab">
+              <input type="checkbox" v-model="autoRefresh" />
+              {{ t("htmlprev.autoRefresh") }}
+            </label>
+            <button
+              class="chip mini-chip"
+              :class="{ on: darkPreview }"
+              @click="darkPreview = !darkPreview"
+            >
+              <Icon name="Moon" :size="12" />
+            </button>
+            <div class="device-btns">
+              <button
+                v-for="d in DEVICES"
+                :key="d.id"
+                class="dev-btn"
+                :class="{ active: device === d.id }"
+                :title="t(`htmlprev.${d.id}`)"
+                @click="device = d.id"
+              >
+                <Icon :name="d.icon" :size="14" />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="frame-wrap">
+          <iframe
+            class="frame"
+            :class="{ dark: darkPreview }"
+            sandbox="allow-scripts"
+            :srcdoc="wrappedFrame"
+            :style="{ maxWidth: deviceWidth }"
+            title="preview"
+          />
+        </div>
       </div>
     </template>
   </ToolFrame>
@@ -91,9 +151,33 @@ async function pick() {
 .head .lab { flex: 1; }
 .grow-field { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
 .grow { flex: 1; min-height: 200px; }
-.preview { display: flex; flex-direction: column; gap: 8px; height: 100%; padding: 14px; }
-.frame {
-  flex: 1; width: 100%; border: 1px solid var(--line-2); border-radius: var(--r);
-  background: #fff;
+
+.preview { display: flex; flex-direction: column; gap: 0; height: 100%; }
+.preview-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-bottom: 1px solid var(--line-2);
 }
+.toolbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.chk-lab { display: flex; align-items: center; gap: 5px; font-size: var(--t-xs); color: var(--f-2); cursor: pointer; }
+.mini-chip { padding: 3px 6px; font-size: 10px; min-height: 0; display: flex; align-items: center; }
+
+.device-btns { display: flex; gap: 2px; }
+.dev-btn {
+  padding: 4px 6px; border: 1px solid var(--line-2); background: var(--s-1);
+  border-radius: 4px; cursor: pointer; color: var(--f-2); display: flex;
+  align-items: center; transition: all 0.12s var(--ease);
+}
+.dev-btn:hover { color: var(--f-1); background: var(--s-2); }
+.dev-btn.active { color: var(--acc); border-color: var(--acc); background: var(--cat-wash); }
+
+.frame-wrap {
+  flex: 1; display: flex; justify-content: center;
+  padding: 12px; min-height: 0; overflow: auto;
+}
+.frame {
+  flex: 1; width: 100%; height: 100%;
+  border: 1px solid var(--line-2); border-radius: var(--r);
+  background: #fff; transition: max-width 0.2s var(--ease);
+}
+.frame.dark { background: #1a1a1a; }
 </style>

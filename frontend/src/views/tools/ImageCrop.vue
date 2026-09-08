@@ -184,10 +184,10 @@ async function browse() {
       </template>
       <template v-else>
         <div class="grid4">
-          <label class="mini"><span>X</span><input v-model.number="cx" type="number" min="0" /></label>
-          <label class="mini"><span>Y</span><input v-model.number="cy" type="number" min="0" /></label>
-          <label class="mini"><span>{{ t("crop.w") }}</span><input v-model.number="cw" type="number" min="1" /></label>
-          <label class="mini"><span>{{ t("crop.h") }}</span><input v-model.number="ch" type="number" min="1" /></label>
+          <label class="mfield"><span>X</span><input v-model.number="cx" type="number" min="0" /></label>
+          <label class="mfield"><span>Y</span><input v-model.number="cy" type="number" min="0" /></label>
+          <label class="mfield"><span>{{ t("crop.w") }}</span><input v-model.number="cw" type="number" min="1" /></label>
+          <label class="mfield"><span>{{ t("crop.h") }}</span><input v-model.number="ch" type="number" min="1" /></label>
         </div>
       </template>
 
@@ -237,11 +237,13 @@ async function browse() {
 
 .grid4 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* minmax(0, 1fr): number inputs have a fat intrinsic width — without the
+     explicit zero minimum the four tracks overflow the settings column. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 
-.mini {
+.mfield {
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -249,13 +251,13 @@ async function browse() {
   color: var(--ink-3);
 }
 
-.mini input {
+.mfield input {
   height: 28px;
   padding: 0 8px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--s-2);
-  color: var(--ink-1);
+  color: var(--ink-2);
   font-size: var(--t-sm);
 }
 
@@ -287,23 +289,4 @@ async function browse() {
   pointer-events: none;
 }
 
-.dir {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 4px 0 9px;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--s-2);
-}
-
-.dir-path {
-  flex: 1;
-  min-width: 0;
-  font-size: 11px;
-  color: var(--ink-2);
-  direction: rtl;
-  text-align: left;
-}
 </style>

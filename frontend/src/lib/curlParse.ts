@@ -130,3 +130,61 @@ export function parseCurl(text: string): CurlRequest {
   if (!out.method) out.method = bodies.length ? "POST" : "GET";
   return out;
 }
+
+function headersObj(headers: { name: string; value: string }[]): Record<string, string> {
+  const o: Record<string, string> = {};
+  for (const h of headers) o[h.name] = h.value;
+  return o;
+}
+
+function tryJson(body: string): unknown {
+  try { return JSON.parse(body); } catch { return body; }
+}
+
+/** Generate a `fetch()` call string from a parsed curl request. */
+export function curlToFetch(r: CurlRequest): string {
+  const init: string[] = [`method: "${r.method}"`];
+  if (r.headers.length) {
+    const entries = Object.entries(headersObj(r.headers))
+      .map(([k, v]) => `      "${k}": "${v.replace(/"/g, '\\"')}"`)
+      .join(",\n");
+    init.push(`  headers: {\n${entries}\n    }`);
+  }
+  if (r.body) {
+    const parsed = tryJson(r.body);
+    init.push(typeof parsed === "string" ? `  body: "${parsed.replace(/"/g, '\\"')}"` : `  body: JSON.stringify(${JSON.stringify(parsed, null, 2).split("\n").map((l, i) => i === 0 ? l : "  " + l).join("\n")})`);
+  }
+  return `fetch("${r.url}", {\n  ${init.join(",\n  ")}\n})`;
+}
+
+/** Generate an `axios()` call string from a parsed curl request. */
+export function curlToAxios(r: CurlRequest): string {
+  const parts: string[] = [`  method: "${r.method.toLowerCase()}"`, `  url: "${r.url}"`];
+  if (r.headers.length) {
+    const entries = Object.entries(headersObj(r.headers))
+      .map(([k, v]) => `      "${k}": "${v.replace(/"/g, '\\"')}"`)
+      .join(",\n");
+    parts.push(`  headers: {\n${entries}\n    }`);
+  }
+  if (r.body) {
+    const parsed = tryJson(r.body);
+    if (typeof parsed === "string") {
+      parts.push(`  data: "${parsed.replace(/"/g, '\\"')}"`);
+    } else {
+      const pretty = JSON.stringify(parsed, null, 2)
+        .split("\n").map((l, i) => i === 0 ? "  " + l : "    " + l).join("\n");
+      parts.push(`  data: ${pretty}`);
+    }
+  }
+  return `axios({\n${parts.join(",\n")}\n})`;
+}
+
+/** Generate a JSON representation of a parsed curl request. */
+export function curlToJson(r: CurlRequest): string {
+  const o: Record<string, unknown> = { method: r.method, url: r.url };
+  if (r.headers.length) o.headers = headersObj(r.headers);
+  if (r.body) o.body = tryJson(r.body);
+  if (r.user) o.user = r.user;
+  if (r.other.length) o.other = r.other;
+  return JSON.stringify(o, null, 2);
+}

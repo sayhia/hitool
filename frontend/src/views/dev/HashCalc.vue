@@ -251,12 +251,7 @@ const compared = computed(() => fileResults.value.some((r) => r.compared));
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
   gap: 9px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .encseg {

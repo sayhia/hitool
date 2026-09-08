@@ -72,3 +72,5 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 tmp/
+.superpowers/
+.reasonix/

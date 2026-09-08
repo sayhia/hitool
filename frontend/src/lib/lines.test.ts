@@ -158,6 +158,39 @@ describe("filtering", () => {
     expect(run(lines, { kind: "dropMatching", pattern: "an" })).toEqual(["apple", "cherry"]);
   });
 
+  it("replaces every occurrence per line", () => {
+    const lines = ["foo bar foo", "foobar"];
+    expect(run(lines, { kind: "replace", pattern: "foo", replacement: "baz" })).toEqual([
+      "baz bar baz",
+      "bazbar",
+    ]);
+  });
+
+  it("replaces literally unless the regex flag is on", () => {
+    // A dot is a dot, not "any character"…
+    expect(run(["a.c", "abc"], { kind: "replace", pattern: "a.c", replacement: "X" })).toEqual([
+      "X",
+      "abc",
+    ]);
+    // …until asked otherwise.
+    expect(
+      run(["a.c", "abc"], { kind: "replace", pattern: "a.c", replacement: "X", regex: true }),
+    ).toEqual(["X", "X"]);
+  });
+
+  it("replaces case-insensitively when asked, and no-ops while the pattern is empty", () => {
+    expect(run(["Foo BAR"], { kind: "replace", pattern: "bar", replacement: "x", ignoreCase: true })).toEqual([
+      "Foo x",
+    ]);
+    expect(run(["unchanged"], { kind: "replace", pattern: "", replacement: "x" })).toEqual([
+      "unchanged",
+    ]);
+    // An unfinished regex is a pattern being typed, not a reason to eat the text.
+    expect(run(["keep"], { kind: "replace", pattern: "a(", replacement: "x", regex: true })).toEqual([
+      "keep",
+    ]);
+  });
+
   it("can ignore case", () => {
     expect(run(["Apple"], { kind: "keepMatching", pattern: "apple" })).toEqual([]);
     expect(run(["Apple"], { kind: "keepMatching", pattern: "apple", ignoreCase: true })).toEqual([

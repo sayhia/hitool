@@ -1,8 +1,4 @@
 <script setup lang="ts">
-/**
- * SQL pretty-printing: clause-per-line layout with keywords shaped
- * consistently. Pure frontend, so it also works on pasted fragments.
- */
 import { computed, ref } from "vue";
 import ToolFrame from "../../work/ToolFrame.vue";
 import Icon from "../../components/Icon.vue";
@@ -12,11 +8,13 @@ import { errText } from "../../lib/err";
 import { pickFiles, readFileBytes, formatBytes } from "../../lib/backend";
 import { onFilesDropped, dragActive, useFileHandoff } from "../../lib/drop";
 import { decodeText, MAX_TEXT_BYTES } from "../../lib/textfile";
-import { formatSql } from "../../lib/sqlFormat";
+import { formatSql, minifySql } from "../../lib/sqlFormat";
 import type { FileInfo } from "@bindings/hitool/services/models";
 
 const src = ref("");
 const uppercase = ref(true);
+const minify = ref(false);
+const indent = ref(2);
 
 async function load(f: FileInfo) {
   if (f.size > MAX_TEXT_BYTES) {
@@ -42,14 +40,15 @@ async function choose() {
   const paths = await pickFiles(t("common.selectFiles"), "SQL", ["sql"], false);
   if (!paths.length) return;
   const { StatFiles } = await import("@bindings/hitool/services/systemservice");
-  const stat = (await StatFiles(paths)) ?? [];
-  if (stat.length) load(stat[0]);
+  const stat = await StatFiles(paths);
+  if (stat?.length) load(stat[0]);
 }
 
 const output = computed(() => {
   if (!src.value.trim()) return "";
   try {
-    return formatSql(src.value, { uppercase: uppercase.value });
+    if (minify.value) return minifySql(src.value);
+    return formatSql(src.value, { uppercase: uppercase.value, indent: indent.value });
   } catch {
     return "";
   }
@@ -64,6 +63,16 @@ const output = computed(() => {
         <button class="chip mini-chip" :class="{ on: uppercase }" @click="uppercase = !uppercase">
           {{ t("sqlfmt.upper") }}
         </button>
+        <button class="chip mini-chip" :class="{ on: minify }" @click="minify = !minify">
+          {{ t("sqlfmt.minify") }}
+        </button>
+        <div v-if="!minify" class="indent-ctl">
+          <label class="indent-lab">{{ t("sqlfmt.indent") }}</label>
+          <select v-model.number="indent" class="indent-sel">
+            <option :value="2">2</option>
+            <option :value="4">4</option>
+          </select>
+        </div>
         <button class="mini" :title="t('diff.openFile')" @click="choose">
           <Icon name="FolderOpen" />
         </button>
@@ -93,73 +102,28 @@ const output = computed(() => {
   border-radius: var(--r);
   transition: box-shadow 0.14s;
 }
+.grow-field.hot { box-shadow: 0 0 0 2px var(--acc); }
 
-.grow-field.hot {
-  box-shadow: 0 0 0 2px var(--acc);
+.head { display: flex; align-items: center; gap: 8px; }
+.doc { flex: 1; min-height: 160px; }
+
+.mini-chip { padding: 2px 8px; font-size: 10px; min-height: 0; }
+.mini { margin-left: auto; }
+
+.indent-ctl { display: flex; align-items: center; gap: 4px; }
+.indent-lab { font-size: 10px; color: var(--f-2); }
+.indent-sel {
+  padding: 2px 4px; font-size: 10px; border: 1px solid var(--line-2);
+  border-radius: 4px; background: var(--s-1); color: var(--f-1);
+  font-family: var(--f-ui);
 }
 
-.head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.doc {
-  flex: 1;
-  min-height: 160px;
-}
-
-.mini-chip {
-  padding: 2px 8px;
-  font-size: 10px;
-  min-height: 0;
-}
-
-.mini {
-  margin-left: auto;
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.mini:hover {
-  background: var(--s-3);
-  color: var(--ink);
-}
-
-.mini :deep(svg) {
-  width: 13px;
-  height: 13px;
-}
-
-.res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-}
-
-.res-head .btn {
-  margin-left: auto;
-}
+.res-head { padding: 11px 14px; }
+.res-head .btn { margin-left: auto; }
 
 .out {
-  flex: 1;
-  margin: 0;
-  padding: 10px 14px;
-  font-size: var(--t-sm);
-  line-height: 1.7;
-  white-space: pre-wrap;
-  word-break: break-word;
-  user-select: text;
+  flex: 1; margin: 0; padding: 10px 14px;
+  font-size: var(--t-sm); line-height: 1.7;
+  white-space: pre-wrap; word-break: break-word; user-select: text;
 }
 </style>

@@ -108,7 +108,7 @@ h3 {
 .panel,
 .card {
   background: var(--s-1);
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--e-1);
 }
@@ -144,20 +144,16 @@ h3 {
   font-weight: 550;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(27, 45, 98, 0.06);
-  transition: background 0.16s var(--ease), border-color 0.16s var(--ease),
-    box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  transition: background 0.16s var(--ease), border-color 0.16s var(--ease);
 }
 
 .btn:hover:not(:disabled) {
-  border-color: var(--acc-line);
-  box-shadow: var(--e-1);
-  transform: translateY(-1px);
+  background: var(--s-2);
+  border-color: var(--line-strong);
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: none;
+  background: var(--s-2);
 }
 
 .btn:disabled {
@@ -183,23 +179,17 @@ h3 {
   font-weight: 650;
   height: 34px;
   padding: 0 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 1px 3px rgba(31, 100, 239, 0.35);
 }
 
 .btn-signal:hover:not(:disabled),
 .btn-primary:hover:not(:disabled) {
   background: var(--acc-hover);
   border-color: transparent;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 4px 12px rgba(31, 100, 239, 0.38);
 }
 
 .btn-signal:active:not(:disabled),
 .btn-primary:active:not(:disabled) {
   background: var(--acc-press);
-  transform: translateY(0);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* An inert primary drops the accent entirely rather than showing a
@@ -270,7 +260,6 @@ kbd {
   border-radius: 6px;
   padding: 1px 5px;
   background: var(--s-2);
-  box-shadow: 0 1px 0 rgba(27, 45, 98, 0.08);
   color: var(--ink-3);
   white-space: nowrap;
 }
@@ -320,7 +309,7 @@ kbd {
 .input:hover:not(:focus),
 .textarea:hover:not(:focus),
 .select:hover:not(:focus) {
-  border-color: var(--acc-line);
+  border-color: var(--line-strong);
 }
 
 .input:focus,
@@ -368,7 +357,7 @@ kbd {
   padding: 2.5px;
   border: 0;
   border-radius: calc(var(--r-sm) + 2px);
-  background: var(--s-3);
+  background: var(--s-2);
 }
 
 .seg button {
@@ -397,7 +386,7 @@ kbd {
   background: var(--s-1);
   color: var(--ink);
   font-weight: 650;
-  box-shadow: 0 1px 2px rgba(27, 45, 98, 0.1), 0 0 0 0.5px var(--line-2);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 .seg-wrap {
@@ -475,20 +464,20 @@ kbd {
 .fill {
   height: 100%;
   border-radius: var(--r-pill);
-  background: linear-gradient(90deg, var(--acc), #7a5af5);
+  background: var(--acc);
   transition: width 0.3s var(--ease-out);
 }
 
 .fill.ok {
-  background: linear-gradient(90deg, var(--ok-bright), #7ae69a);
+  background: var(--ok);
 }
 
 .fill.fail {
-  background: linear-gradient(90deg, var(--fail-bright), #ff9d9d);
+  background: var(--fail);
 }
 
 .fill.warn {
-  background: linear-gradient(90deg, var(--warn-bright), #ffd166);
+  background: var(--warn);
 }
 
 /* ---------- status banner ----------
@@ -632,4 +621,286 @@ kbd {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ============================================================
+   Category-adaptive controls
+   Inside a ToolFrame the page's own category hue rides in as
+   --cat* (set per tool from the registry; --cat-* tokens are
+   theme-aware, so light/dark need no extra work here). The hue
+   takes over the moments that belong to the tool — its primary
+   action, selected chips and option rows, input focus, live
+   progress and copy affordances — while input widgets stay
+   neutral and status banners keep their semantic colours.
+   Outside a frame everything falls back to the action blue.
+   ============================================================ */
+.frame {
+  --cat: var(--acc);
+  --cat-bright: var(--acc-hover);
+  --cat-wash: var(--acc-wash);
+  --cat-line: var(--acc-line);
+}
+
+/* Mixing with --ink darkens on the light ground and lightens on
+   the dark one — the same relationship --acc-hover has to --acc. */
+.frame .btn-signal,
+.frame .btn-primary {
+  background: var(--cat);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 1px 3px color-mix(in srgb, var(--cat) 42%, transparent);
+}
+
+.frame .btn-signal:hover:not(:disabled),
+.frame .btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cat) 84%, var(--ink));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 4px 12px color-mix(in srgb, var(--cat) 46%, transparent);
+}
+
+.frame .btn-signal:active:not(:disabled),
+.frame .btn-primary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--cat) 68%, var(--ink));
+}
+
+.frame .btn-quiet:hover:not(:disabled) {
+  background: var(--cat-wash);
+}
+
+.frame .chip.on {
+  background: var(--cat-wash);
+  color: var(--cat);
+}
+
+.frame .badge.acc {
+  background: var(--cat-wash);
+  color: var(--cat);
+}
+
+.frame .input:hover:not(:focus),
+.frame .textarea:hover:not(:focus),
+.frame .select:hover:not(:focus) {
+  border-color: var(--cat-line);
+}
+
+.frame .input:focus,
+.frame .select:focus,
+.frame .textarea:focus {
+  border-color: var(--cat);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat) 18%, transparent);
+}
+
+/* Semantic fills keep their own colours — only the plain fill
+   picks up the category gradient. */
+.frame .fill:not(.ok):not(.fail):not(.warn) {
+  background: linear-gradient(90deg, var(--cat), var(--cat-bright));
+}
+
+/* ---------- result pane header ----------
+   Label on the left, actions pushed right; the canonical shape
+   ~30 views were hand-rolling. */
+.res-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.res-head .btn:first-of-type {
+  margin-left: auto;
+}
+
+/* ---------- readout meter cluster ----------
+   Hairline-ruled grid of label-over-value cells; the shared
+   answer block for calculators and parsers. .cell/.value are
+   readout-scoped so views using the same names for unrelated
+   grids (anchor pickers, calendars) stay untouched. */
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.readout .cell {
+  background: var(--s-2);
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  /* Cells double as click-to-copy buttons, whose UA colour is a washed
+     grey — pin them to the ink everything else reads. */
+  color: var(--ink);
+}
+
+.readout .cell .lab {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.readout .value {
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- empty state ----------
+   Category-washed icon plate over a title and hint — the quiet
+   "nothing here yet" moment every pane should reach for. */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 42px 20px;
+  text-align: center;
+}
+
+.empty .plate {
+  width: 46px;
+  height: 46px;
+  margin-bottom: 8px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--cat-wash);
+  color: var(--cat);
+  box-shadow: inset 0 0 0 1px var(--cat-line);
+}
+
+.empty .plate svg {
+  width: 22px;
+  height: 22px;
+}
+
+.empty .etitle {
+  font-size: var(--t-md);
+  font-weight: 650;
+  color: var(--ink);
+}
+
+/* ---------- click-to-copy row ---------- */
+.copyrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--f-ui);
+  font-size: var(--t-md);
+  cursor: pointer;
+  text-align: left;
+}
+
+.copyrow:hover {
+  border-color: var(--cat-line);
+  background: var(--cat-wash);
+}
+
+.copyrow .lab {
+  color: var(--ink-3);
+}
+
+.copyrow .val {
+  margin-left: auto;
+  font-weight: 600;
+  user-select: text;
+}
+
+/* ---------- mini icon button ----------
+   The tiny square action beside a field label — open file,
+   clear, pick — so views stop re-declaring it. */
+.mini {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.mini:hover {
+  background: var(--s-3);
+  color: var(--ink);
+}
+
+.mini svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- output-directory picker ----------
+   The inset path row every batch tool shows under its settings;
+   rtl direction keeps the tail of a long path visible. */
+.dir {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 4px 0 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--s-2);
+}
+
+.dir-path {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  color: var(--ink-2);
+  direction: rtl;
+  text-align: left;
+}
+
+/* ---------- inspector option list ----------
+   Stacked selector rows; the on state follows the category hue. */
+.optlist {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--f-ui);
+  font-size: var(--t-sm);
+  font-weight: 550;
+  cursor: pointer;
+  text-align: left;
+}
+
+.opt:hover:not(.on) {
+  background: var(--s-3);
+  color: var(--ink);
+}
+
+.opt.on {
+  background: var(--cat-wash);
+  border-color: var(--cat-line);
+  color: var(--cat);
 }

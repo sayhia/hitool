@@ -1,8 +1,9 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", component: () => import("./views/LandingView.vue") },
-  { path: "/c/:id", component: () => import("./views/CategoryView.vue") },
+  { path: "/", component: () => import("./views/RedirectView.vue") },
+  // Categories live in the tool tree now; deep links land on the redirect page.
+  { path: "/c/:id", redirect: "/" },
   {
     path: "/t/:id",
     name: "tool",

@@ -193,26 +193,7 @@ const fmt = (n: number) =>
 
 /* Readout panel: one hairline-ruled block, like a meter cluster. */
 .readout {
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
 }
 
-.cell {
-  background: var(--s-2);
-  padding: 11px 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.value {
-  font-size: 21px;
-  font-weight: 600;
-  line-height: 1.2;
-}
 </style>

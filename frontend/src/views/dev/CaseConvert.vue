@@ -10,11 +10,29 @@ import Icon from "../../components/Icon.vue";
 import { t } from "../../lib/i18n";
 import { copyText } from "../../stores/toast";
 import { convertAll, splitWords } from "../../lib/caseConvert";
+import { sanitizeFilename, slugify } from "../../lib/slugify";
 
 const input = ref("");
 
+// Slug options — the slug row works on the raw text (NFKD cleanup, length
+// cap), not on the split words, so it lives outside CASE_STYLES.
+const slugLower = ref(true);
+const slugSep = ref("-");
+const slugMax = ref(80);
+
 const words = computed(() => splitWords(input.value));
-const rows = computed(() => convertAll(input.value));
+const rows = computed(() => {
+  const base = convertAll(input.value);
+  if (!input.value.trim()) return base;
+  return [
+    ...base,
+    {
+      style: { id: "slug", label: "url-slug" },
+      text: slugify(input.value, { sep: slugSep.value, lower: slugLower.value, max: slugMax.value }),
+    },
+    { style: { id: "filename", label: "safe-filename" }, text: sanitizeFilename(input.value) },
+  ];
+});
 </script>
 
 <template>
@@ -31,6 +49,18 @@ const rows = computed(() => convertAll(input.value));
         <span class="lab">{{ t("caseconv.words") }}</span>
         <span v-for="(w, i) in words" :key="i" class="tag mono">{{ w }}</span>
       </p>
+      <!-- Slug refinements; the styles above are pure word joins and need none. -->
+      <div v-if="words.length" class="opts">
+        <label class="chk"><input v-model="slugLower" type="checkbox" /> {{ t("caseconv.lower") }}</label>
+        <div class="seg">
+          <button :class="{ on: slugSep === '-' }" @click="slugSep = '-'">-</button>
+          <button :class="{ on: slugSep === '_' }" @click="slugSep = '_'">_</button>
+        </div>
+        <label class="chk max">
+          {{ t("caseconv.max") }}
+          <input v-model.number="slugMax" class="input mono" type="number" min="8" max="200" />
+        </label>
+      </div>
     </div>
 
     <template #result>
@@ -76,13 +106,27 @@ const rows = computed(() => convertAll(input.value));
   color: var(--ink-2);
 }
 
-.res-head {
+.opts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.chk {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.max .input {
+  width: 72px;
+}
+
+.res-head {
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .out {

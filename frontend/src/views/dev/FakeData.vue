@@ -157,12 +157,7 @@ const asJson = computed(() =>
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .copies {

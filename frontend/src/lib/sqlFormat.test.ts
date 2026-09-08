@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSql } from "./sqlFormat";
+import { formatSql, minifySql } from "./sqlFormat";
 
 describe("formatSql", () => {
   it("breaks major clauses onto their own lines", () => {
@@ -46,5 +46,27 @@ describe("formatSql", () => {
   it("returns an empty string for empty input", () => {
     expect(formatSql("")).toBe("");
     expect(formatSql("   ")).toBe("");
+  });
+});
+
+describe("minifySql", () => {
+  it("collapses to single line", () => {
+    const out = minifySql("SELECT a, b\nFROM t\nWHERE x = 1");
+    expect(out).toBe("SELECT a, b FROM t WHERE x = 1");
+  });
+
+  it("strips comments", () => {
+    const out = minifySql("SELECT a -- comment\nFROM t /* block */");
+    expect(out).toBe("SELECT a FROM t");
+  });
+
+  it("normalises whitespace", () => {
+    const out = minifySql("SELECT   a,   b   FROM   t");
+    expect(out).toBe("SELECT a, b FROM t");
+  });
+
+  it("handles empty input", () => {
+    expect(minifySql("")).toBe("");
+    expect(minifySql("  \n  ")).toBe("");
   });
 });

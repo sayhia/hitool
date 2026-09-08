@@ -30,6 +30,7 @@ export type StepKind =
   | "pangu"
   | "keepMatching"
   | "dropMatching"
+  | "replace"
   | "number"
   | "affix"
   | "slice";
@@ -38,6 +39,8 @@ export interface Step {
   kind: StepKind;
   /** Search text or pattern, for the filtering steps. */
   pattern?: string;
+  /** What found matches become, for the replace step. */
+  replacement?: string;
   regex?: boolean;
   ignoreCase?: boolean;
   /** Sort direction and numbering start. */
@@ -185,6 +188,19 @@ export function applyStep(lines: string[], step: Step, seed = 1): string[] {
     case "dropMatching": {
       const m = matcher(step);
       return lines.filter((l) => !m(l));
+    }
+    case "replace": {
+      const raw = step.pattern ?? "";
+      if (!raw) return lines;
+      try {
+        // Literal needles are escaped so a pattern full of dots stays literal
+        // until the .* flag is on; an uncompilable regex is one being typed.
+        const source = step.regex ? raw : raw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(source, `g${step.ignoreCase ? "i" : ""}`);
+        return lines.map((l) => l.replace(re, step.replacement ?? ""));
+      } catch {
+        return lines;
+      }
     }
     case "number": {
       const start = Math.floor(step.start ?? 1);

@@ -316,41 +316,6 @@ export const MANIFESTS: ToolManifest[] = [
     },
   },
   {
-    id: "image-compress",
-    accept: IMAGE_EXT,
-    filterName: "Images",
-    multiple: true,
-    minFiles: 1,
-    outputBucket: "Images",
-    cancellable: true,
-    fields: [
-      {
-        key: "quality",
-        type: "segment",
-        label: "image.quality",
-        options: [
-          { value: "high", label: "image.qualityHigh" },
-          { value: "medium", label: "image.qualityMedium" },
-          { value: "low", label: "image.qualityLow" },
-        ],
-        default: "medium",
-      },
-      dirField(),
-    ],
-    async run({ files, v, outDir }) {
-      const res = await ImageService.CompressBatch(files.map((f) => f.path), outDir, v.quality);
-      return batchResult(res, outDir, (r) => {
-        // Both sizes are optional on the wire — report the ratio only when
-        // the backend actually measured, never a "−100%" built from a zero.
-        const before = r.originalSize ?? 0;
-        const after = r.compressedSize ?? 0;
-        if (!before || !after) return `${r.successCount}/${files.length}`;
-        const pct = Math.round((1 - after / before) * 1000) / 10;
-        return `${formatBytes(before)} → ${formatBytes(after)} · −${pct}%`;
-      });
-    },
-  },
-  {
     id: "icon-gen",
     accept: IMAGE_EXT,
     filterName: "Images",

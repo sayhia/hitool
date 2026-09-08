@@ -160,27 +160,11 @@ const width = computed(() => [8, 16, 32, 64, 128].find((w) => bits.value <= w) ?
 }
 
 .readout {
-  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-
-.cell {
-  background: var(--s-2);
-  padding: 11px 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
 }
 
 .value {
   font-size: var(--t-2xl);
-  font-weight: 600;
-  line-height: 1.2;
 }
 
 .row {

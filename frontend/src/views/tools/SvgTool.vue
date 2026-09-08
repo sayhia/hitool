@@ -320,23 +320,6 @@ async function save() {
   margin-left: auto;
   width: 20px;
   height: 20px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
-}
-
-.mini:hover {
-  background: var(--s-3);
-  color: var(--ink);
-}
-
-.mini :deep(svg) {
-  width: 13px;
-  height: 13px;
 }
 
 .doc {
@@ -366,12 +349,7 @@ async function save() {
 }
 
 .res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res-head .btn {

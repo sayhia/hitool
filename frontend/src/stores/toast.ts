@@ -36,12 +36,27 @@ export function dismiss(id: number) {
  * Success stays silent here: callers that acknowledge it with a label on the
  * button itself don't want a toast saying the same thing twice.
  */
+function fallbackCopy(text: string): boolean {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  ta.style.top = "-9999px";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  const ok = document.execCommand("copy");
+  document.body.removeChild(ta);
+  return ok;
+}
+
 export async function writeClipboard(text: string, failMsg = t("common.copyFailed")) {
   if (!text) return false;
   try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {
+    if (fallbackCopy(text)) return true;
     toast(failMsg, "fail");
     return false;
   }

@@ -9,29 +9,34 @@
  *   single — one centred column (calculators, short forms)
  *
  * Secondary controls go in the `inspector` slot, which renders in the
- * right-hand drawer rather than stacking above the work area.
+ * right-hand drawer rather than stacking above the work area. Identity and
+ * location live in the shell (command-bar crumb, side panel), so the frame
+ * is all work area and no chrome.
  */
 import { computed, onBeforeUnmount, useSlots, watchEffect } from "vue";
-import { useRouter } from "vue-router";
-import Icon from "../components/Icon.vue";
-import { t, lang } from "../lib/i18n";
-import { inspectorHasContent, inspectorOpen, toggleInspector } from "../stores/inspector";
+import { toolById } from "../lib/tools";
+import { inspectorHasContent, inspectorOpen } from "../stores/inspector";
 
 const props = withDefaults(
   defineProps<{ toolId: string; shape?: "flow" | "batch" | "single" }>(),
   { shape: "single" },
 );
 
-const router = useRouter();
 const slots = useSlots();
 
-const title = computed(() => {
-  void lang.value;
-  return t(`tools.${props.toolId}.name`);
-});
-const desc = computed(() => {
-  void lang.value;
-  return t(`tools.${props.toolId}.desc`);
+// Category identity: the launcher's hue follows the tool inside, so each
+// page carries its category colour through primary actions, selection,
+// focus and empty states (base.css reads --cat*).
+const cat = computed(() => toolById(props.toolId)?.category);
+const catVars = computed(() => {
+  const c = cat.value;
+  if (!c) return undefined;
+  return {
+    "--cat": `var(--cat-${c})`,
+    "--cat-bright": `var(--cat-${c}-bright)`,
+    "--cat-wash": `var(--cat-${c}-wash)`,
+    "--cat-line": `var(--cat-${c}-line)`,
+  };
 });
 
 const hasInspector = computed(() => !!slots.inspector);
@@ -46,30 +51,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="frame">
-    <header class="head">
-      <button class="btn btn-sm btn-quiet btn-icon" :title="t('common.back')" @click="router.back()">
-        <Icon name="ArrowLeft" />
-      </button>
-      <div class="titles">
-        <h1>{{ title }}</h1>
-        <p class="desc truncate">{{ desc }}</p>
-      </div>
-      <div class="head-actions">
-        <slot name="actions" />
-        <button
-          v-if="hasInspector"
-          class="btn btn-sm btn-quiet btn-icon"
-          :class="{ on: inspectorOpen }"
-          :title="t('common.inspector')"
-          @click="toggleInspector"
-        >
-          <Icon name="PanelRight" />
-        </button>
-      </div>
-    </header>
-
-    <!-- Optional full-width band under the header: notices, status. -->
+  <div class="frame" :style="catVars">
+    <!-- Optional full-width band above the work area: notices, status. -->
     <div v-if="slots.notice" class="notice">
       <slot name="notice" />
     </div>
@@ -108,9 +91,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* v0.6 Candy canvas: the tool header sits on the tinted ground and every
-   working pane floats as a white card — depth comes from elevation,
-   separation from gaps instead of hairlines. */
+/* v0.6 Candy canvas: every working pane floats as a white card on the
+   tinted ground — depth from elevation, separation from gaps. */
 .frame {
   flex: 1;
   min-height: 0;
@@ -119,52 +101,8 @@ onBeforeUnmount(() => {
   background: var(--bg);
 }
 
-.head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  flex-shrink: 0;
-}
-
-/* One compact line — title, then the description trailing with ellipsis —
-   so the work area keeps the vertical room a two-row header ate. */
-.titles {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.titles h1 {
-  font-size: var(--t-lg);
-  font-weight: 750;
-  letter-spacing: -0.015em;
-  white-space: nowrap;
-}
-
-.desc {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--t-sm);
-  color: var(--ink-3);
-}
-
-.head-actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
-}
-
-.head-actions .btn.on {
-  background: var(--acc-wash);
-  color: var(--acc);
-}
-
 .notice {
-  padding: 0 20px 4px;
+  padding: 10px 20px 4px;
   flex-shrink: 0;
 }
 
@@ -173,7 +111,7 @@ onBeforeUnmount(() => {
   min-height: 0;
   display: flex;
   gap: 12px;
-  padding: 6px 16px 14px;
+  padding: 10px 16px 14px;
   position: relative;
 }
 
@@ -190,7 +128,7 @@ onBeforeUnmount(() => {
 .pane-result,
 .inspector {
   background: var(--s-1);
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--e-1);
 }

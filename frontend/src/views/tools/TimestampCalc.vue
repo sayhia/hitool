@@ -65,7 +65,7 @@ function useNowForDate() {
 <template>
   <PanelPage tool-id="timestamp-calc" wide>
     <!-- Live clock: both units at once, so neither needs a mode switch. -->
-    <div class="clock">
+    <div class="clock readout">
       <button class="cell" :title="t('common.copy')" @click="copyText(String(nowS), t('common.copied'))">
         <span class="value mono">{{ nowS }}</span>
         <span class="lab">{{ t("calc.timestamp.now") }} · {{ t("calc.timestamp.seconds") }}</span>
@@ -204,15 +204,9 @@ function useNowForDate() {
 }
 
 .cell {
-  background: var(--s-2);
-  padding: 11px 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
   align-items: flex-start;
   border: 0;
   font-family: var(--f-ui);
-  text-align: left;
   cursor: pointer;
 }
 
@@ -225,9 +219,6 @@ function useNowForDate() {
 }
 
 .value {
-  font-size: 21px;
-  font-weight: 600;
-  line-height: 1.2;
   color: var(--ink);
 }
 

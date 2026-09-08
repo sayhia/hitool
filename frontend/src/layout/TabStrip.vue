@@ -3,9 +3,18 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router";
 import Icon from "../components/Icon.vue";
 import ContextMenu from "../components/ContextMenu.vue";
+import BrandLogo from "../components/BrandLogo.vue";
 import { t, lang } from "../lib/i18n";
 import { comboText } from "../lib/shortcuts";
 import { toolById } from "../lib/tools";
+import { useRoute } from "vue-router";
+import { sidebarOpen, toggleSidebar } from "../stores/sidebar";
+import { inspectorHasContent, inspectorOpen, toggleInspector } from "../stores/inspector";
+
+const route = useRoute();
+const showInspector = computed(
+  () => route.path.startsWith("/t/") && inspectorHasContent.value,
+);
 import type { MenuItem } from "../lib/menu";
 import {
   closeAll,
@@ -136,9 +145,19 @@ function onListSelect(id: string) {
 </script>
 
 <template>
-  <div v-if="items.length" class="strip">
+  <header class="strip">
+    <div class="brand-mark" :title="t('land.title')">
+      <BrandLogo :size="22" />
+    </div>
+    <button
+      class="tb side-toggle"
+      :title="sidebarOpen ? t('nav.collapse') : t('nav.expand')"
+      @click="toggleSidebar"
+    >
+      <Icon :name="sidebarOpen ? 'PanelLeftClose' : 'PanelLeft'" />
+    </button>
+
     <div ref="lane" class="lane">
-      <!-- TransitionGroup so a closed tab eases out instead of popping -->
       <TransitionGroup name="tab">
         <div
           v-for="(tab, i) in items"
@@ -172,17 +191,29 @@ function onListSelect(id: string) {
     <button
       v-if="overflowing"
       ref="overflowBtn"
-      class="overflow"
+      class="tb overflow"
       :title="t('tabs.list')"
       @click="openList"
     >
       <Icon name="ChevronDown" />
     </button>
 
-    <button class="all-x" :title="t('tabs.closeAll')" @click="closeAll(router)">
+    <button v-if="items.length" class="tb" :title="t('tabs.closeAll')" @click="closeAll(router)">
       <Icon name="X" />
     </button>
-  </div>
+
+    <div class="cluster">
+      <button
+        v-if="showInspector"
+        class="tb"
+        :class="{ on: inspectorOpen }"
+        :title="t('common.inspector')"
+        @click="toggleInspector"
+      >
+        <Icon name="PanelRight" />
+      </button>
+    </div>
+  </header>
 
   <ContextMenu
     v-if="ctx"
@@ -203,28 +234,67 @@ function onListSelect(id: string) {
 </template>
 
 <style scoped>
-/* v0.6 Candy tabs: floating pills on the ground; the active one is a
-   white card wearing its tool's category hue. */
+/* The canvas header: window drag zone, tab lane and the contextual
+   controls in one 40px strip. Tabs are quiet text with an underline
+   accent — no pills, no cards. */
 .strip {
   height: var(--tabs-h);
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 14px 0 10px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line-2);
+  gap: 4px;
+  padding: 0 10px;
+  background: var(--s-1);
+  border-bottom: 1px solid var(--line);
+  --wails-draggable: drag;
+}
+
+.tb {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  --wails-draggable: no-drag;
+}
+
+.tb:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.tb.on {
+  background: var(--acc-wash);
+  color: var(--acc);
+}
+
+.tb svg {
+  width: 15px;
+  height: 15px;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+  margin-right: 2px;
+  --wails-draggable: drag;
 }
 
 .lane {
-  flex: 1;
-  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
+  min-width: 0;
+  flex: 0 1 auto;
   overflow-x: auto;
-  overflow-y: hidden;
   scrollbar-width: none;
+  --wails-draggable: no-drag;
 }
 
 .lane::-webkit-scrollbar {
@@ -232,68 +302,44 @@ function onListSelect(id: string) {
 }
 
 .tab {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: 7px;
-  height: 30px;
+  gap: 6px;
+  height: var(--tabs-h);
+  padding: 0 9px;
   max-width: 190px;
-  padding: 0 7px 0 11px;
-  border-radius: var(--r-sm);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
   color: var(--ink-3);
+  font-family: var(--f-ui);
   font-size: var(--t-sm);
-  font-weight: 480;
+  font-weight: 550;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.16s var(--ease), color 0.16s var(--ease),
-    box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  user-select: none;
 }
 
-.tab:hover:not(.on) {
+.tab:hover {
+  color: var(--ink);
   background: var(--hover);
-  color: var(--ink-2);
 }
 
-/* Category hues — same mapping as the sidebar. */
-.tab.pdf { --c: var(--cat-pdf); --cb: var(--cat-pdf-bright); }
-.tab.image { --c: var(--cat-image); --cb: var(--cat-image-bright); }
-.tab.text { --c: var(--cat-text); --cb: var(--cat-text-bright); }
-.tab.dev { --c: var(--cat-dev); --cb: var(--cat-dev-bright); }
-.tab.calculator { --c: var(--cat-calculator); --cb: var(--cat-calculator-bright); }
-.tab.creative { --c: var(--cat-creative); --cb: var(--cat-creative-bright); }
-.tab.ai { --c: var(--cat-ai); --cb: var(--cat-ai-bright); }
-
-/* Active pill: floats as a white card, icon and underline wear the
-   category colour. */
 .tab.on {
-  background: var(--s-1);
   color: var(--ink);
   font-weight: 650;
-  box-shadow: var(--e-1), inset 0 0 0 1px var(--line-2);
-}
-
-.tab.on::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 2px;
-  width: 16px;
-  height: 3px;
-  transform: translateX(-50%);
-  border-radius: var(--r-pill);
-  background: var(--cb, var(--acc));
+  border-bottom-color: var(--acc);
 }
 
 .tab-icon {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
-  opacity: 0.7;
+  color: var(--ink-4);
 }
 
 .tab.on .tab-icon {
-  opacity: 1;
-  color: var(--c, var(--acc));
+  color: var(--acc);
 }
 
 .tab-name {
@@ -302,19 +348,25 @@ function onListSelect(id: string) {
   white-space: nowrap;
 }
 
-.tab-x {
-  width: 17px;
-  height: 17px;
+.pin-mark {
+  width: 10px;
+  height: 10px;
   flex-shrink: 0;
+  color: var(--ink-4);
+}
+
+.tab-x {
+  width: 16px;
+  height: 16px;
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-sm);
   background: transparent;
-  color: var(--ink-3);
+  color: var(--ink-4);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.14s, background 0.14s, color 0.14s;
+  flex-shrink: 0;
 }
 
 .tab:hover .tab-x,
@@ -327,56 +379,28 @@ function onListSelect(id: string) {
   color: var(--ink);
 }
 
-.tab-x :deep(svg) {
-  width: 11px;
-  height: 11px;
+.tab-x svg {
+  width: 10px;
+  height: 10px;
 }
 
-.pin-mark {
-  width: 11px;
-  height: 11px;
-  flex-shrink: 0;
-  color: var(--acc);
+.cluster {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  --wails-draggable: no-drag;
 }
 
-/* Closed tabs fade and lift away while the lane reflows around them. */
+/* tab close/switch motion */
+.tab-enter-active,
 .tab-leave-active {
-  transition: opacity 0.18s var(--ease-out), transform 0.18s var(--ease-out);
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease-out);
 }
 
+.tab-enter-from,
 .tab-leave-to {
   opacity: 0;
-  transform: translateY(-6px);
-}
-
-.tab-move {
-  transition: transform 0.18s var(--ease-out);
-}
-
-.overflow,
-.all-x {
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
-  color: var(--ink-3);
-  cursor: pointer;
-  transition: background 0.16s var(--ease), color 0.16s var(--ease);
-}
-
-.overflow:hover,
-.all-x:hover {
-  background: var(--acc-wash);
-  color: var(--acc);
-}
-
-.overflow :deep(svg),
-.all-x :deep(svg) {
-  width: 14px;
-  height: 14px;
+  transform: translateY(4px);
 }
 </style>

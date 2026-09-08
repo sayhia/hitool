@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import RailNav from "./RailNav.vue";
-import CommandBar from "./CommandBar.vue";
+import SideTree from "./SideTree.vue";
 import CommandPalette from "./CommandPalette.vue";
 import SettingsDialog from "./SettingsDialog.vue";
 import TabStrip from "./TabStrip.vue";
@@ -12,7 +11,7 @@ import { installDropBridge } from "../lib/drop";
 import { installProgressBridge, useJobs } from "../stores/jobs";
 import { activateAt, closeActive, cycleTab, persistTabs, restoreTabs, syncFromRoute, useTabs } from "../stores/tabs";
 import { toggleInspector } from "../stores/inspector";
-import { toggleSidebar } from "../stores/sidebar";
+import { focusedCat, toggleSidebar } from "../stores/sidebar";
 import { openSettings, settingsOpen } from "../stores/settings";
 import { toast } from "../stores/toast";
 import { t } from "../lib/i18n";
@@ -89,6 +88,13 @@ function onKey(e: KeyboardEvent) {
     paletteOpen.value = true;
     return;
   }
+  // ⌘B toggles the sidebar drawer — IDE muscle memory. Also fixed so it
+  // can't be disabled by a bad rebind.
+  if (meta && e.key.toLowerCase() === "b") {
+    e.preventDefault();
+    toggleSidebar();
+    return;
+  }
   // ⌘1…⌘9 jumps to the Nth tab; bare digits still switch categories below.
   if (meta && !e.altKey && /^[1-9]$/.test(e.key)) {
     e.preventDefault();
@@ -104,10 +110,14 @@ function onKey(e: KeyboardEvent) {
       }
     }
   }
-  // Bare digits switch category rails, but never while typing.
+  // Bare digits reveal the Nth category in the tool tree, but never
+  // while typing. (⌘1…9 switch tabs instead.)
   if (!meta && !inField && /^[1-9]$/.test(e.key)) {
     const cat = CATEGORIES[Number(e.key) - 1];
-    if (cat) router.push(`/c/${cat.id}`);
+    if (cat) {
+      focusedCat.value = cat.id;
+      toggleSidebar();
+    }
   }
 }
 
@@ -174,9 +184,7 @@ function openPalette() {
 
 <template>
   <div class="shell">
-    <RailNav />
     <div class="col">
-      <CommandBar @open-palette="paletteOpen = true" />
       <TabStrip />
       <!-- KeepAlive is what makes tabs real: leaving a tool no longer
            destroys its state. Bounded so a long session can't grow
@@ -191,6 +199,7 @@ function openPalette() {
       </div>
       <JobDock />
     </div>
+    <SideTree />
     <CommandPalette v-model:open="paletteOpen" />
     <SettingsDialog />
     <DropVeil />
@@ -200,6 +209,7 @@ function openPalette() {
 <style scoped>
 .shell {
   display: flex;
+  flex-direction: column;
   height: 100%;
   background: var(--bg);
 }
@@ -216,6 +226,6 @@ function openPalette() {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: var(--s-1);
+  background: var(--bg);
 }
 </style>

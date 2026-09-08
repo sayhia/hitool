@@ -335,15 +335,11 @@ function onKey(e: KeyboardEvent) {
 
 .side-head,
 .res-head {
-  display: flex;
-  align-items: center;
   gap: 9px;
 }
 
 .res-head {
   padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
 }
 
 .res-head .btn {

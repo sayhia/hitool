@@ -499,21 +499,8 @@ function replaceAll() {
   border-color: var(--fail);
 }
 
-.res-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-}
-
 .viewseg {
   width: 230px;
-}
-
-.res-head .btn:first-of-type {
-  margin-left: auto;
 }
 
 .pane {
