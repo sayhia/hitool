@@ -3,12 +3,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { useRouter } from "vue-router";
 import Icon from "../components/Icon.vue";
 import ContextMenu from "../components/ContextMenu.vue";
-import BrandLogo from "../components/BrandLogo.vue";
 import { t, lang } from "../lib/i18n";
 import { comboText } from "../lib/shortcuts";
 import { toolById } from "../lib/tools";
 import { useRoute } from "vue-router";
-import { sidebarOpen, toggleSidebar } from "../stores/sidebar";
+import { sidebarOpen, setSidebar } from "../stores/sidebar";
 import { inspectorHasContent, inspectorOpen, toggleInspector } from "../stores/inspector";
 
 const route = useRoute();
@@ -146,15 +145,14 @@ function onListSelect(id: string) {
 
 <template>
   <header class="strip">
-    <div class="brand-mark" :title="t('land.title')">
-      <BrandLogo :size="22" />
-    </div>
+    <!-- Only visible while the sidebar is collapsed: the one way back. -->
     <button
-      class="tb side-toggle"
-      :title="sidebarOpen ? t('nav.collapse') : t('nav.expand')"
-      @click="toggleSidebar"
+      v-if="!sidebarOpen"
+      class="tb"
+      :title="t('nav.expand')"
+      @click="setSidebar(true)"
     >
-      <Icon :name="sidebarOpen ? 'PanelLeftClose' : 'PanelLeft'" />
+      <Icon name="PanelLeft" />
     </button>
 
     <div ref="lane" class="lane">
@@ -276,14 +274,6 @@ function onListSelect(id: string) {
 .tb svg {
   width: 15px;
   height: 15px;
-}
-
-.brand-mark {
-  display: flex;
-  align-items: center;
-  padding-left: 4px;
-  margin-right: 2px;
-  --wails-draggable: drag;
 }
 
 .lane {
