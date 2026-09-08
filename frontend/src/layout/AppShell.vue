@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, watch } from "vue";
+import { nextTick, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import SideTree from "./SideTree.vue";
 import CommandPalette from "./CommandPalette.vue";
@@ -94,8 +94,8 @@ function onKey(e: KeyboardEvent) {
     paletteOpen.value = true;
     return;
   }
-  // ⌘B toggles the sidebar drawer — IDE muscle memory. Also fixed so it
-  // can't be disabled by a bad rebind.
+  // ⌘B toggles the sidebar — IDE muscle memory. Also fixed so it can't be
+  // disabled by a bad rebind.
   if (meta && e.key.toLowerCase() === "b") {
     e.preventDefault();
     toggleSidebar();
@@ -122,9 +122,10 @@ function onKey(e: KeyboardEvent) {
     const cat = CATEGORIES[Number(e.key) - 1];
     if (cat) {
       setSidebar(true);
-      // focusedCat also drives the reveal watch inside SideTree.
       focusedCat.value = "";
-      requestAnimationFrame(() => (focusedCat.value = cat.id));
+      // nextTick fires after the scheduler flush that mounts SideTree,
+      // so its focusedCat watcher is guaranteed to be registered.
+      nextTick(() => (focusedCat.value = cat.id));
     }
   }
 }

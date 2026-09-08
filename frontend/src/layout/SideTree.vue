@@ -86,7 +86,7 @@ watch(() => route.path, loadFavs);
 // Number keys land here: reveal and scroll to the requested category.
 watch(focusedCat, (id) => {
   if (!id) return;
-  collapsed.value = new Set([...collapsed.value].filter((c) => c === id));
+  collapsed.value = new Set([...collapsed.value].filter((c) => c !== id));
   requestAnimationFrame(() => {
     document.querySelector(`[data-cat="${id}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
   });
