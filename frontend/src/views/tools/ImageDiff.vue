@@ -126,7 +126,7 @@ watch([files, threshold, overlay], () => {
 </script>
 
 <template>
-  <ToolFrame tool-id="image-diff" shape="flow">
+  <ToolFrame tool-id="image-diff" shape="flow" wide>
     <div class="field">
       <span class="lab">{{ t("imgdiff.pick") }}</span>
       <SourceTray v-model="files" :accept="IMAGE_EXT" :multiple="true" filter-name="Images" />

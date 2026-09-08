@@ -4,7 +4,7 @@
  * palette), recent tools, favourites — nothing else. Every other destination
  * lives one click away in the tree.
  */
-import { computed, onMounted, ref } from "vue";
+import { computed, onActivated, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import Icon from "../components/Icon.vue";
 import { t, lang } from "../lib/i18n";
@@ -16,7 +16,7 @@ const router = useRouter();
 const recents = ref<string[]>([]);
 const favorites = ref<string[]>([]);
 
-onMounted(async () => {
+async function load() {
   if (!inWails()) return;
   try {
     const rows = (await StoreService.GetHistory(40)) ?? [];
@@ -34,7 +34,12 @@ onMounted(async () => {
   } catch {
     favorites.value = [];
   }
-});
+}
+
+// KeepAlive caches this view permanently, so also reload on every
+// reactivation — otherwise recents/favourites would go stale forever.
+onMounted(load);
+onActivated(load);
 
 function openPalette() {
   window.dispatchEvent(new Event("hitool:open-palette"));

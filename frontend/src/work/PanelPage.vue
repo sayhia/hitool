@@ -13,7 +13,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <ToolFrame :tool-id="props.toolId" :shape="props.wide ? 'flow' : 'single'">
+  <ToolFrame :tool-id="props.toolId" :shape="props.wide ? 'flow' : 'single'" :wide="props.wide">
     <template v-if="$slots['head-extra']" #actions>
       <slot name="head-extra" />
     </template>

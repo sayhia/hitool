@@ -10,7 +10,7 @@ import { useRoute, useRouter } from "vue-router";
 import { CATEGORIES, TOOLS, canonicalToolId, toolById, toolsInCategory, uniqueTools, type CategoryId } from "../lib/tools";
 import { t, lang } from "../lib/i18n";
 import { inWails } from "../lib/backend";
-import { focusedCat, sidebarOpen } from "../stores/sidebar";
+import { focusedCat } from "../stores/sidebar";
 import { openSettings } from "../stores/settings";
 import { theme, cycleTheme } from "../lib/theme";
 import * as StoreService from "@bindings/hitool/services/storeservice";

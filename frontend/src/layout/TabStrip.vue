@@ -198,7 +198,7 @@ function onListSelect(id: string) {
       <Icon name="ChevronDown" />
     </button>
 
-    <button v-if="items.length" class="tb" :title="t('tabs.closeAll')" @click="closeAll(router)">
+    <button v-if="items.length > 1" class="tb" :title="t('tabs.closeAll')" @click="closeAll(router)">
       <Icon name="X" />
     </button>
 
