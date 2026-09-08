@@ -115,10 +115,11 @@ onBeforeUnmount(() => {
   position: relative;
 }
 
-/* The work canvas keeps a readable width on wide windows; `wide` opts out
-   for tools that genuinely need every pixel (image diff, stitch). */
+/* The work canvas keeps a cozy floor on mid-size windows, then grows with
+   the window so side gutters never balloon past ~96px; `wide` opts out
+   entirely for tools that genuinely need every pixel (image diff, stitch). */
 .frame:not(.wide) > .body {
-  max-width: var(--content-w);
+  max-width: max(var(--content-w), calc(100% - 192px));
   width: 100%;
   margin-inline: auto;
 }
