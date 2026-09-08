@@ -7,11 +7,11 @@
 import ToolFrame from "./ToolFrame.vue";
 import type { FileInfo } from "@bindings/hitool/services/models";
 
-const props = defineProps<{ toolId: string; files?: FileInfo[]; noSource?: boolean; wide?: boolean }>();
+const props = defineProps<{ toolId: string; files?: FileInfo[]; noSource?: boolean }>();
 </script>
 
 <template>
-  <ToolFrame :tool-id="props.toolId" shape="batch" :wide="props.wide">
+  <ToolFrame :tool-id="props.toolId" shape="batch">
     <template v-if="$slots['head-extra']" #actions>
       <slot name="head-extra" />
     </template>

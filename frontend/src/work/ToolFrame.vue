@@ -18,8 +18,8 @@ import { toolById } from "../lib/tools";
 import { inspectorHasContent, inspectorOpen } from "../stores/inspector";
 
 const props = withDefaults(
-  defineProps<{ toolId: string; shape?: "flow" | "batch" | "single"; wide?: boolean }>(),
-  { shape: "single", wide: false },
+  defineProps<{ toolId: string; shape?: "flow" | "batch" | "single" }>(),
+  { shape: "single" },
 );
 
 const slots = useSlots();
@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="frame" :class="{ wide: props.wide }" :style="catVars">
+  <div class="frame" :style="catVars">
     <!-- Optional full-width band above the work area: notices, status. -->
     <div v-if="slots.notice" class="notice">
       <slot name="notice" />
@@ -111,17 +111,8 @@ onBeforeUnmount(() => {
   min-height: 0;
   display: flex;
   gap: 12px;
-  padding: 10px 16px 14px;
+  padding: 10px 14px 14px;
   position: relative;
-}
-
-/* The work canvas keeps a cozy floor on mid-size windows, then grows with
-   the window so side gutters never balloon past ~96px; `wide` opts out
-   entirely for tools that genuinely need every pixel (image diff, stitch). */
-.frame:not(.wide) > .body {
-  max-width: max(var(--content-w), calc(100% - 192px));
-  width: 100%;
-  margin-inline: auto;
 }
 
 .work {
