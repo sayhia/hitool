@@ -11,7 +11,7 @@ import { installDropBridge } from "../lib/drop";
 import { installProgressBridge, useJobs } from "../stores/jobs";
 import { activateAt, closeActive, cycleTab, persistTabs, restoreTabs, syncFromRoute, useTabs } from "../stores/tabs";
 import { toggleInspector } from "../stores/inspector";
-import { focusedCat, toggleSidebar } from "../stores/sidebar";
+import { focusedCat, setSidebar, sidebarOpen, toggleSidebar } from "../stores/sidebar";
 import { openSettings, settingsOpen } from "../stores/settings";
 import { toast } from "../stores/toast";
 import { t } from "../lib/i18n";
@@ -43,6 +43,12 @@ refreshBindings();
 // The router is the single source of truth for which tool is open; the tab
 // store just mirrors it, so deep links and palette jumps both create tabs.
 router.afterEach((to) => syncFromRoute(to.path));
+
+// Navigation ends a number-key reveal, so the category can be collapsed again.
+watch(
+  () => router.currentRoute.value.path,
+  () => (focusedCat.value = ""),
+);
 
 function runAction(a: ShortcutAction) {
   switch (a) {
@@ -110,13 +116,15 @@ function onKey(e: KeyboardEvent) {
       }
     }
   }
-  // Bare digits reveal the Nth category in the tool tree, but never
-  // while typing. (⌘1…9 switch tabs instead.)
+  // Bare digits reveal the Nth category in the sidebar, but never while
+  // typing. (⌘1…9 switch tabs instead.)
   if (!meta && !inField && /^[1-9]$/.test(e.key)) {
     const cat = CATEGORIES[Number(e.key) - 1];
     if (cat) {
-      focusedCat.value = cat.id;
-      toggleSidebar();
+      setSidebar(true);
+      // focusedCat also drives the reveal watch inside SideTree.
+      focusedCat.value = "";
+      requestAnimationFrame(() => (focusedCat.value = cat.id));
     }
   }
 }
@@ -184,6 +192,7 @@ function openPalette() {
 
 <template>
   <div class="shell">
+    <SideTree v-if="sidebarOpen" />
     <div class="col">
       <TabStrip />
       <!-- KeepAlive is what makes tabs real: leaving a tool no longer
@@ -199,7 +208,6 @@ function openPalette() {
       </div>
       <JobDock />
     </div>
-    <SideTree />
     <CommandPalette v-model:open="paletteOpen" />
     <SettingsDialog />
     <DropVeil />
@@ -209,7 +217,6 @@ function openPalette() {
 <style scoped>
 .shell {
   display: flex;
-  flex-direction: column;
   height: 100%;
   background: var(--bg);
 }
