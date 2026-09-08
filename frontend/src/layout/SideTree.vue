@@ -10,7 +10,7 @@ import { useRoute, useRouter } from "vue-router";
 import { CATEGORIES, TOOLS, canonicalToolId, toolById, toolsInCategory, uniqueTools, type CategoryId } from "../lib/tools";
 import { t, lang } from "../lib/i18n";
 import { inWails } from "../lib/backend";
-import { focusedCat, setSidebar, sidebarOpen } from "../stores/sidebar";
+import { focusedCat, sidebarOpen } from "../stores/sidebar";
 import { openSettings } from "../stores/settings";
 import { theme, cycleTheme } from "../lib/theme";
 import * as StoreService from "@bindings/hitool/services/storeservice";
@@ -92,174 +92,123 @@ watch(focusedCat, (id) => {
   });
 });
 
-/** Auto-close drawer when navigating to a tool. */
-watch(
-  () => route.path,
-  (p) => {
-    if (p.startsWith("/t/")) setSidebar(false);
-  },
-);
-
-function closeDrawer() {
-  setSidebar(false);
-}
-
 const themeIcon = computed(() =>
   theme.value === "dark" ? "Moon" : theme.value === "light" ? "Sun" : "SunMoon",
 );
 </script>
 
 <template>
-  <Transition name="drawer">
-    <aside v-if="sidebarOpen" class="tree">
-      <div class="brand">
-        <BrandLogo :size="26" />
-      </div>
+  <aside class="tree">
+    <div class="brand">
+      <BrandLogo :size="26" />
+    </div>
 
-      <div class="filter">
-        <Icon name="Search" class="f-ico" />
-        <input
-          v-model="filter"
-          class="f-in"
-          :placeholder="t('cmd.placeholder')"
-          spellcheck="false"
-        />
-        <button v-if="filter" class="f-x" :title="t('common.clear')" @click="filter = ''">
-          <Icon name="X" />
+    <div class="filter">
+      <Icon name="Search" class="f-ico" />
+      <input
+        v-model="filter"
+        class="f-in"
+        :placeholder="t('cmd.placeholder')"
+        spellcheck="false"
+      />
+      <button v-if="filter" class="f-x" :title="t('common.clear')" @click="filter = ''">
+        <Icon name="X" />
+      </button>
+    </div>
+
+    <nav class="body scroll-y">
+      <!-- Filtering: one flat list of hits across the whole catalogue. -->
+      <template v-if="filter">
+        <button
+          v-for="m in matches"
+          :key="m.id"
+          type="button"
+          class="row"
+          :class="{ on: activeTool === m.id }"
+          @click="router.push(`/t/${m.id}`); filter = ''"
+        >
+          <span class="ico" :class="m.cat"><Icon :name="m.icon" /></span>
+          <span class="txt truncate">{{ m.label }}</span>
         </button>
-      </div>
+        <p v-if="!matches.length" class="hint pad">{{ t("common.noResults") }}</p>
+      </template>
 
-      <nav class="body scroll-y">
-        <!-- Filtering: one flat list of hits across the whole catalogue. -->
-        <template v-if="filter">
+      <template v-else>
+        <section v-if="favTools.length" class="grp">
+          <div class="g-h">{{ t("common.favorites") }}</div>
           <button
-            v-for="m in matches"
-            :key="m.id"
+            v-for="tool in favTools"
+            :key="`fav-${tool.id}`"
             type="button"
             class="row"
-            :class="{ on: activeTool === m.id }"
-            @click="router.push(`/t/${m.id}`); filter = ''"
+            :class="{ on: activeTool === tool.id }"
+            :title="tool.label"
+            @click="router.push(`/t/${tool.id}`)"
           >
-            <span class="ico" :class="m.cat"><Icon :name="m.icon" /></span>
-            <span class="txt truncate">{{ m.label }}</span>
+            <span class="ico fav"><Icon :name="tool.icon" /></span>
+            <span class="txt truncate">{{ tool.label }}</span>
           </button>
-          <p v-if="!matches.length" class="hint pad">{{ t("common.noResults") }}</p>
-        </template>
+        </section>
 
-        <template v-else>
-          <section v-if="favTools.length" class="grp">
-            <div class="g-h">{{ t("common.favorites") }}</div>
+        <section
+          v-for="c in CATEGORIES"
+          :key="c.id"
+          class="grp"
+          :data-cat="c.id"
+        >
+          <button
+            type="button"
+            class="g-btn"
+            :class="[c.id, { open: isOpen(c.id), on: activeCat === c.id }]"
+            @click="toggleCat(c.id)"
+          >
+            <Icon name="ChevronRight" class="caret" />
+            <span class="ico" :class="c.id"><Icon :name="c.icon" /></span>
+            <span class="txt truncate">{{ t(`nav.${c.id}`) }}</span>
+            <span class="lab n">{{ toolsInCategory(c.id).length }}</span>
+          </button>
+
+          <div v-if="isOpen(c.id)" class="kids">
             <button
-              v-for="tool in favTools"
-              :key="`fav-${tool.id}`"
+              v-for="tool in toolsInCategory(c.id)"
+              :key="tool.id"
               type="button"
-              class="row"
+              class="row kid"
               :class="{ on: activeTool === tool.id }"
-              :title="tool.label"
+              :title="name(tool.id)"
               @click="router.push(`/t/${tool.id}`)"
             >
-              <span class="ico fav"><Icon :name="tool.icon" /></span>
-              <span class="txt truncate">{{ tool.label }}</span>
+              <span class="ico"><Icon :name="tool.icon" /></span>
+              <span class="txt truncate">{{ name(tool.id) }}</span>
+              <Icon v-if="favorites.includes(tool.id)" name="Star" class="stared" />
             </button>
-          </section>
+          </div>
+        </section>
+      </template>
+    </nav>
 
-          <section
-            v-for="c in CATEGORIES"
-            :key="c.id"
-            class="grp"
-            :data-cat="c.id"
-          >
-            <button
-              type="button"
-              class="g-btn"
-              :class="[c.id, { open: isOpen(c.id), on: activeCat === c.id }]"
-              @click="toggleCat(c.id)"
-            >
-              <Icon name="ChevronRight" class="caret" />
-              <span class="ico" :class="c.id"><Icon :name="c.icon" /></span>
-              <span class="txt truncate">{{ t(`nav.${c.id}`) }}</span>
-              <span class="lab n">{{ toolsInCategory(c.id).length }}</span>
-            </button>
-
-            <div v-if="isOpen(c.id)" class="kids">
-              <button
-                v-for="tool in toolsInCategory(c.id)"
-                :key="tool.id"
-                type="button"
-                class="row kid"
-                :class="{ on: activeTool === tool.id }"
-                :title="name(tool.id)"
-                @click="router.push(`/t/${tool.id}`)"
-              >
-                <span class="ico"><Icon :name="tool.icon" /></span>
-                <span class="txt truncate">{{ name(tool.id) }}</span>
-                <Icon v-if="favorites.includes(tool.id)" name="Star" class="stared" />
-              </button>
-            </div>
-          </section>
-        </template>
-      </nav>
-
-      <div class="foot">
-        <UpdateButton />
-        <button class="f-btn" :title="t('settings.theme')" @click="cycleTheme">
-          <Icon :name="themeIcon" />
-        </button>
-        <button class="f-btn" :title="t('nav.settings')" @click="openSettings()">
-          <Icon name="Settings2" />
-        </button>
-      </div>
-    </aside>
-  </Transition>
-  <Transition name="backdrop">
-    <div v-if="sidebarOpen" class="backdrop" @click="closeDrawer"></div>
-  </Transition>
+    <div class="foot">
+      <UpdateButton />
+      <button class="f-btn" :title="t('settings.theme')" @click="cycleTheme">
+        <Icon :name="themeIcon" />
+      </button>
+      <button class="f-btn" :title="t('nav.settings')" @click="openSettings()">
+        <Icon name="Settings2" />
+      </button>
+    </div>
+  </aside>
 </template>
 
 <style scoped>
 .tree {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: var(--drawer-w);
-  z-index: 50;
+  width: var(--side-w);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   background: var(--chrome);
   backdrop-filter: blur(var(--chrome-blur));
   -webkit-backdrop-filter: blur(var(--chrome-blur));
   border-right: 1px solid var(--line);
-  box-shadow: var(--e-3);
-}
-
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-/* Slide transition for the drawer panel */
-.drawer-enter-active,
-.drawer-leave-active {
-  transition: transform 0.2s var(--ease-out);
-}
-
-.drawer-enter-from,
-.drawer-leave-to {
-  transform: translateX(-100%);
-}
-
-/* Fade transition for the backdrop */
-.backdrop-enter-active,
-.backdrop-leave-active {
-  transition: opacity 0.2s var(--ease);
-}
-
-.backdrop-enter-from,
-.backdrop-leave-to {
-  opacity: 0;
 }
 
 .brand {
