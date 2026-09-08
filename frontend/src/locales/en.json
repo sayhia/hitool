@@ -1204,6 +1204,7 @@
     "bothDays": "Both day fields are set: this tool intersects them (both must match). Quartz requires ? in one of them, and Unix cron takes the union — one expression, three meanings."
   },
   "tabs": {
+    "home": "Home",
     "close": "Close",
     "closeOthers": "Close others",
     "closeAll": "Close all",

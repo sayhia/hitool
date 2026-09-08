@@ -20,17 +20,27 @@ export interface Tab {
 const tabs = ref<Tab[]>([]);
 const activePath = ref("");
 
+/** The home tab is a permanent fixture: always index 0, never closable. */
+const HOME_TAB: Tab = { path: "/", toolId: "", icon: "House", pinned: true };
+
+function ensureHome() {
+  if (tabs.value[0]?.path === "/") return;
+  tabs.value = [HOME_TAB, ...tabs.value.filter((x) => x.path !== "/")];
+}
+
 export function useTabs() {
   return { tabs, activePath };
 }
 
 export function tabTitle(tab: Tab): string {
+  if (tab.path === "/") return t("tabs.home");
   return t(`tools.${tab.toolId}.name`);
 }
 
 /** Called by the router afterEach — the single place tabs are created. */
 export function syncFromRoute(path: string) {
   activePath.value = path;
+  ensureHome();
   // Tools only; the launcher, category pages and settings are not tabbed.
   const raw = toolIdOfPath(path);
   if (!raw) return;
@@ -45,6 +55,7 @@ export function syncFromRoute(path: string) {
 }
 
 export function closeTab(path: string, router: Router) {
+  if (path === "/") return;
   const idx = tabs.value.findIndex((x) => x.path === path);
   if (idx === -1) return;
   const wasActive = activePath.value === path;
@@ -57,16 +68,19 @@ export function closeTab(path: string, router: Router) {
 }
 
 export function closeOthers(path: string, router: Router) {
-  tabs.value = tabs.value.filter((x) => x.path === path || x.pinned);
+  tabs.value = tabs.value.filter((x) => x.path === path || x.pinned || x.path === "/");
   router.push(path);
 }
 
 export function closeAll(router: Router) {
-  tabs.value = tabs.value.filter((x) => x.pinned);
-  router.push(tabs.value[0]?.path ?? "/");
+  tabs.value = tabs.value.filter((x) => x.pinned || x.path === "/");
+  // Home always sorts first, so the first non-home tab is the fallback.
+  const rest = tabs.value.filter((x) => x.path !== "/");
+  router.push(rest[0]?.path ?? "/");
 }
 
 export function togglePin(path: string) {
+  if (path === "/") return;
   tabs.value = tabs.value.map((x) => (x.path === path ? { ...x, pinned: !x.pinned } : x));
   // Pinned tabs collect on the left so their position stays predictable.
   tabs.value = [
@@ -79,6 +93,7 @@ export function togglePin(path: string) {
 export function moveTab(from: number, to: number) {
   const list = [...tabs.value];
   if (from < 0 || from >= list.length || to < 0 || to >= list.length) return;
+  if (from === 0 || to === 0) return;
   const [item] = list.splice(from, 1);
   list.splice(to, 0, item);
   tabs.value = list;
@@ -130,6 +145,7 @@ export async function restoreTabs() {
   } catch {
     return;
   }
+  ensureHome();
   if (!raw) return;
   let stored: StoredTab[];
   try {
@@ -154,15 +170,18 @@ export async function restoreTabs() {
   }
   if (!restored.length) return;
   tabs.value = [
-    ...tabs.value,
+    ...tabs.value.filter((x) => x.path === "/"),
     ...restored.filter((x) => x.pinned),
     ...restored.filter((x) => !x.pinned),
+    ...tabs.value.filter((x) => x.path !== "/"),
   ];
 }
 
 export function persistTabs() {
   const raw = JSON.stringify(
-    tabs.value.map((x) => ({ path: x.path, pinned: x.pinned })),
+    tabs.value
+      .filter((x) => x.path !== "/")
+      .map((x) => ({ path: x.path, pinned: x.pinned })),
   );
   try {
     if (inWails()) void StoreService.SetSetting(TABS_KEY, raw);
