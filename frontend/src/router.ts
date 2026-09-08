@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", component: () => import("./views/RedirectView.vue") },
-  // Categories live in the tool tree now; deep links land on the redirect page.
+  { path: "/", component: () => import("./views/HomeView.vue") },
+  // Categories live in the sidebar tree; deep links land on home.
   { path: "/c/:id", redirect: "/" },
   {
     path: "/t/:id",
