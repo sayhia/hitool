@@ -24,19 +24,15 @@ const props = withDefaults(
 
 const slots = useSlots();
 
-// Category identity: the launcher's hue follows the tool inside, so each
-// page carries its category colour through primary actions, selection,
-// focus and empty states (base.css reads --cat*).
+// Category identity: the category hue seeds a full M3 scheme inside the
+// frame (base.css .frame derives primary/containers/state layers from
+// --cat-seed), so primary actions, selection, focus and empty states all
+// follow the tool's category through light and dark.
 const cat = computed(() => toolById(props.toolId)?.category);
 const catVars = computed(() => {
   const c = cat.value;
   if (!c) return undefined;
-  return {
-    "--cat": `var(--cat-${c})`,
-    "--cat-bright": `var(--cat-${c}-bright)`,
-    "--cat-wash": `var(--cat-${c}-wash)`,
-    "--cat-line": `var(--cat-${c}-line)`,
-  };
+  return { "--cat-seed": `var(--cat-seed-${c})` };
 });
 
 const hasInspector = computed(() => !!slots.inspector);

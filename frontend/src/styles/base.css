@@ -1,9 +1,12 @@
 /* ============================================================
-   Base + shared primitives — v0.6 "Candy".
-   Colourful, friendly controls: white cards floating on a cool
-   tinted ground, soft lifted buttons, wash-filled selections,
-   generous radii. Class names are stable across the v0.5 → v0.6
-   port; only the styling changed, so views migrate without
+   Base + shared primitives — v0.8 "Material You"
+   Components follow the Material Design 3 spec: tonal surfaces
+   and filled/tonal/outlined/text buttons, state layers instead
+   of background shifts, the M3 shape scale, elevated cards.
+   Colour is role-based: everything reads the M3 roles from
+   tokens.css, and inside a ToolFrame the category seed re-derives
+   the whole scheme (see the .frame block at the bottom).
+   Class names are stable across versions; views migrate without
    renaming markup.
    ============================================================ */
 
@@ -103,8 +106,8 @@ h3 {
 }
 
 /* ---------- surfaces ----------
-   Cards float on the tinted ground with soft blue-tinted depth;
-   they carry their own edge only where two whites meet. */
+   M3 surfaces: cards sit one elevation above the ground and carry
+   a hairline where two whites meet. */
 .panel,
 .card {
   background: var(--s-1);
@@ -126,34 +129,33 @@ h3 {
 }
 
 /* ---------- buttons ----------
-   Default button: quiet white face that lifts on hover and
-   sinks on press — depth instead of darkening. */
+   The M3 quartet. Default .btn = tonal: secondary-container fill,
+   stadium shape, state layers on interaction. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  height: 32px;
-  padding: 0 13px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  background: var(--s-1);
-  color: var(--ink);
+  height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
   font-family: var(--f-ui);
   font-size: var(--t-md);
   font-weight: 550;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.16s var(--ease), border-color 0.16s var(--ease);
+  transition: background 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
 
 .btn:hover:not(:disabled) {
-  background: var(--s-2);
-  border-color: var(--line-strong);
+  background: color-mix(in srgb, var(--on-secondary-container) 10%, var(--secondary-container));
 }
 
 .btn:active:not(:disabled) {
-  background: var(--s-2);
+  background: color-mix(in srgb, var(--on-secondary-container) 16%, var(--secondary-container));
 }
 
 .btn:disabled {
@@ -168,57 +170,56 @@ h3 {
   flex-shrink: 0;
 }
 
-/* Primary: solid action blue with a gentle top sheen; hover lifts
-   it slightly and grows its glow. One per view — the thing the
-   view exists to do. */
+/* Primary: the filled button — solid primary, on-primary ink,
+   state layers over the fill. One per view — the thing the view
+   exists to do. */
 .btn-signal,
 .btn-primary {
-  background: var(--acc);
-  border-color: transparent;
-  color: var(--acc-ink);
+  background: var(--primary);
+  border: 0;
+  color: var(--on-primary);
   font-weight: 650;
-  height: 34px;
-  padding: 0 18px;
+  height: 36px;
+  padding: 0 20px;
+  box-shadow: var(--e-1);
 }
 
 .btn-signal:hover:not(:disabled),
 .btn-primary:hover:not(:disabled) {
-  background: var(--acc-hover);
-  border-color: transparent;
+  background: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+  box-shadow: var(--e-1);
 }
 
 .btn-signal:active:not(:disabled),
 .btn-primary:active:not(:disabled) {
-  background: var(--acc-press);
+  background: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
 }
 
 /* An inert primary drops the accent entirely rather than showing a
-   washed-out blue that still reads as "press me". */
+   washed-out fill that still reads as "press me". */
 .btn-signal:disabled,
 .btn-primary:disabled {
-  background: var(--s-3);
-  border-color: transparent;
-  color: var(--ink-4);
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  color: var(--ink-3);
   opacity: 1;
   box-shadow: none;
 }
 
 .btn-quiet {
-  border-color: transparent;
+  border: 0;
   background: transparent;
   color: var(--ink-2);
   box-shadow: none;
 }
 
 .btn-quiet:hover:not(:disabled) {
-  background: var(--acc-wash);
-  border-color: transparent;
+  background: var(--hover);
   color: var(--ink);
   box-shadow: none;
 }
 
 .btn-quiet:active:not(:disabled) {
-  background: var(--acc-wash-2);
+  background: var(--hover-strong);
 }
 
 .btn-danger {
@@ -227,14 +228,17 @@ h3 {
 
 .btn-danger:hover:not(:disabled) {
   background: var(--fail-wash);
-  border-color: var(--fail-line);
+  color: var(--fail);
+}
+
+.btn-danger:active:not(:disabled) {
+  background: color-mix(in srgb, var(--fail) 16%, transparent);
 }
 
 .btn-sm {
-  height: 27px;
-  padding: 0 11px;
+  height: 28px;
+  padding: 0 13px;
   font-size: var(--t-sm);
-  border-radius: calc(var(--r-sm) - 1px);
 }
 
 .btn-sm svg {
@@ -243,12 +247,12 @@ h3 {
 }
 
 .btn-icon {
-  width: 32px;
+  width: 34px;
   padding: 0;
 }
 
 .btn-icon.btn-sm {
-  width: 27px;
+  width: 28px;
 }
 
 /* ---------- keycap ---------- */
@@ -273,8 +277,8 @@ kbd {
 }
 
 /* ---------- inputs ----------
-   White field on the card face; focus brings the accent ring
-   plus a whisper of wash inside. */
+   M3 outlined text field: surface fill, outline border, focus
+   swaps the border to primary and doubles it via an inset ring. */
 .input,
 .select,
 .textarea {
@@ -309,14 +313,14 @@ kbd {
 .input:hover:not(:focus),
 .textarea:hover:not(:focus),
 .select:hover:not(:focus) {
-  border-color: var(--line-strong);
+  border-color: var(--ink-3);
 }
 
 .input:focus,
 .select:focus,
 .textarea:focus {
-  border-color: var(--acc);
-  box-shadow: var(--focus-ring);
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
 }
 
 .input::placeholder,
@@ -334,7 +338,7 @@ kbd {
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238b94aa' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%237a7688' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-position: calc(100% - 12px) center;
   background-size: 10px 6px;
   background-repeat: no-repeat;
@@ -360,8 +364,8 @@ kbd {
 }
 
 /* ---------- range slider ----------
-   One slider for the whole app: hairline track, floating white thumb,
-   category hue on grab. */
+   One slider for the whole app: hairline track, floating thumb
+   that picks up the category hue on grab. */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -382,20 +386,20 @@ input[type="range"]::-webkit-slider-thumb {
   height: 16px;
   margin-top: -5.5px;
   border-radius: 50%;
-  background: var(--s-1);
-  border: 1px solid var(--line-strong);
+  background: var(--primary);
+  border: 2px solid var(--s-1);
   box-shadow: var(--e-1);
-  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  transition: box-shadow 0.16s var(--ease), transform 0.16s var(--ease);
 }
 
 input[type="range"]:hover::-webkit-slider-thumb,
 input[type="range"]:focus-visible::-webkit-slider-thumb {
-  border-color: var(--cat, var(--acc));
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--cat-primary, var(--primary)) 16%, transparent);
 }
 
 input[type="range"]:active::-webkit-slider-thumb {
-  border-color: var(--cat, var(--acc));
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat, var(--acc)) 18%, transparent);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--cat-primary, var(--primary)) 20%, transparent);
+  transform: scale(1.08);
 }
 
 input[type="range"]::-moz-range-track {
@@ -405,39 +409,41 @@ input[type="range"]::-moz-range-track {
 }
 
 input[type="range"]::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--s-1);
-  border: 1px solid var(--line-strong);
+  background: var(--primary);
+  border: 2px solid var(--s-1);
   box-shadow: var(--e-1);
 }
 
-input[type="range"]:hover::-moz-range-thumb,
-input[type="range"]:active::-moz-range-thumb {
-  border-color: var(--cat, var(--acc));
-}
-
 /* ---------- segmented control ----------
-   A recessed tinted track with a raised white pill: the on state
-   floats, colour arrives through the text weight and shadow. */
+   M3 segmented button: a connected stadium outlined as one piece,
+   dividers between segments, selected segment fills with
+   secondary-container. */
 .seg {
   display: inline-flex;
+  gap: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  background: transparent;
+  overflow: hidden;
+}
+
+.seg.wrap,
+.seg-wrap {
   flex-wrap: wrap;
-  gap: 2px;
-  padding: 2.5px;
-  border: 0;
-  border-radius: calc(var(--r-sm) + 2px);
-  background: var(--s-2);
+  border-radius: var(--r);
+  overflow: visible;
 }
 
 .seg button {
   flex: 1 0 auto;
   min-width: fit-content;
-  height: 26px;
-  padding: 0 13px;
+  height: 30px;
+  padding: 0 15px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: 0;
   background: transparent;
   color: var(--ink-2);
   font-family: var(--f-ui);
@@ -445,23 +451,22 @@ input[type="range"]:active::-moz-range-thumb {
   font-weight: 550;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.16s var(--ease), color 0.16s var(--ease),
-    box-shadow 0.16s var(--ease);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+
+.seg button + button {
+  border-left: 1px solid var(--line);
 }
 
 .seg button:hover:not(.on) {
   color: var(--ink);
+  background: var(--hover);
 }
 
 .seg button.on {
-  background: var(--s-1);
-  color: var(--ink);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
   font-weight: 650;
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-}
-
-.seg-wrap {
-  flex-wrap: wrap;
 }
 
 /* ---------- field ---------- */
@@ -476,16 +481,17 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 /* ---------- chips ----------
-   Soft pills; the selected one fills with accent wash. */
+   M3 filter chip: outlined 8px-radius pill; selected fills with
+   secondary-container and loses the border. */
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
+  height: 30px;
   padding: 0 13px;
-  border: 1px solid transparent;
-  border-radius: var(--r-pill);
-  background: var(--s-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: transparent;
   color: var(--ink-2);
   font-family: var(--f-ui);
   font-size: var(--t-sm);
@@ -513,20 +519,20 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 .chip:hover:not(:disabled):not(.on) {
-  background: var(--s-3);
+  background: var(--hover);
   color: var(--ink);
 }
 
 .chip.on {
-  background: var(--acc-wash-2);
+  background: var(--secondary-container);
   border-color: transparent;
-  color: var(--acc);
+  color: var(--on-secondary-container);
   font-weight: 650;
 }
 
 /* ---------- progress ---------- */
 .track {
-  height: 5px;
+  height: 6px;
   border-radius: var(--r-pill);
   background: var(--s-3);
   overflow: hidden;
@@ -535,7 +541,7 @@ input[type="range"]:active::-moz-range-thumb {
 .fill {
   height: 100%;
   border-radius: var(--r-pill);
-  background: var(--acc);
+  background: var(--primary);
   transition: width 0.3s var(--ease-out);
 }
 
@@ -552,16 +558,17 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 /* ---------- status banner ----------
-   Washed fill + matching pill edge. Severity is carried by colour
-   and by the icon the caller supplies, not by a bare stripe. */
+   M3 banner: container-high surface, hairline edge. Severity is
+   carried by colour and by the icon the caller supplies, not by
+   a bare stripe. */
 .stripe,
 .banner {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--line);
   border-radius: var(--r);
-  background: var(--s-2);
+  background: var(--s-3);
   color: var(--ink-2);
   padding: 10px 14px;
   font-size: var(--t-sm);
@@ -625,8 +632,8 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 .badge.acc {
-  background: var(--acc-wash);
-  color: var(--acc);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
 }
 .badge.ok {
   background: var(--ok-wash);
@@ -695,42 +702,71 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 /* ============================================================
-   Category-adaptive controls
-   Inside a ToolFrame the page's own category hue rides in as
-   --cat* (set per tool from the registry; --cat-* tokens are
-   theme-aware, so light/dark need no extra work here). The hue
-   takes over the moments that belong to the tool — its primary
-   action, selected chips and option rows, input focus, live
-   progress and copy affordances — while input widgets stay
-   neutral and status banners keep their semantic colours.
-   Outside a frame everything falls back to the action blue.
+   Category-adaptive dynamic colour
+   Inside a ToolFrame the page's category seed (set as --cat-seed)
+   re-derives an entire M3 scheme — primary, containers, state
+   layers. The formulas are theme-aware through the knob
+   variables: dark contexts only flip the knobs and mixing bases,
+   so the same block serves both themes.
+   Outside a frame everything falls back to the app scheme.
    ============================================================ */
 .frame {
-  --cat: var(--acc);
-  --cat-bright: var(--acc-hover);
-  --cat-wash: var(--acc-wash);
-  --cat-line: var(--acc-line);
+  --cat-seed: var(--md-seed);
+  --cat-primary: var(--cat-seed);
+  --cat-on-primary: #ffffff;
+  --cat-primary-container: color-mix(
+    in srgb,
+    var(--cat-seed) var(--cat-cont-keep, 14%),
+    var(--cat-cont-base, #ffffff)
+  );
+  --cat-on-primary-container: color-mix(
+    in srgb,
+    var(--cat-seed) var(--cat-oncont-keep, 58%),
+    var(--cat-oncont-base, #14121f)
+  );
+  --cat-secondary-container: color-mix(
+    in srgb,
+    var(--cat-seed) var(--cat-tonal-keep, 11%),
+    var(--cat-tonal-base, #edecf4)
+  );
+  --cat-on-secondary-container: color-mix(
+    in srgb,
+    var(--cat-seed) var(--cat-tonal-ink-keep, 40%),
+    var(--cat-tonal-ink-base, #232031)
+  );
+  --cat: var(--cat-primary);
+  --cat-bright: color-mix(
+    in srgb,
+    var(--cat-seed) var(--cat-bright-keep, 76%),
+    var(--cat-bright-base, #ffffff)
+  );
+  --cat-wash: color-mix(in srgb, var(--cat-primary) var(--cat-state, 9%), transparent);
+  --cat-wash-2: color-mix(in srgb, var(--cat-primary) var(--cat-state-2, 16%), transparent);
+  --cat-line: color-mix(in srgb, var(--cat-primary) 34%, transparent);
 }
 
-/* Mixing with --ink darkens on the light ground and lightens on
-   the dark one — the same relationship --acc-hover has to --acc. */
+/* The frame's filled action, selected chips and badges follow the
+   category scheme; input widgets stay neutral. */
 .frame .btn-signal,
 .frame .btn-primary {
-  background: var(--cat);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 1px 3px color-mix(in srgb, var(--cat) 42%, transparent);
+  background: var(--cat-primary);
+  color: var(--cat-on-primary);
 }
 
 .frame .btn-signal:hover:not(:disabled),
 .frame .btn-primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--cat) 84%, var(--ink));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 4px 12px color-mix(in srgb, var(--cat) 46%, transparent);
+  background: color-mix(in srgb, var(--cat-on-primary) 10%, var(--cat-primary));
 }
 
 .frame .btn-signal:active:not(:disabled),
 .frame .btn-primary:active:not(:disabled) {
-  background: color-mix(in srgb, var(--cat) 68%, var(--ink));
+  background: color-mix(in srgb, var(--cat-on-primary) 18%, var(--cat-primary));
+}
+
+.frame .btn-signal:disabled,
+.frame .btn-primary:disabled {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  color: var(--ink-3);
 }
 
 .frame .btn-quiet:hover:not(:disabled) {
@@ -738,13 +774,13 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 .frame .chip.on {
-  background: var(--cat-wash);
-  color: var(--cat);
+  background: var(--cat-secondary-container);
+  color: var(--cat-on-secondary-container);
 }
 
 .frame .badge.acc {
-  background: var(--cat-wash);
-  color: var(--cat);
+  background: var(--cat-primary-container);
+  color: var(--cat-on-primary-container);
 }
 
 .frame .input:hover:not(:focus),
@@ -756,14 +792,52 @@ input[type="range"]:active::-moz-range-thumb {
 .frame .input:focus,
 .frame .select:focus,
 .frame .textarea:focus {
-  border-color: var(--cat);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat) 18%, transparent);
+  border-color: var(--cat-primary);
+  box-shadow: inset 0 0 0 1px var(--cat-primary);
 }
 
 /* Semantic fills keep their own colours — only the plain fill
-   picks up the category gradient. */
+   picks up the category hue. */
 .frame .fill:not(.ok):not(.fail):not(.warn) {
-  background: linear-gradient(90deg, var(--cat), var(--cat-bright));
+  background: var(--cat-primary);
+}
+
+/* Dark knobs: the seed lifts toward tone-80 and containers sink
+   into the dark surface. */
+@media (prefers-color-scheme: dark) {
+  .frame {
+    --cat-primary: color-mix(in srgb, var(--cat-seed) 52%, #e9e6fa);
+    --cat-on-primary: #292552;
+    --cat-cont-keep: 40%;
+    --cat-cont-base: #201c30;
+    --cat-oncont-keep: 24%;
+    --cat-oncont-base: #eae6ff;
+    --cat-tonal-keep: 28%;
+    --cat-tonal-base: #2b2740;
+    --cat-tonal-ink-keep: 20%;
+    --cat-tonal-ink-base: #e6e2f8;
+    --cat-bright-keep: 52%;
+    --cat-bright-base: #e9e6fa;
+    --cat-state: 14%;
+    --cat-state-2: 22%;
+  }
+}
+
+:root[data-theme="dark"] .frame {
+  --cat-primary: color-mix(in srgb, var(--cat-seed) 52%, #e9e6fa);
+  --cat-on-primary: #292552;
+  --cat-cont-keep: 40%;
+  --cat-cont-base: #201c30;
+  --cat-oncont-keep: 24%;
+  --cat-oncont-base: #eae6ff;
+  --cat-tonal-keep: 28%;
+  --cat-tonal-base: #2b2740;
+  --cat-tonal-ink-keep: 20%;
+  --cat-tonal-ink-base: #e6e2f8;
+  --cat-bright-keep: 52%;
+  --cat-bright-base: #e9e6fa;
+  --cat-state: 14%;
+  --cat-state-2: 22%;
 }
 
 /* ---------- result pane header ----------
@@ -825,7 +899,7 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 /* ---------- empty state ----------
-   Category-washed icon plate over a title and hint — the quiet
+   Primary-container plate over a title and hint — the quiet
    "nothing here yet" moment every pane should reach for. */
 .empty {
   display: flex;
@@ -843,10 +917,9 @@ input[type="range"]:active::-moz-range-thumb {
   margin-bottom: 8px;
   display: grid;
   place-items: center;
-  border-radius: 13px;
-  background: var(--cat-wash);
-  color: var(--cat);
-  box-shadow: inset 0 0 0 1px var(--cat-line);
+  border-radius: var(--r-lg);
+  background: var(--cat-primary-container);
+  color: var(--cat-on-primary-container);
 }
 
 .empty .plate svg {
@@ -943,7 +1016,8 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 /* ---------- inspector option list ----------
-   Stacked selector rows; the on state follows the category hue. */
+   Stacked selector rows; the on state fills with the category
+   secondary container. */
 .optlist {
   display: flex;
   flex-direction: column;
@@ -968,12 +1042,12 @@ input[type="range"]:active::-moz-range-thumb {
 }
 
 .opt:hover:not(.on) {
-  background: var(--s-3);
+  background: var(--hover);
   color: var(--ink);
 }
 
 .opt.on {
-  background: var(--cat-wash);
-  border-color: var(--cat-line);
-  color: var(--cat);
+  background: var(--cat-secondary-container);
+  border-color: transparent;
+  color: var(--cat-on-secondary-container);
 }

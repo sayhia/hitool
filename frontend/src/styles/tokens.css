@@ -1,122 +1,136 @@
 /* ============================================================
-   HiTool design tokens — v0.7 "Slate"
-   A quiet, flat workbench: one neutral ground, surfaces split
-   by hairlines instead of elevation, a single indigo accent,
-   and the seven category hues demoted to small identity marks
-   (icons, dots, selection washes). Depth exists only for things
-   that truly float — menus, dialogs, flyouts.
+   HiTool design tokens — v0.8 "Material You"
+   The token layer is rebuilt on Material Design 3 colour roles:
+   eight seed colours (the app indigo + the seven category hues)
+   expand into primary/primary-container/secondary-container and
+   surface tiers via color-mix formulas, so light and dark are
+   the same scheme mapped onto two tone ramps. Categories ride in
+   as dynamic colour sources: a frame that sets --cat-seed
+   re-derives its whole scheme (see base.css .frame).
    Components must read these tokens only — never hard-code a
-   colour and never style inside the media query, so the manual
-   theme toggle can win in both directions.
+   colour. Theme switching keeps the data-theme override model;
+   dark blocks only flip the mixing bases and neutral ramps.
    ============================================================ */
 
 :root {
   color-scheme: light dark;
 
-  /* ---- ground & surfaces (light) ----
-     bg   = app ground behind everything
-     s-1  = canvas / panels
-     s-2  = inset wells and quiet fills, s-3 = pressed tracks */
-  --bg: #f5f6f8;
-  --s-1: #ffffff;
-  --s-2: #eef0f3;
-  --s-3: #e3e6ea;
-  --s-sunken: #eff1f4;
+  /* ---- seeds ---- */
+  --md-seed: #4f52c8;
+  --cat-seed-pdf: #d64545;
+  --cat-seed-image: #2e9152;
+  --cat-seed-text: #4263d0;
+  --cat-seed-dev: #6a4fc8;
+  --cat-seed-calculator: #c27414;
+  --cat-seed-creative: #c74e7e;
+  --cat-seed-ai: #0f8a9e;
 
-  /* Translucent chrome for the sidebar / tab strip / popovers.
-     Pair with `backdrop-filter: blur(var(--chrome-blur))`. */
-  --chrome: rgba(247, 248, 250, 0.9);
-  --chrome-solid: #f7f8fa;
+  /* ---- M3 roles (light, mixed from --md-seed) ---- */
+  --primary: var(--md-seed);
+  --on-primary: #ffffff;
+  --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
+  --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);
+  --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
+  --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
+  --on-surface-variant: #7a7688;
+
+  /* ---- ground & surfaces (light) ----
+     bg = app ground, s-1 = canvas/panels, s-2 = inset wells,
+     s-3 = pressed tracks — the M3 surface tiers. */
+  --bg: #faf9fd;
+  --s-1: #ffffff;
+  --s-2: #f1eff7;
+  --s-3: #e8e5f2;
+  --s-sunken: #f3f1f9;
+
+  /* Translucent chrome for the sidebar / tab strip / popovers. */
+  --chrome: rgba(250, 249, 253, 0.9);
+  --chrome-solid: #faf9fd;
   --chrome-blur: 16px;
 
-  /* ---- ink ---- */
-  --ink: #191c22;
-  --ink-2: #474d59;
-  --ink-3: #7c8390;
-  --ink-4: #a8aeb9;
+  /* ---- ink: indigo-tinted neutrals ---- */
+  --ink: #1b1a22;
+  --ink-2: #4a4757;
+  --ink-3: #7a7688;
+  --ink-4: #a5a1b2;
 
-  /* ---- hairlines: the only separation in Slate ---- */
-  --line: rgba(22, 27, 38, 0.1);
-  --line-2: rgba(22, 27, 38, 0.055);
-  --line-strong: rgba(22, 27, 38, 0.17);
+  /* ---- outlines: M3 outline / outline-variant ---- */
+  --line: rgba(30, 24, 56, 0.11);
+  --line-2: rgba(30, 24, 56, 0.06);
+  --line-strong: rgba(30, 24, 56, 0.19);
 
-  /* ---- accent: the single indigo ---- */
-  --acc: #4f52c8;
-  --acc-hover: #4244b2;
-  --acc-press: #37399c;
-  --acc-ink: #ffffff;
-  --acc-wash: rgba(79, 82, 200, 0.09);
-  --acc-wash-2: rgba(79, 82, 200, 0.16);
-  --acc-line: rgba(79, 82, 200, 0.32);
+  /* ---- accent aliases (legacy names → M3 roles) ---- */
+  --acc: var(--primary);
+  --acc-hover: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+  --acc-press: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
+  --acc-ink: var(--on-primary);
+  --acc-wash: color-mix(in srgb, var(--primary) 9%, transparent);
+  --acc-wash-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --acc-line: color-mix(in srgb, var(--primary) 34%, transparent);
 
-  /* Brand mark — kept for the logo plate only. */
   --brand-grad: linear-gradient(135deg, #4f52c8 0%, #7a5af5 100%);
   --brand-gold: #c9a46a;
 
-  /* ---- semantic ---- */
+  /* ---- semantic (status keeps its own hues) ---- */
   --ok: #1e8e4d;
   --ok-bright: #2fb566;
-  --ok-wash: rgba(47, 181, 102, 0.11);
-  --ok-line: rgba(47, 181, 102, 0.36);
+  --ok-wash: color-mix(in srgb, var(--ok) 11%, transparent);
+  --ok-line: color-mix(in srgb, var(--ok) 36%, transparent);
   --warn: #b26e00;
   --warn-bright: #f09f2d;
-  --warn-wash: rgba(240, 159, 45, 0.13);
-  --warn-line: rgba(240, 159, 45, 0.4);
-  --fail: #cc3333;
-  --fail-bright: #e05252;
-  --fail-wash: rgba(224, 82, 82, 0.11);
-  --fail-line: rgba(224, 82, 82, 0.34);
+  --warn-wash: color-mix(in srgb, var(--warn-bright) 13%, transparent);
+  --warn-line: color-mix(in srgb, var(--warn-bright) 40%, transparent);
+  --fail: #b3261e;
+  --fail-bright: #dc362e;
+  --fail-wash: color-mix(in srgb, var(--fail-bright) 11%, transparent);
+  --fail-line: color-mix(in srgb, var(--fail-bright) 34%, transparent);
   --info: #2f6fd0;
-  --info-wash: rgba(47, 111, 208, 0.09);
+  --info-wash: color-mix(in srgb, var(--info) 9%, transparent);
 
   /* ---- syntax (code panes / JSON tree) ---- */
   --syn-str: #1f8f4e;
   --syn-num: #c07a10;
-  --syn-key: #191c22;
+  --syn-key: #1b1a22;
   --syn-kw: #5c5ce6;
-  --syn-punc: #7c8390;
-  --syn-com: #a8aeb9;
-  --code-bg: #f6f8fa;
+  --syn-punc: #7a7688;
+  --syn-com: #a5a1b2;
+  --code-bg: #f4f2fa;
 
-  /* ---- category identities ----
-     Slate keeps the seven hues but wears them quietly: icon
-     marks, dots and selection washes — never filled plates. */
+  /* ---- category identity marks ----
+     Small-area marks (icons, dots): tone-40-ish per category.
+     Washes / lines derive; the tool-level scheme is dynamic
+     (see --cat-seed in base.css .frame). */
   --cat-pdf: #d64545;
   --cat-pdf-bright: #e05252;
-  --cat-pdf-wash: rgba(224, 82, 82, 0.1);
-  --cat-pdf-line: rgba(224, 82, 82, 0.32);
-
   --cat-image: #2e9152;
   --cat-image-bright: #3fb567;
-  --cat-image-wash: rgba(63, 181, 103, 0.11);
-  --cat-image-line: rgba(63, 181, 103, 0.34);
-
   --cat-text: #4263d0;
   --cat-text-bright: #5f7ce0;
-  --cat-text-wash: rgba(95, 124, 224, 0.11);
-  --cat-text-line: rgba(95, 124, 224, 0.34);
-
   --cat-dev: #6a4fc8;
   --cat-dev-bright: #8a6fe0;
-  --cat-dev-wash: rgba(138, 111, 224, 0.11);
-  --cat-dev-line: rgba(138, 111, 224, 0.32);
-
   --cat-calculator: #c27414;
   --cat-calculator-bright: #e8971f;
-  --cat-calculator-wash: rgba(232, 151, 31, 0.12);
-  --cat-calculator-line: rgba(232, 151, 31, 0.36);
-
   --cat-creative: #c74e7e;
   --cat-creative-bright: #e0669a;
-  --cat-creative-wash: rgba(224, 102, 154, 0.11);
-  --cat-creative-line: rgba(224, 102, 154, 0.32);
-
   --cat-ai: #0f8a9e;
   --cat-ai-bright: #31b4c9;
-  --cat-ai-wash: rgba(49, 180, 201, 0.12);
-  --cat-ai-line: rgba(49, 180, 201, 0.34);
 
-  /* Legacy aliases kept until every view migrates. */
+  --cat-pdf-wash: color-mix(in srgb, var(--cat-pdf) 11%, transparent);
+  --cat-pdf-line: color-mix(in srgb, var(--cat-pdf) 32%, transparent);
+  --cat-image-wash: color-mix(in srgb, var(--cat-image) 11%, transparent);
+  --cat-image-line: color-mix(in srgb, var(--cat-image) 34%, transparent);
+  --cat-text-wash: color-mix(in srgb, var(--cat-text) 11%, transparent);
+  --cat-text-line: color-mix(in srgb, var(--cat-text) 34%, transparent);
+  --cat-dev-wash: color-mix(in srgb, var(--cat-dev) 11%, transparent);
+  --cat-dev-line: color-mix(in srgb, var(--cat-dev) 32%, transparent);
+  --cat-calculator-wash: color-mix(in srgb, var(--cat-calculator) 12%, transparent);
+  --cat-calculator-line: color-mix(in srgb, var(--cat-calculator) 36%, transparent);
+  --cat-creative-wash: color-mix(in srgb, var(--cat-creative) 11%, transparent);
+  --cat-creative-line: color-mix(in srgb, var(--cat-creative) 32%, transparent);
+  --cat-ai-wash: color-mix(in srgb, var(--cat-ai) 12%, transparent);
+  --cat-ai-line: color-mix(in srgb, var(--cat-ai) 34%, transparent);
+
+  /* Legacy tile aliases. */
   --tile-pdf: var(--cat-pdf-wash);
   --tile-pdf-ink: var(--cat-pdf);
   --tile-image: var(--cat-image-wash);
@@ -145,17 +159,18 @@
   --t-2xl: 22px;
   --t-3xl: 28px;
 
-  /* ---- shape: tighter, tool-like ---- */
-  --r-sm: 5px;
-  --r: 8px;
-  --r-lg: 10px;
-  --r-xl: 12px;
+  /* ---- shape: the M3 scale ---- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r: 12px;
+  --r-lg: 16px;
+  --r-xl: 28px;
   --r-pill: 999px;
 
-  /* ---- elevation: flat by default; depth only for floaters ---- */
-  --e-1: 0 0 rgba(0, 0, 0, 0);
-  --e-2: 0 1px 3px rgba(12, 16, 28, 0.07);
-  --e-3: 0 10px 36px rgba(12, 16, 28, 0.16), 0 2px 8px rgba(12, 16, 28, 0.08);
+  /* ---- elevation: M3 levels ---- */
+  --e-1: 0 1px 2px rgba(18, 14, 40, 0.3), 0 1px 3px 1px rgba(18, 14, 40, 0.12);
+  --e-2: 0 1px 2px rgba(18, 14, 40, 0.3), 0 2px 6px 2px rgba(18, 14, 40, 0.13);
+  --e-3: 0 4px 8px 3px rgba(18, 14, 40, 0.13), 0 1px 3px rgba(18, 14, 40, 0.3);
 
   /* ---- metrics ---- */
   --rail-w: 60px;
@@ -165,354 +180,237 @@
   --dock-h: 36px;
   --insp-w: 300px;
 
-  --focus-ring: 0 0 0 3px rgba(79, 82, 200, 0.22);
-  --hover: rgba(22, 27, 38, 0.05);
-  --hover-strong: rgba(22, 27, 38, 0.09);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 24%, transparent);
+  --hover: rgba(30, 24, 56, 0.05);
+  --hover-strong: rgba(30, 24, 56, 0.09);
 
   /* ---- motion ---- */
   --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Dark is "Graphite": a true neutral charcoal, surfaces step by
-   lightness, hairlines go cool grey, the accent lifts to stay legible. */
+/* ============================================================
+   Dark scheme — "Material Night". Same roles, dark tone ramp:
+   the seed lifts toward tone-80, containers sink into the
+   surface, state layers strengthen. Only the mixing bases and
+   neutral ramps change; formulas stay in :root.
+   ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #131519;
-    --s-1: #1b1e24;
-    --s-2: #171a20;
-    --s-3: #272b33;
-    --s-sunken: #101216;
+    --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
+    --primary: var(--md-seed-lift, var(--md-seed));
+    --on-primary: #292552;
+    --primary-container: color-mix(in srgb, var(--md-seed) 38%, #1d1a2c);
+    --on-primary-container: color-mix(in srgb, var(--md-seed) 24%, #eae6ff);
+    --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
+    --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
+    --on-surface-variant: #948fa8;
 
-    --chrome: rgba(24, 27, 33, 0.88);
-    --chrome-solid: #1d2026;
+    --bg: #131218;
+    --s-1: #1c1a26;
+    --s-2: #211e2e;
+    --s-3: #2a2739;
+    --s-sunken: #0f0e15;
+
+    --chrome: rgba(27, 25, 38, 0.88);
+    --chrome-solid: #1b1926;
     --chrome-blur: 16px;
 
-    --ink: #e8eaf0;
-    --ink-2: #a7aeba;
-    --ink-3: #7d8592;
-    --ink-4: #5b6370;
+    --ink: #e6e2f2;
+    --ink-2: #c6c2d8;
+    --ink-3: #948fa8;
+    --ink-4: #6b677e;
 
-    --line: rgba(162, 172, 190, 0.13);
-    --line-2: rgba(162, 172, 190, 0.07);
-    --line-strong: rgba(162, 172, 190, 0.22);
+    --line: rgba(205, 200, 230, 0.13);
+    --line-2: rgba(205, 200, 230, 0.06);
+    --line-strong: rgba(205, 200, 230, 0.22);
 
-    --acc: #7d80f0;
-    --acc-hover: #9294f4;
-    --acc-press: #a9abf7;
-    --acc-ink: #ffffff;
-    --acc-wash: rgba(125, 128, 240, 0.14);
-    --acc-wash-2: rgba(125, 128, 240, 0.22);
-    --acc-line: rgba(125, 128, 240, 0.42);
+    --acc: var(--primary);
+    --acc-hover: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+    --acc-press: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
+    --acc-ink: var(--on-primary);
+    --acc-wash: color-mix(in srgb, var(--primary) 14%, transparent);
+    --acc-wash-2: color-mix(in srgb, var(--primary) 22%, transparent);
+    --acc-line: color-mix(in srgb, var(--primary) 40%, transparent);
 
     --brand-grad: linear-gradient(135deg, #7d80f0 0%, #8f6fff 100%);
     --brand-gold: #e0c48a;
 
     --ok: #43c46a;
     --ok-bright: #43c46a;
-    --ok-wash: rgba(67, 196, 106, 0.14);
-    --ok-line: rgba(67, 196, 106, 0.36);
     --warn: #f0a53a;
     --warn-bright: #f0a53a;
-    --warn-wash: rgba(240, 165, 58, 0.14);
-    --warn-line: rgba(240, 165, 58, 0.36);
     --fail: #ef6b6b;
     --fail-bright: #ef6b6b;
-    --fail-wash: rgba(239, 107, 107, 0.13);
-    --fail-line: rgba(239, 107, 107, 0.34);
     --info: #6ba2f0;
-    --info-wash: rgba(107, 162, 240, 0.12);
 
     --syn-str: #52d67c;
     --syn-num: #f0a53a;
-    --syn-key: #e8eaf0;
+    --syn-key: #e6e2f2;
     --syn-kw: #9297ff;
-    --syn-punc: #7d8592;
-    --syn-com: #5b6370;
-    --code-bg: #14171d;
+    --syn-punc: #948fa8;
+    --syn-com: #6b677e;
+    --code-bg: #17151f;
 
     --cat-pdf: #ef8080;
-    --cat-pdf-bright: #ef8080;
-    --cat-pdf-wash: rgba(239, 128, 128, 0.13);
-    --cat-pdf-line: rgba(239, 128, 128, 0.32);
-
     --cat-image: #58d57e;
-    --cat-image-bright: #58d57e;
-    --cat-image-wash: rgba(88, 213, 126, 0.13);
-    --cat-image-line: rgba(88, 213, 126, 0.32);
-
     --cat-text: #8aa2f5;
-    --cat-text-bright: #8aa2f5;
-    --cat-text-wash: rgba(138, 162, 245, 0.14);
-    --cat-text-line: rgba(138, 162, 245, 0.34);
-
     --cat-dev: #b09af5;
-    --cat-dev-bright: #b09af5;
-    --cat-dev-wash: rgba(176, 154, 245, 0.14);
-    --cat-dev-line: rgba(176, 154, 245, 0.34);
-
     --cat-calculator: #f0b04a;
-    --cat-calculator-bright: #f0b04a;
-    --cat-calculator-wash: rgba(240, 176, 74, 0.14);
-    --cat-calculator-line: rgba(240, 176, 74, 0.34);
-
     --cat-creative: #f088ae;
-    --cat-creative-bright: #f088ae;
-    --cat-creative-wash: rgba(240, 136, 174, 0.14);
-    --cat-creative-line: rgba(240, 136, 174, 0.34);
-
     --cat-ai: #4fd0e0;
-    --cat-ai-bright: #4fd0e0;
-    --cat-ai-wash: rgba(79, 208, 224, 0.13);
-    --cat-ai-line: rgba(79, 208, 224, 0.32);
 
-    --tile-pdf: var(--cat-pdf-wash);
-    --tile-pdf-ink: var(--cat-pdf);
-    --tile-image: var(--cat-image-wash);
-    --tile-image-ink: var(--cat-image);
-    --tile-text: var(--cat-text-wash);
-    --tile-text-ink: var(--cat-text);
-    --tile-dev: var(--cat-dev-wash);
-    --tile-dev-ink: var(--cat-dev);
-    --tile-calculator: var(--cat-calculator-wash);
-    --tile-calculator-ink: var(--cat-calculator);
-    --tile-creative: var(--cat-creative-wash);
-    --tile-creative-ink: var(--cat-creative);
-    --tile-ai: var(--cat-ai-wash);
-    --tile-ai-ink: var(--cat-ai);
+    --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
+    --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
+    --e-3: 0 4px 8px 3px rgba(0, 0, 0, 0.24), 0 1px 3px rgba(0, 0, 0, 0.45);
 
-    --e-1: 0 0 rgba(0, 0, 0, 0);
-    --e-2: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --e-3: 0 10px 36px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
-
-    --focus-ring: 0 0 0 3px rgba(125, 128, 240, 0.3);
-    --hover: rgba(162, 172, 190, 0.08);
-    --hover-strong: rgba(162, 172, 190, 0.14);
+    --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 32%, transparent);
+    --hover: rgba(205, 200, 230, 0.08);
+    --hover-strong: rgba(205, 200, 230, 0.14);
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #131519;
-  --s-1: #1b1e24;
-  --s-2: #171a20;
-  --s-3: #272b33;
-  --s-sunken: #101216;
+  --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
+  --primary: var(--md-seed-lift, var(--md-seed));
+  --on-primary: #292552;
+  --primary-container: color-mix(in srgb, var(--md-seed) 38%, #1d1a2c);
+  --on-primary-container: color-mix(in srgb, var(--md-seed) 24%, #eae6ff);
+  --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
+  --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
+  --on-surface-variant: #948fa8;
 
-  --chrome: rgba(24, 27, 33, 0.88);
-  --chrome-solid: #1d2026;
+  --bg: #131218;
+  --s-1: #1c1a26;
+  --s-2: #211e2e;
+  --s-3: #2a2739;
+  --s-sunken: #0f0e15;
+
+  --chrome: rgba(27, 25, 38, 0.88);
+  --chrome-solid: #1b1926;
   --chrome-blur: 16px;
 
-  --ink: #e8eaf0;
-  --ink-2: #a7aeba;
-  --ink-3: #7d8592;
-  --ink-4: #5b6370;
+  --ink: #e6e2f2;
+  --ink-2: #c6c2d8;
+  --ink-3: #948fa8;
+  --ink-4: #6b677e;
 
-  --line: rgba(162, 172, 190, 0.13);
-  --line-2: rgba(162, 172, 190, 0.07);
-  --line-strong: rgba(162, 172, 190, 0.22);
+  --line: rgba(205, 200, 230, 0.13);
+  --line-2: rgba(205, 200, 230, 0.06);
+  --line-strong: rgba(205, 200, 230, 0.22);
 
-  --acc: #7d80f0;
-  --acc-hover: #9294f4;
-  --acc-press: #a9abf7;
-  --acc-ink: #ffffff;
-  --acc-wash: rgba(125, 128, 240, 0.14);
-  --acc-wash-2: rgba(125, 128, 240, 0.22);
-  --acc-line: rgba(125, 128, 240, 0.42);
+  --acc: var(--primary);
+  --acc-hover: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+  --acc-press: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
+  --acc-ink: var(--on-primary);
+  --acc-wash: color-mix(in srgb, var(--primary) 14%, transparent);
+  --acc-wash-2: color-mix(in srgb, var(--primary) 22%, transparent);
+  --acc-line: color-mix(in srgb, var(--primary) 40%, transparent);
 
   --brand-grad: linear-gradient(135deg, #7d80f0 0%, #8f6fff 100%);
   --brand-gold: #e0c48a;
 
   --ok: #43c46a;
   --ok-bright: #43c46a;
-  --ok-wash: rgba(67, 196, 106, 0.14);
-  --ok-line: rgba(67, 196, 106, 0.36);
   --warn: #f0a53a;
   --warn-bright: #f0a53a;
-  --warn-wash: rgba(240, 165, 58, 0.14);
-  --warn-line: rgba(240, 165, 58, 0.36);
   --fail: #ef6b6b;
   --fail-bright: #ef6b6b;
-  --fail-wash: rgba(239, 107, 107, 0.13);
-  --fail-line: rgba(239, 107, 107, 0.34);
   --info: #6ba2f0;
-  --info-wash: rgba(107, 162, 240, 0.12);
 
   --syn-str: #52d67c;
   --syn-num: #f0a53a;
-  --syn-key: #e8eaf0;
+  --syn-key: #e6e2f2;
   --syn-kw: #9297ff;
-  --syn-punc: #7d8592;
-  --syn-com: #5b6370;
-  --code-bg: #14171d;
+  --syn-punc: #948fa8;
+  --syn-com: #6b677e;
+  --code-bg: #17151f;
 
   --cat-pdf: #ef8080;
-  --cat-pdf-bright: #ef8080;
-  --cat-pdf-wash: rgba(239, 128, 128, 0.13);
-  --cat-pdf-line: rgba(239, 128, 128, 0.32);
-
   --cat-image: #58d57e;
-  --cat-image-bright: #58d57e;
-  --cat-image-wash: rgba(88, 213, 126, 0.13);
-  --cat-image-line: rgba(88, 213, 126, 0.32);
-
   --cat-text: #8aa2f5;
-  --cat-text-bright: #8aa2f5;
-  --cat-text-wash: rgba(138, 162, 245, 0.14);
-  --cat-text-line: rgba(138, 162, 245, 0.34);
-
   --cat-dev: #b09af5;
-  --cat-dev-bright: #b09af5;
-  --cat-dev-wash: rgba(176, 154, 245, 0.14);
-  --cat-dev-line: rgba(176, 154, 245, 0.34);
-
   --cat-calculator: #f0b04a;
-  --cat-calculator-bright: #f0b04a;
-  --cat-calculator-wash: rgba(240, 176, 74, 0.14);
-  --cat-calculator-line: rgba(240, 176, 74, 0.34);
-
   --cat-creative: #f088ae;
-  --cat-creative-bright: #f088ae;
-  --cat-creative-wash: rgba(240, 136, 174, 0.14);
-  --cat-creative-line: rgba(240, 136, 174, 0.34);
-
   --cat-ai: #4fd0e0;
-  --cat-ai-bright: #4fd0e0;
-  --cat-ai-wash: rgba(79, 208, 224, 0.13);
-  --cat-ai-line: rgba(79, 208, 224, 0.32);
 
-  --tile-pdf: var(--cat-pdf-wash);
-  --tile-pdf-ink: var(--cat-pdf);
-  --tile-image: var(--cat-image-wash);
-  --tile-image-ink: var(--cat-image);
-  --tile-text: var(--cat-text-wash);
-  --tile-text-ink: var(--cat-text);
-  --tile-dev: var(--cat-dev-wash);
-  --tile-dev-ink: var(--cat-dev);
-  --tile-calculator: var(--cat-calculator-wash);
-  --tile-calculator-ink: var(--cat-calculator);
-  --tile-creative: var(--cat-creative-wash);
-  --tile-creative-ink: var(--cat-creative);
-  --tile-ai: var(--cat-ai-wash);
-  --tile-ai-ink: var(--cat-ai);
+  --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
+  --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
+  --e-3: 0 4px 8px 3px rgba(0, 0, 0, 0.24), 0 1px 3px rgba(0, 0, 0, 0.45);
 
-  --e-1: 0 0 rgba(0, 0, 0, 0);
-  --e-2: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --e-3: 0 10px 36px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
-
-  --focus-ring: 0 0 0 3px rgba(125, 128, 240, 0.3);
-  --hover: rgba(162, 172, 190, 0.08);
-  --hover-strong: rgba(162, 172, 190, 0.14);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 32%, transparent);
+  --hover: rgba(205, 200, 230, 0.08);
+  --hover-strong: rgba(205, 200, 230, 0.14);
 }
 
 :root[data-theme="light"] {
-  --bg: #f5f6f8;
-  --s-1: #ffffff;
-  --s-2: #eef0f3;
-  --s-3: #e3e6ea;
-  --s-sunken: #eff1f4;
+  --primary: var(--md-seed);
+  --on-primary: #ffffff;
+  --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
+  --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);
+  --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
+  --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
+  --on-surface-variant: #7a7688;
 
-  --chrome: rgba(247, 248, 250, 0.9);
-  --chrome-solid: #f7f8fa;
+  --bg: #faf9fd;
+  --s-1: #ffffff;
+  --s-2: #f1eff7;
+  --s-3: #e8e5f2;
+  --s-sunken: #f3f1f9;
+
+  --chrome: rgba(250, 249, 253, 0.9);
+  --chrome-solid: #faf9fd;
   --chrome-blur: 16px;
 
-  --ink: #191c22;
-  --ink-2: #474d59;
-  --ink-3: #7c8390;
-  --ink-4: #a8aeb9;
+  --ink: #1b1a22;
+  --ink-2: #4a4757;
+  --ink-3: #7a7688;
+  --ink-4: #a5a1b2;
 
-  --line: rgba(22, 27, 38, 0.1);
-  --line-2: rgba(22, 27, 38, 0.055);
-  --line-strong: rgba(22, 27, 38, 0.17);
+  --line: rgba(30, 24, 56, 0.11);
+  --line-2: rgba(30, 24, 56, 0.06);
+  --line-strong: rgba(30, 24, 56, 0.19);
 
-  --acc: #4f52c8;
-  --acc-hover: #4244b2;
-  --acc-press: #37399c;
-  --acc-ink: #ffffff;
-  --acc-wash: rgba(79, 82, 200, 0.09);
-  --acc-wash-2: rgba(79, 82, 200, 0.16);
-  --acc-line: rgba(79, 82, 200, 0.32);
+  --acc: var(--primary);
+  --acc-hover: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
+  --acc-press: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
+  --acc-ink: var(--on-primary);
+  --acc-wash: color-mix(in srgb, var(--primary) 9%, transparent);
+  --acc-wash-2: color-mix(in srgb, var(--primary) 16%, transparent);
+  --acc-line: color-mix(in srgb, var(--primary) 34%, transparent);
 
   --brand-grad: linear-gradient(135deg, #4f52c8 0%, #7a5af5 100%);
   --brand-gold: #c9a46a;
 
   --ok: #1e8e4d;
   --ok-bright: #2fb566;
-  --ok-wash: rgba(47, 181, 102, 0.11);
-  --ok-line: rgba(47, 181, 102, 0.36);
   --warn: #b26e00;
   --warn-bright: #f09f2d;
-  --warn-wash: rgba(240, 159, 45, 0.13);
-  --warn-line: rgba(240, 159, 45, 0.4);
-  --fail: #cc3333;
-  --fail-bright: #e05252;
-  --fail-wash: rgba(224, 82, 82, 0.11);
-  --fail-line: rgba(224, 82, 82, 0.34);
+  --fail: #b3261e;
+  --fail-bright: #dc362e;
   --info: #2f6fd0;
-  --info-wash: rgba(47, 111, 208, 0.09);
 
   --syn-str: #1f8f4e;
   --syn-num: #c07a10;
-  --syn-key: #191c22;
+  --syn-key: #1b1a22;
   --syn-kw: #5c5ce6;
-  --syn-punc: #7c8390;
-  --syn-com: #a8aeb9;
-  --code-bg: #f6f8fa;
+  --syn-punc: #7a7688;
+  --syn-com: #a5a1b2;
+  --code-bg: #f4f2fa;
 
   --cat-pdf: #d64545;
-  --cat-pdf-bright: #e05252;
-  --cat-pdf-wash: rgba(224, 82, 82, 0.1);
-  --cat-pdf-line: rgba(224, 82, 82, 0.32);
-
   --cat-image: #2e9152;
-  --cat-image-bright: #3fb567;
-  --cat-image-wash: rgba(63, 181, 103, 0.11);
-  --cat-image-line: rgba(63, 181, 103, 0.34);
-
   --cat-text: #4263d0;
-  --cat-text-bright: #5f7ce0;
-  --cat-text-wash: rgba(95, 124, 224, 0.11);
-  --cat-text-line: rgba(95, 124, 224, 0.34);
-
   --cat-dev: #6a4fc8;
-  --cat-dev-bright: #8a6fe0;
-  --cat-dev-wash: rgba(138, 111, 224, 0.11);
-  --cat-dev-line: rgba(138, 111, 224, 0.32);
-
   --cat-calculator: #c27414;
-  --cat-calculator-bright: #e8971f;
-  --cat-calculator-wash: rgba(232, 151, 31, 0.12);
-  --cat-calculator-line: rgba(232, 151, 31, 0.36);
-
   --cat-creative: #c74e7e;
-  --cat-creative-bright: #e0669a;
-  --cat-creative-wash: rgba(224, 102, 154, 0.11);
-  --cat-creative-line: rgba(224, 102, 154, 0.32);
-
   --cat-ai: #0f8a9e;
-  --cat-ai-bright: #31b4c9;
-  --cat-ai-wash: rgba(49, 180, 201, 0.12);
-  --cat-ai-line: rgba(49, 180, 201, 0.34);
 
-  --tile-pdf: var(--cat-pdf-wash);
-  --tile-pdf-ink: var(--cat-pdf);
-  --tile-image: var(--cat-image-wash);
-  --tile-image-ink: var(--cat-image);
-  --tile-text: var(--cat-text-wash);
-  --tile-text-ink: var(--cat-text);
-  --tile-dev: var(--cat-dev-wash);
-  --tile-dev-ink: var(--cat-dev);
-  --tile-calculator: var(--cat-calculator-wash);
-  --tile-calculator-ink: var(--cat-calculator);
-  --tile-creative: var(--cat-creative-wash);
-  --tile-creative-ink: var(--cat-creative);
-  --tile-ai: var(--cat-ai-wash);
-  --tile-ai-ink: var(--cat-ai);
+  --e-1: 0 1px 2px rgba(18, 14, 40, 0.3), 0 1px 3px 1px rgba(18, 14, 40, 0.12);
+  --e-2: 0 1px 2px rgba(18, 14, 40, 0.3), 0 2px 6px 2px rgba(18, 14, 40, 0.13);
+  --e-3: 0 4px 8px 3px rgba(18, 14, 40, 0.13), 0 1px 3px rgba(18, 14, 40, 0.3);
 
-  --e-1: 0 0 rgba(0, 0, 0, 0);
-  --e-2: 0 1px 3px rgba(12, 16, 28, 0.07);
-  --e-3: 0 10px 36px rgba(12, 16, 28, 0.16), 0 2px 8px rgba(12, 16, 28, 0.08);
-
-  --focus-ring: 0 0 0 3px rgba(79, 82, 200, 0.22);
-  --hover: rgba(22, 27, 38, 0.05);
-  --hover-strong: rgba(22, 27, 38, 0.09);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 24%, transparent);
+  --hover: rgba(30, 24, 56, 0.05);
+  --hover-strong: rgba(30, 24, 56, 0.09);
 }
