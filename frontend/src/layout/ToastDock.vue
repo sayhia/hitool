@@ -40,15 +40,13 @@ const ICONS: Record<string, string> = {
   align-items: center;
   gap: 9px;
   padding: 10px 14px;
-  border: 1px solid var(--line-2);
-  border-radius: var(--r-xl);
-  background: var(--chrome);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 0;
+  border-radius: var(--r-xs);
+  background: var(--inverse-surface);
   box-shadow: var(--e-2);
   font-size: var(--t-sm);
   font-weight: 500;
-  color: var(--ink);
+  color: var(--inverse-on-surface);
   cursor: pointer;
   max-width: 340px;
 }
@@ -60,7 +58,7 @@ const ICONS: Record<string, string> = {
   color: var(--fail-bright);
 }
 .toast.info :deep(svg) {
-  color: var(--ink-3);
+  color: color-mix(in srgb, var(--inverse-on-surface) 72%, transparent);
 }
 
 .toast :deep(svg) {

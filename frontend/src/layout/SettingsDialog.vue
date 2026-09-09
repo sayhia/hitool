@@ -729,8 +729,8 @@ async function openDataDir() {
 }
 
 .set-tab.on {
-  background: var(--acc-wash);
-  color: var(--acc);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
 }
 
 .set-body {

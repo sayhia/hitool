@@ -33,6 +33,8 @@
   --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
   --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
   --on-surface-variant: #7a7688;
+  --inverse-surface: #31303a;
+  --inverse-on-surface: #f2eff9;
 
   /* ---- ground & surfaces (light) ----
      bg = app ground, s-1 = canvas/panels, s-2 = inset wells,
@@ -205,6 +207,8 @@
     --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
     --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
     --on-surface-variant: #948fa8;
+    --inverse-surface: #e6e2f2;
+    --inverse-on-surface: #1b1926;
 
     --bg: #131218;
     --s-1: #1c1a26;
@@ -279,6 +283,8 @@
   --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
   --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
   --on-surface-variant: #948fa8;
+  --inverse-surface: #e6e2f2;
+  --inverse-on-surface: #1b1926;
 
   --bg: #131218;
   --s-1: #1c1a26;
@@ -351,6 +357,8 @@
   --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
   --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
   --on-surface-variant: #7a7688;
+  --inverse-surface: #31303a;
+  --inverse-on-surface: #f2eff9;
 
   --bg: #faf9fd;
   --s-1: #ffffff;

@@ -363,8 +363,8 @@ function choose(row?: Row) {
 }
 
 .pal-row.on {
-  background: var(--acc-wash-2);
-  color: var(--acc);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
   font-weight: 600;
 }
 
