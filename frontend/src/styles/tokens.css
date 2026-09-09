@@ -30,10 +30,10 @@
      so white labels hold AA contrast on every category hue. */
   --primary: color-mix(in srgb, var(--md-seed) 80%, #1a1420);
   --on-primary: #ffffff;
-  --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
-  --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);
-  --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
-  --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
+  --primary-container: color-mix(in oklch, var(--md-seed) 16%, #ffffff);
+  --on-primary-container: color-mix(in oklch, var(--md-seed) 56%, #14121f);
+  --secondary-container: color-mix(in oklch, var(--md-seed) 9%, #f2f1f7);
+  --on-secondary-container: color-mix(in oklch, var(--md-seed) 38%, #232031);
   --on-surface-variant: #7a7688;
   --inverse-surface: #31303a;
   --inverse-on-surface: #f2eff9;
@@ -204,10 +204,11 @@
     --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
     --primary: var(--md-seed-lift, var(--md-seed));
     --on-primary: #292552;
-    --primary-container: color-mix(in srgb, var(--md-seed) 38%, #1d1a2c);
-    --on-primary-container: color-mix(in srgb, var(--md-seed) 24%, #eae6ff);
-    --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
-    --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
+    --primary: color-mix(in oklch, var(--md-seed) 52%, #e9e6fa);
+    --primary-container: color-mix(in oklch, var(--md-seed) 38%, #1d1a2c);
+    --on-primary-container: color-mix(in oklch, var(--md-seed) 24%, #eae6ff);
+    --secondary-container: color-mix(in oklch, var(--md-seed) 22%, #262433);
+    --on-secondary-container: color-mix(in oklch, var(--md-seed) 20%, #e6e2f8);
     --on-surface-variant: #948fa8;
     --inverse-surface: #e6e2f2;
     --inverse-on-surface: #1b1926;
@@ -280,10 +281,11 @@
   --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
   --primary: var(--md-seed-lift, var(--md-seed));
   --on-primary: #292552;
-  --primary-container: color-mix(in srgb, var(--md-seed) 38%, #1d1a2c);
-  --on-primary-container: color-mix(in srgb, var(--md-seed) 24%, #eae6ff);
-  --secondary-container: color-mix(in srgb, var(--md-seed) 26%, #232031);
-  --on-secondary-container: color-mix(in srgb, var(--md-seed) 20%, #e6e2f8);
+  --primary: color-mix(in oklch, var(--md-seed) 52%, #e9e6fa);
+  --primary-container: color-mix(in oklch, var(--md-seed) 38%, #1d1a2c);
+  --on-primary-container: color-mix(in oklch, var(--md-seed) 24%, #eae6ff);
+  --secondary-container: color-mix(in oklch, var(--md-seed) 22%, #262433);
+  --on-secondary-container: color-mix(in oklch, var(--md-seed) 20%, #e6e2f8);
   --on-surface-variant: #948fa8;
   --inverse-surface: #e6e2f2;
   --inverse-on-surface: #1b1926;
@@ -354,10 +356,10 @@
 :root[data-theme="light"] {
   --primary: color-mix(in srgb, var(--md-seed) 80%, #1a1420);
   --on-primary: #ffffff;
-  --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
-  --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);
-  --secondary-container: color-mix(in srgb, var(--md-seed) 11%, #edecf4);
-  --on-secondary-container: color-mix(in srgb, var(--md-seed) 40%, #232031);
+  --primary-container: color-mix(in oklch, var(--md-seed) 16%, #ffffff);
+  --on-primary-container: color-mix(in oklch, var(--md-seed) 56%, #14121f);
+  --secondary-container: color-mix(in oklch, var(--md-seed) 9%, #f2f1f7);
+  --on-secondary-container: color-mix(in oklch, var(--md-seed) 38%, #232031);
   --on-surface-variant: #7a7688;
   --inverse-surface: #31303a;
   --inverse-on-surface: #f2eff9;

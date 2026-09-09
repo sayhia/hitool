@@ -811,28 +811,28 @@ input[type="range"]::-moz-range-thumb {
   --cat-primary: color-mix(in srgb, var(--cat-seed) 80%, #1a1420);
   --cat-on-primary: #ffffff;
   --cat-primary-container: color-mix(
-    in srgb,
-    var(--cat-seed) var(--cat-cont-keep, 14%),
+    in oklch,
+    var(--cat-seed) var(--cat-cont-keep, 16%),
     var(--cat-cont-base, #ffffff)
   );
   --cat-on-primary-container: color-mix(
-    in srgb,
-    var(--cat-seed) var(--cat-oncont-keep, 58%),
+    in oklch,
+    var(--cat-seed) var(--cat-oncont-keep, 56%),
     var(--cat-oncont-base, #14121f)
   );
   --cat-secondary-container: color-mix(
-    in srgb,
-    var(--cat-seed) var(--cat-tonal-keep, 11%),
-    var(--cat-tonal-base, #edecf4)
+    in oklch,
+    var(--cat-seed) var(--cat-tonal-keep, 9%),
+    var(--cat-tonal-base, #f2f1f7)
   );
   --cat-on-secondary-container: color-mix(
-    in srgb,
-    var(--cat-seed) var(--cat-tonal-ink-keep, 40%),
+    in oklch,
+    var(--cat-seed) var(--cat-tonal-ink-keep, 38%),
     var(--cat-tonal-ink-base, #232031)
   );
   --cat: var(--cat-primary);
   --cat-bright: color-mix(
-    in srgb,
+    in oklch,
     var(--cat-seed) var(--cat-bright-keep, 76%),
     var(--cat-bright-base, #ffffff)
   );
@@ -902,14 +902,14 @@ input[type="range"]::-moz-range-thumb {
    into the dark surface. */
 @media (prefers-color-scheme: dark) {
   .frame {
-    --cat-primary: color-mix(in srgb, var(--cat-seed) 52%, #e9e6fa);
+    --cat-primary: color-mix(in oklch, var(--cat-seed) 52%, #e9e6fa);
     --cat-on-primary: #292552;
     --cat-cont-keep: 40%;
     --cat-cont-base: #201c30;
     --cat-oncont-keep: 24%;
     --cat-oncont-base: #eae6ff;
-    --cat-tonal-keep: 28%;
-    --cat-tonal-base: #2b2740;
+    --cat-tonal-keep: 22%;
+    --cat-tonal-base: #262433;
     --cat-tonal-ink-keep: 20%;
     --cat-tonal-ink-base: #e6e2f8;
     --cat-bright-keep: 52%;
@@ -920,14 +920,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 :root[data-theme="dark"] .frame {
-  --cat-primary: color-mix(in srgb, var(--cat-seed) 52%, #e9e6fa);
+  --cat-primary: color-mix(in oklch, var(--cat-seed) 52%, #e9e6fa);
   --cat-on-primary: #292552;
   --cat-cont-keep: 40%;
   --cat-cont-base: #201c30;
   --cat-oncont-keep: 24%;
   --cat-oncont-base: #eae6ff;
-  --cat-tonal-keep: 28%;
-  --cat-tonal-base: #2b2740;
+  --cat-tonal-keep: 22%;
+  --cat-tonal-base: #262433;
   --cat-tonal-ink-keep: 20%;
   --cat-tonal-ink-base: #e6e2f8;
   --cat-bright-keep: 52%;
