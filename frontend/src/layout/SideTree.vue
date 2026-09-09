@@ -222,7 +222,7 @@ const themeIcon = computed(() =>
 }
 
 .filter {
-  margin: 10px 10px 6px;
+  margin: 10px 12px 6px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -230,13 +230,13 @@ const themeIcon = computed(() =>
   height: 30px;
   padding: 0 8px;
   border: 1px solid var(--line);
-  border-radius: var(--r);
+  border-radius: var(--r-pill);
   background: var(--s-1);
   transition: border-color 0.16s var(--ease);
 }
 
 .filter:focus-within {
-  border-color: var(--acc);
+  border-color: var(--primary);
 }
 
 .f-ico {
@@ -281,7 +281,7 @@ const themeIcon = computed(() =>
 .body {
   flex: 1;
   min-height: 0;
-  padding: 4px 8px 12px;
+  padding: 4px 10px 12px;
 }
 
 .grp {
@@ -308,7 +308,7 @@ const themeIcon = computed(() =>
 }
 
 .g-btn {
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-2);
   font-size: var(--t-sm);
@@ -360,7 +360,12 @@ const themeIcon = computed(() =>
 .ico.fav { color: var(--warn); }
 
 .g-btn.on {
-  background: var(--hover);
+  background: var(--secondary-container);
+}
+
+.g-btn.on .ico,
+.g-btn.on .txt {
+  color: var(--on-secondary-container);
 }
 
 .n {
@@ -383,10 +388,10 @@ const themeIcon = computed(() =>
   align-items: center;
   gap: 8px;
   width: 100%;
-  height: 30px;
-  padding: 0 8px;
+  height: 32px;
+  padding: 0 10px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-2);
   font-family: var(--f-ui);
@@ -403,8 +408,8 @@ const themeIcon = computed(() =>
 }
 
 .row.on {
-  background: var(--acc-wash);
-  color: var(--acc);
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
   font-weight: 650;
 }
 
@@ -423,7 +428,7 @@ const themeIcon = computed(() =>
 }
 
 .row.on .ico {
-  color: var(--acc);
+  color: var(--on-secondary-container);
 }
 
 .row .txt {

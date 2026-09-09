@@ -234,9 +234,9 @@ function onListSelect(id: string) {
 </template>
 
 <style scoped>
-/* The canvas header: window drag zone, tab lane and the contextual
-   controls in one 40px strip. Tabs are quiet text with an underline
-   accent — no pills, no cards. */
+/* M3 Top App Bar + Primary Tabs: the window drag zone, tab lane and
+   contextual controls in one 40px translucent bar. The active tab wears
+   primary ink with a rounded indicator hugging its label. */
 .strip {
   height: var(--tabs-h);
   flex-shrink: 0;
@@ -244,7 +244,9 @@ function onListSelect(id: string) {
   align-items: center;
   gap: 4px;
   padding: 0 10px;
-  background: var(--s-1);
+  background: var(--chrome);
+  backdrop-filter: blur(var(--chrome-blur));
+  -webkit-backdrop-filter: blur(var(--chrome-blur));
   border-bottom: 1px solid var(--line);
   --wails-draggable: drag;
 }
@@ -294,6 +296,7 @@ function onListSelect(id: string) {
 }
 
 .tab {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -301,7 +304,6 @@ function onListSelect(id: string) {
   padding: 0 9px;
   max-width: 190px;
   border: 0;
-  border-bottom: 2px solid transparent;
   background: transparent;
   color: var(--ink-3);
   font-family: var(--f-ui);
@@ -318,9 +320,20 @@ function onListSelect(id: string) {
 }
 
 .tab.on {
-  color: var(--ink);
+  color: var(--primary);
   font-weight: 650;
-  border-bottom-color: var(--acc);
+}
+
+/* M3 primary-tab indicator: a rounded bar hugging the label. */
+.tab.on::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--primary);
 }
 
 .tab-icon {
@@ -331,7 +344,7 @@ function onListSelect(id: string) {
 }
 
 .tab.on .tab-icon {
-  color: var(--acc);
+  color: var(--primary);
 }
 
 .tab-name {
