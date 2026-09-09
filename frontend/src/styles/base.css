@@ -363,6 +363,87 @@ kbd {
   appearance: textfield;
 }
 
+/* ---------- checkbox ----------
+   M3 checkbox: outlined box that fills with primary and reveals an
+   on-primary checkmark when checked. */
+input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid var(--ink-3);
+  border-radius: var(--r-xs);
+  background: transparent;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background 0.14s var(--ease), border-color 0.14s var(--ease);
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  background: var(--on-primary);
+  clip-path: polygon(14% 46%, 0 62%, 38% 100%, 100% 18%, 85% 5%, 38% 70%);
+  transform: scale(0);
+  transition: transform 0.14s var(--ease-out);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
+
+input[type="checkbox"]:hover:not(:checked) {
+  border-color: var(--ink);
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- radio ----------
+   M3 radio: ring that gains the primary dot when selected. */
+input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 2px solid var(--ink-3);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: border-color 0.14s var(--ease);
+}
+
+input[type="radio"]::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--primary);
+  transform: scale(0);
+  transition: transform 0.14s var(--ease-out);
+}
+
+input[type="radio"]:checked {
+  border-color: var(--primary);
+}
+
+input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
 /* ---------- range slider ----------
    One slider for the whole app: hairline track, floating thumb
    that picks up the category hue on grab. */

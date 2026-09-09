@@ -158,8 +158,8 @@ function pick(it: MenuItem) {
 
 .ctx-item:hover:not(:disabled),
 .ctx-item.cursor:not(:disabled) {
-  background: var(--acc-wash-2);
-  color: var(--acc);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink);
 }
 
 .ctx-item.danger {
@@ -202,7 +202,7 @@ function pick(it: MenuItem) {
 }
 
 .ctx-item.cursor .ctx-check {
-  color: var(--acc-ink);
+  color: var(--acc);
 }
 
 .ctx-detail {
