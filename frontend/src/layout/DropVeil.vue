@@ -54,7 +54,7 @@ import Icon from "../components/Icon.vue";
   font-size: var(--t-lg);
   font-weight: 650;
   letter-spacing: 0.02em;
-  box-shadow: 0 6px 18px rgba(51, 118, 251, 0.4);
+  box-shadow: var(--e-3);
 }
 
 .badge :deep(svg) {

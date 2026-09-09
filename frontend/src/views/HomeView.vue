@@ -137,6 +137,7 @@ h1 {
   font-size: var(--t-md);
 }
 
+/* M3 search bar: container-high pill that lifts on hover. */
 .search {
   margin-top: 26px;
   width: 100%;
@@ -144,20 +145,21 @@ h1 {
   align-items: center;
   gap: 10px;
   height: 44px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
-  background: var(--s-1);
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--s-2);
+  box-shadow: var(--e-1);
   color: var(--ink-3);
   font-family: var(--f-ui);
   font-size: var(--t-md);
   cursor: pointer;
-  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  transition: background 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
 
 .search:hover {
-  border-color: var(--acc-line);
-  box-shadow: var(--focus-ring);
+  background: var(--s-3);
+  box-shadow: var(--e-2);
 }
 
 .search svg {
