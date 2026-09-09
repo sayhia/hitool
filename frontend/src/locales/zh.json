@@ -1942,6 +1942,7 @@
     "sourcePh": "粘贴 JSON / YAML / TOML，格式自动识别…",
     "target": "目标格式",
     "result": "转换结果",
+    "useAsInput": "作为输入",
     "idle": "填入数据后显示转换结果",
     "unparsed": "无法识别的内容：不是合法的 JSON、YAML 或 TOML"
   },

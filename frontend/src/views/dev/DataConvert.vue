@@ -2,6 +2,8 @@
 /**
  * JSON ⇄ YAML ⇄ TOML conversion. The source format is detected so the user
  * only picks where they want to go; errors quote the parser's own message.
+ * The result can be fed back as the source, so multi-hop chains
+ * (JSON → YAML → TOML) need no copy-paste.
  */
 import { computed, ref } from "vue";
 import ToolFrame from "../../work/ToolFrame.vue";
@@ -59,6 +61,20 @@ const result = computed<{ text: string; error: string }>(() => {
     return { text: "", error: (e as Error).message };
   }
 });
+
+/** Feed the conversion result back as the source — chains formats without copy-paste. */
+function useAsInput() {
+  if (!result.value.text) return;
+  src.value = result.value.text;
+}
+
+function clear() {
+  src.value = "";
+}
+
+const outSize = computed(() =>
+  result.value.text ? formatBytes(new TextEncoder().encode(result.value.text).length) : "",
+);
 </script>
 
 <template>
@@ -67,9 +83,17 @@ const result = computed<{ text: string; error: string }>(() => {
       <div class="head">
         <span class="lab">{{ t("dataconv.source") }}</span>
         <span v-if="detected" class="badge acc">{{ detected.toUpperCase() }}</span>
-        <button class="mini" :title="t('diff.openFile')" @click="choose">
-          <Icon name="FolderOpen" />
-        </button>
+        <div class="head-actions">
+          <button class="mini" :title="t('dataconv.useAsInput')" :disabled="!result.text" @click="useAsInput">
+            <Icon name="ArrowLeftRight" />
+          </button>
+          <button class="mini" :title="t('common.clear')" :disabled="!src" @click="clear">
+            <Icon name="X" />
+          </button>
+          <button class="mini" :title="t('diff.openFile')" @click="choose">
+            <Icon name="FolderOpen" />
+          </button>
+        </div>
       </div>
       <textarea
         v-model="src"
@@ -77,28 +101,33 @@ const result = computed<{ text: string; error: string }>(() => {
         :placeholder="t('dataconv.sourcePh')"
         spellcheck="false"
       ></textarea>
-      <div class="seg">
+      <div class="target-row">
         <span class="lab">{{ t("dataconv.target") }}</span>
-        <button
-          v-for="f in DATA_FORMATS"
-          :key="f"
-          class="chip"
-          :class="{ on: target === f }"
-          @click="target = f"
-        >
-          {{ f.toUpperCase() }}
-        </button>
+        <div class="seg">
+          <button
+            v-for="f in DATA_FORMATS"
+            :key="f"
+            :class="{ on: target === f }"
+            @click="target = f"
+          >
+            {{ f.toUpperCase() }}
+          </button>
+        </div>
       </div>
     </div>
 
     <template #result>
       <div class="res-head">
         <span class="lab">{{ t("dataconv.result") }}</span>
+        <span v-if="outSize" class="badge mono">{{ outSize }}</span>
         <button class="btn btn-sm btn-quiet" :disabled="!result.text" @click="copyText(result.text, t('common.copied'))">
           <Icon name="Copy" />
         </button>
       </div>
-      <pre v-if="result.error" class="out scroll-y mono err">{{ result.error }}</pre>
+      <div v-if="result.error" class="banner fail err">
+        <Icon name="CircleAlert" />
+        <code class="mono">{{ result.error }}</code>
+      </div>
       <pre v-else class="out scroll-y mono">{{ result.text || t("dataconv.idle") }}</pre>
     </template>
   </ToolFrame>
@@ -111,7 +140,7 @@ const result = computed<{ text: string; error: string }>(() => {
 }
 
 .grow-field.hot {
-  box-shadow: 0 0 0 2px var(--acc);
+  box-shadow: 0 0 0 2px var(--cat-primary);
 }
 
 .head {
@@ -120,8 +149,11 @@ const result = computed<{ text: string; error: string }>(() => {
   gap: 8px;
 }
 
-.mini {
+.head-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .doc {
@@ -129,11 +161,16 @@ const result = computed<{ text: string; error: string }>(() => {
   min-height: 150px;
 }
 
-.seg {
+.target-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   flex-wrap: wrap;
+}
+
+.target-row .seg {
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .res-head {
@@ -156,6 +193,13 @@ const result = computed<{ text: string; error: string }>(() => {
 }
 
 .err {
-  color: var(--fail);
+  margin: 0 14px;
+  user-select: text;
+}
+
+.err code {
+  font-size: var(--t-sm);
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 </style>

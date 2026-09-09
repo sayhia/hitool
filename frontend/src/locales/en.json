@@ -1942,6 +1942,7 @@
     "sourcePh": "Paste JSON / YAML / TOML — the format is detected…",
     "target": "Target format",
     "result": "Converted",
+    "useAsInput": "Use as input",
     "idle": "Add some data to see the conversion",
     "unparsed": "Unrecognized input: not valid JSON, YAML or TOML"
   },
