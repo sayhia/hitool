@@ -75,15 +75,15 @@ const emit = defineEmits<{ "update:modelValue": [boolean] }>();
   height: 15px;
   border-radius: 50%;
   background: var(--s-1);
-  box-shadow: 0 1px 2px rgba(27, 45, 98, 0.28);
+  box-shadow: var(--e-1);
   transition: transform 0.18s var(--ease-out);
 }
 
 .sw.on .knob {
   transform: translateX(15px);
-  /* The knob rides on the accent fill, so it keeps its own light surface in
-     both themes instead of following --s-1 into the dark palette. */
-  background: #fff;
+  /* The knob rides on the primary fill, so it takes the on-primary role —
+     white in light, dark ink in dark, exactly as M3 specifies. */
+  background: var(--on-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {

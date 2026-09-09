@@ -287,25 +287,28 @@ function applyTemplate(tpl: { id: string; body: string; name: string; builtin?: 
 
 .bubble {
   padding: 10px 12px;
-  border-radius: var(--r);
+  border-radius: var(--r-lg);
   font-size: var(--t-sm);
   line-height: 1.75;
   user-select: text;
 }
 
+/* M3 chat shapes: the sender-side corner pulls in tight. */
 .user-body {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
   font-family: var(--f-ui);
-  background: var(--acc-wash);
-  color: var(--ink);
-  border: 1px solid var(--acc-line);
+  background: var(--cat-primary-container);
+  color: var(--cat-on-primary-container);
+  border: 0;
+  border-radius: var(--r-lg) var(--r-lg) var(--r-sm) var(--r-lg);
 }
 
 .turn.assistant .bubble {
   background: var(--s-2);
-  border: 1px solid var(--line);
+  border: 0;
+  border-radius: var(--r-lg) var(--r-lg) var(--r-lg) var(--r-sm);
 }
 
 .src {
