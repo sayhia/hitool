@@ -66,16 +66,14 @@ const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
-  max-width: 560px;
 }
 
 .mode {
-  max-width: 260px;
+  width: fit-content;
 }
 
 /* Readout panel: one hairline-ruled block, like a meter cluster. */
 .readout {
-  max-width: 560px;
 }
 
 </style>

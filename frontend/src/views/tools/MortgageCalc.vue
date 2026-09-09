@@ -184,11 +184,10 @@ const fmt = (n: number) =>
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
-  max-width: 560px;
 }
 
 .method {
-  max-width: 260px;
+  width: fit-content;
 }
 
 /* Readout panel: one hairline-ruled block, like a meter cluster. */

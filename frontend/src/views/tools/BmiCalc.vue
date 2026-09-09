@@ -90,14 +90,13 @@ const TICKS = [
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
-  max-width: 420px;
 }
 
 .gauge {
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--s-2);
-  max-width: 480px;
+
   overflow: hidden;
 }
 

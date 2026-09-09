@@ -347,6 +347,77 @@ kbd {
   color: var(--ink);
 }
 
+/* Number fields lose the UA spinners — they read as noise beside the
+   mono numerals, and keyboards/arrows still step the value. */
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ---------- range slider ----------
+   One slider for the whole app: hairline track, floating white thumb,
+   category hue on grab. */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--s-3);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -5.5px;
+  border-radius: 50%;
+  background: var(--s-1);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--e-1);
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  border-color: var(--cat, var(--acc));
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  border-color: var(--cat, var(--acc));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--cat, var(--acc)) 18%, transparent);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--s-3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--s-1);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--e-1);
+}
+
+input[type="range"]:hover::-moz-range-thumb,
+input[type="range"]:active::-moz-range-thumb {
+  border-color: var(--cat, var(--acc));
+}
+
 /* ---------- segmented control ----------
    A recessed tinted track with a raised white pill: the on state
    floats, colour arrives through the text weight and shadow. */

@@ -76,7 +76,6 @@ const bracketRate = computed(() =>
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 10px;
-  max-width: 560px;
 }
 
 /* Readout panel: one hairline-ruled block, like a meter cluster. */
