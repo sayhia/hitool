@@ -462,7 +462,7 @@ const themeIcon = computed(() =>
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
   cursor: pointer;

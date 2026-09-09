@@ -48,10 +48,11 @@ h3 {
   text-wrap: balance;
 }
 
+/* Focus ring follows each element's own radius (box-shadow tracks
+   border-radius), so pills stay pills under keyboard focus. */
 :focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
-  border-radius: var(--r-sm);
 }
 
 /* macOS overlay-style scrollbars: thin, quiet, darker on hover */
@@ -171,15 +172,15 @@ h3 {
 }
 
 /* Primary: the filled button — solid primary, on-primary ink,
-   state layers over the fill. One per view — the thing the view
-   exists to do. */
+   state layers over the fill. Same height as the tonal button so
+   mixed rows stay on one line. */
 .btn-signal,
 .btn-primary {
   background: var(--primary);
   border: 0;
   color: var(--on-primary);
   font-weight: 650;
-  height: 36px;
+  height: 34px;
   padding: 0 20px;
   box-shadow: var(--e-1);
 }
@@ -187,12 +188,22 @@ h3 {
 .btn-signal:hover:not(:disabled),
 .btn-primary:hover:not(:disabled) {
   background: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
-  box-shadow: var(--e-1);
+  box-shadow: var(--e-2);
 }
 
 .btn-signal:active:not(:disabled),
 .btn-primary:active:not(:disabled) {
   background: color-mix(in srgb, var(--on-primary) 18%, var(--primary));
+}
+
+/* M3 focus: the state layer joins the ring on keyboard focus. */
+.btn:focus-visible {
+  background: color-mix(in srgb, var(--on-secondary-container) 10%, var(--secondary-container));
+}
+
+.btn-signal:focus-visible,
+.btn-primary:focus-visible {
+  background: color-mix(in srgb, var(--on-primary) 10%, var(--primary));
 }
 
 /* An inert primary drops the accent entirely rather than showing a
@@ -249,10 +260,12 @@ h3 {
 .btn-icon {
   width: 34px;
   padding: 0;
+  border-radius: var(--r-pill);
 }
 
 .btn-icon.btn-sm {
   width: 28px;
+  border-radius: var(--r-pill);
 }
 
 /* ---------- keycap ---------- */
@@ -1058,7 +1071,7 @@ input[type="range"]::-moz-range-thumb {
   display: inline-grid;
   place-items: center;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   background: transparent;
   color: var(--ink-3);
   cursor: pointer;
