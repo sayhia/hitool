@@ -94,7 +94,7 @@ const asJson = computed(() =>
         </div>
       </div>
 
-      <div class="tablewrap scroll-y">
+      <div class="tablewrap scroll-y scroll-x">
         <table v-if="rows.length" class="tbl mono">
           <thead>
             <tr>

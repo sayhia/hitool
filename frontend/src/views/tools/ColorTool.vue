@@ -495,6 +495,8 @@ async function extract() {
 
 .step {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
   height: 46px;
   border: 0;
   cursor: pointer;

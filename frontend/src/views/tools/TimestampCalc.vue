@@ -281,7 +281,7 @@ function useNowForDate() {
 /* Format table: every row is a one-click copy target. */
 .fmt {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 1px;
   background: var(--line-2);
   border: 1px solid var(--line);
@@ -337,7 +337,7 @@ function useNowForDate() {
 
 .snips {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 6px;
 }
 

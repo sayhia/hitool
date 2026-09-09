@@ -125,7 +125,7 @@ function toggleSpecial(key: "setuid" | "setgid" | "sticky") {
   display: flex; align-items: center; gap: 12px;
   padding: 10px 0; border-top: 1px solid var(--line-2);
 }
-.special-chks { display: flex; gap: 16px; }
+.special-chks { display: flex; flex-wrap: wrap; gap: 16px; }
 
 .cell.big {
   border: 0; background: var(--s-2); cursor: pointer;

@@ -772,7 +772,9 @@ input[type="range"]:active::-moz-range-thumb {
 .res-head {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+  row-gap: 6px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;

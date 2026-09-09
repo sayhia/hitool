@@ -190,7 +190,7 @@ async function choose() {
         </div>
       </div>
 
-      <div class="tablewrap scroll-y">
+      <div class="tablewrap scroll-y scroll-x">
         <table v-if="rows.length" class="tbl mono">
           <thead>
             <tr>
@@ -302,6 +302,8 @@ async function choose() {
 .copies {
   margin-left: auto;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 3px;
 }
 
