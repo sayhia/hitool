@@ -75,6 +75,14 @@ const crack = computed(() =>
   shown.value ? t(`pstr.crack.${crackLabel(analysis.value.crackSeconds)}`) : "—",
 );
 
+// Per-character colouring (digits vs symbols) — the 1Password-style readout.
+const pwChars = computed(() =>
+  [...shown.value].map((ch) => ({
+    ch,
+    cls: /\d/.test(ch) ? "d" : /[a-zA-Z]/.test(ch) ? "" : "s",
+  })),
+);
+
 function crackLabel(s: number): string {
   if (s < 1) return "instant";
   if (s < 60) return "seconds";
@@ -120,15 +128,30 @@ onMounted(generate);
       </button>
     </div>
 
-    <div class="readout">
-      <span class="pw mono">{{ password || "—" }}</span>
-      <button class="btn btn-sm btn-icon" :title="t('calc.password.generate')" @click="generate">
-        <Icon name="RefreshCw" />
-      </button>
-      <button class="btn btn-sm btn-signal copy" @click="copy()">
-        <Icon name="Copy" /> {{ t("common.copy") }}
-      </button>
+    <div class="hero">
+      <div class="hero-top">
+        <span v-if="shown" class="pw mono"
+          ><span v-for="(c, i) in pwChars" :key="i" :class="c.cls">{{ c.ch }}</span></span
+        >
+        <span v-else class="pw mono empty">—</span>
+        <div class="hero-actions">
+          <button class="btn btn-sm btn-icon" :title="t('calc.password.generate')" @click="generate">
+            <Icon name="RefreshCw" />
+          </button>
+          <button class="btn btn-sm btn-signal" :disabled="!shown" @click="copy(shown)">
+            <Icon name="Copy" /> {{ t("common.copy") }}
+          </button>
+        </div>
+      </div>
+      <div class="meter" :class="`s${analysis.score}`">
+        <span v-for="i in 5" :key="i" class="notch" :class="{ on: shown && i <= analysis.score + 1 }"></span>
+        <span class="grade">{{ shown ? t(`pstr.grade${analysis.score}`) : "" }}</span>
+      </div>
+      <p v-if="shown" class="stats">{{ t("pstr.crackTime") }} · {{ crack }} · {{ analysis.entropy }} bit</p>
     </div>
+    <ul v-if="shown && analysis.hints.length" class="hints">
+      <li v-for="h in analysis.hints" :key="h">{{ t(`pstr.hint.${h}`) }}</li>
+    </ul>
 
     <template v-if="mode === 'password'">
       <div class="field">
@@ -206,15 +229,6 @@ onMounted(generate);
       />
     </div>
 
-    <div class="meter" :class="`s${analysis.score}`">
-      <span v-for="i in 5" :key="i" class="notch" :class="{ on: shown && i <= analysis.score + 1 }"></span>
-      <span class="grade">{{ shown ? t(`pstr.grade${analysis.score}`) : "" }}</span>
-    </div>
-    <p v-if="shown" class="hint">{{ t("pstr.crackTime") }} · {{ crack }} · {{ analysis.entropy }} bit</p>
-    <ul v-if="shown && analysis.hints.length" class="hints">
-      <li v-for="h in analysis.hints" :key="h">{{ t(`pstr.hint.${h}`) }}</li>
-    </ul>
-
     <!-- Batch generation -->
     <div class="field">
       <div class="batch-head">
@@ -282,30 +296,52 @@ onMounted(generate);
   padding: 0 10px 8px;
 }
 
-.readout {
+.hero {
+  padding: 14px 16px 12px;
+  background: var(--s-1);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e-1);
+}
+
+.hero-top {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 10px 10px 14px;
-  background: var(--s-2);
+  gap: 10px;
 }
 
 .pw {
   flex: 1;
   min-width: 0;
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 600;
+  line-height: 1.45;
   word-break: break-all;
   user-select: text;
 }
 
-.copy {
-  height: 24px;
+.pw .d {
+  color: var(--acc);
+}
+
+.pw .s {
+  color: var(--warn);
+}
+
+.pw.empty {
+  color: var(--ink-4);
+  font-weight: 500;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .slider {
   width: 100%;
-  max-width: 340px;
   accent-color: var(--acc);
 }
 
@@ -319,18 +355,25 @@ onMounted(generate);
   display: flex;
   align-items: center;
   gap: 4px;
-  max-width: 560px;
+  margin-top: 12px;
 }
 .meter .notch {
   flex: 1;
   height: 6px;
   border-radius: 3px;
   background: var(--s-3);
+  transition: background 0.18s var(--ease-out);
 }
 .meter .grade { margin-left: 10px; font-size: var(--t-sm); font-weight: 600; white-space: nowrap; }
 .meter.s0 .notch.on, .meter.s1 .notch.on { background: var(--fail); }
 .meter.s2 .notch.on { background: var(--warn); }
 .meter.s3 .notch.on, .meter.s4 .notch.on { background: var(--ok); }
+
+.stats {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
 
 .batch-head {
   display: flex;
@@ -357,7 +400,8 @@ onMounted(generate);
   text-align: center;
 }
 
-.batch-list {
+.batch-list,
+.hist {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1px;
@@ -376,16 +420,6 @@ onMounted(generate);
 
 .hist-head .btn {
   margin-left: auto;
-}
-
-.hist {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1px;
-  background: var(--line-2);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
 }
 
 .hist-row {
@@ -437,7 +471,6 @@ onMounted(generate);
   display: flex;
   flex-direction: column;
   gap: 3px;
-  max-width: 560px;
 }
 
 .hints li {
