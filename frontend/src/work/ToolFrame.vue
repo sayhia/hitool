@@ -160,10 +160,6 @@ onBeforeUnmount(() => {
   flex: 1 1 50%;
 }
 
-.shape-flow:not(.dual) > .pane-main > .pane-inner {
-  max-width: 1100px;
-}
-
 .pane-result {
   flex: 1 1 auto;
   min-width: 0;
@@ -185,11 +181,9 @@ onBeforeUnmount(() => {
   min-height: 100%;
 }
 
-/* single-column tools stay readable instead of stretching to 1900px; inside
-   the floating card they read as inset groups. */
+/* single-column tools read as an inset group on the white pane; the group
+   fills the canvas so wide windows are used, not framed in dead space. */
 .pane-inner.narrow {
-  max-width: 720px;
-  margin: 0 auto;
   background: var(--s-2);
   border-radius: var(--r-xl);
   padding: 22px;
