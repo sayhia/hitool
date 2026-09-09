@@ -25,8 +25,10 @@
   --cat-seed-creative: #c74e7e;
   --cat-seed-ai: #0f8a9e;
 
-  /* ---- M3 roles (light, mixed from --md-seed) ---- */
-  --primary: var(--md-seed);
+  /* ---- M3 roles (light, mixed from --md-seed) ----
+     Light primary sinks ~20% toward the ink base (M3 tone-40 depth)
+     so white labels hold AA contrast on every category hue. */
+  --primary: color-mix(in srgb, var(--md-seed) 80%, #1a1420);
   --on-primary: #ffffff;
   --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
   --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);
@@ -350,7 +352,7 @@
 }
 
 :root[data-theme="light"] {
-  --primary: var(--md-seed);
+  --primary: color-mix(in srgb, var(--md-seed) 80%, #1a1420);
   --on-primary: #ffffff;
   --primary-container: color-mix(in srgb, var(--md-seed) 14%, #ffffff);
   --on-primary-container: color-mix(in srgb, var(--md-seed) 58%, #14121f);

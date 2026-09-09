@@ -808,7 +808,7 @@ input[type="range"]::-moz-range-thumb {
    ============================================================ */
 .frame {
   --cat-seed: var(--md-seed);
-  --cat-primary: var(--cat-seed);
+  --cat-primary: color-mix(in srgb, var(--cat-seed) 80%, #1a1420);
   --cat-on-primary: #ffffff;
   --cat-primary-container: color-mix(
     in srgb,
