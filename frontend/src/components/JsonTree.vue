@@ -94,7 +94,7 @@ const scalar = computed(() => {
 <style scoped>
 .node {
   font-family: var(--f-mono);
-  font-size: 12px;
+  font-size: var(--t-sm);
   line-height: 1.65;
 }
 
@@ -104,7 +104,7 @@ const scalar = computed(() => {
   gap: 3px;
   padding-left: calc(var(--d) * 13px);
   white-space: nowrap;
-  border-radius: 2px;
+  border-radius: var(--r-xs);
 }
 
 .line.branch {

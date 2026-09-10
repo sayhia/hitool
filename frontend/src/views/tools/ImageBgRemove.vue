@@ -232,7 +232,7 @@ async function browse() {
   width: 24px;
   height: 24px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
 }
 
 .peek {

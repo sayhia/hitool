@@ -64,7 +64,7 @@ const sizePx = computed(() => `${props.size}px`);
   width: v-bind(sizePx);
   height: v-bind(sizePx);
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   display: block;
 }
 
@@ -77,7 +77,7 @@ const sizePx = computed(() => `${props.size}px`);
 }
 
 .name {
-  font-size: 15px;
+  font-size: var(--t-lg);
   font-weight: 750;
   letter-spacing: -0.04em;
   line-height: 1.1;

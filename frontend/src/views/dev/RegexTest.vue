@@ -732,7 +732,7 @@ function copyMatchesCsv() {
 .preview .hit {
   background: var(--acc-wash-2);
   color: var(--acc);
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   padding: 0 1px;
   font-weight: 600;
 }
@@ -740,7 +740,7 @@ function copyMatchesCsv() {
 /* The row-click target ring; box-shadow so the flash never reflows text. */
 .preview .flash {
   box-shadow: 0 0 0 2px var(--acc);
-  border-radius: 4px;
+  border-radius: var(--r-xs);
 }
 
 /* Substituted text uses the success colour rather than the accent: in the
@@ -749,7 +749,7 @@ function copyMatchesCsv() {
 .preview .sub {
   background: var(--ok-wash, var(--acc-wash-2));
   color: var(--ok, var(--acc));
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   padding: 0 1px;
   font-weight: 600;
 }

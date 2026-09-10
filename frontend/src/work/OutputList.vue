@@ -208,7 +208,7 @@ function onChainSelect(toolId: string) {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--t-sm);
 }
 
 .line .lab {
@@ -238,7 +238,7 @@ function onChainSelect(toolId: string) {
 .name {
   flex: 1;
   min-width: 0;
-  font-size: 12px;
+  font-size: var(--t-sm);
 }
 
 .reveal {

@@ -137,7 +137,7 @@ function toggleIn(list: number[], v: number) {
   background: transparent;
   color: var(--ink-2);
   font-family: var(--f-ui);
-  font-size: 12px;
+  font-size: var(--t-sm);
   font-weight: 550;
   cursor: pointer;
   align-self: flex-start;

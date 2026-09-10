@@ -375,7 +375,7 @@ function cancel() {
   display: grid;
   place-items: center;
   border: 0;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--s-1);
   cursor: pointer;
 }

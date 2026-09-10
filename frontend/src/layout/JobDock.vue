@@ -143,7 +143,7 @@ function progressText(j: Job) {
 }
 
 .lead {
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   color: var(--ink-2);
   max-width: 240px;
 }
@@ -179,7 +179,7 @@ function progressText(j: Job) {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: var(--t-sm);
 }
 
 .job-dot {
@@ -218,7 +218,7 @@ function progressText(j: Job) {
   background: transparent;
   color: var(--ink);
   font-family: var(--f-ui);
-  font-size: 12px;
+  font-size: var(--t-sm);
   text-align: left;
   cursor: pointer;
   padding: 0;

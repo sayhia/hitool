@@ -115,7 +115,7 @@ const TICKS = [
 
 .cat {
   margin-left: auto;
-  font-size: 13px;
+  font-size: var(--t-md);
   font-weight: 600;
 }
 

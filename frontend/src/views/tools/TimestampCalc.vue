@@ -273,7 +273,7 @@ function useNowForDate() {
 }
 
 .rel {
-  font-size: 13px;
+  font-size: var(--t-md);
   font-weight: 600;
   color: var(--acc);
 }
@@ -315,7 +315,7 @@ function useNowForDate() {
 .fmt-val {
   flex: 1;
   min-width: 0;
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -367,7 +367,7 @@ function useNowForDate() {
 }
 
 .snip code {
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   color: var(--ink);
   word-break: break-all;
 }

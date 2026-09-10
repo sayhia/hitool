@@ -332,7 +332,7 @@ function onListSelect(id: string) {
   right: 10px;
   bottom: 0;
   height: 3px;
-  border-radius: 3px 3px 0 0;
+  border-radius: var(--r-xs) 3px 0 0;
   background: var(--primary);
 }
 

@@ -114,7 +114,7 @@ const output = computed(() => {
 .indent-lab { font-size: 10px; color: var(--f-2); }
 .indent-sel {
   padding: 2px 4px; font-size: 10px; border: 1px solid var(--line-2);
-  border-radius: 4px; background: var(--s-1); color: var(--f-1);
+  border-radius: var(--r-xs); background: var(--s-1); color: var(--f-1);
   font-family: var(--f-ui);
 }
 

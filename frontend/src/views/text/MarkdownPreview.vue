@@ -387,7 +387,7 @@ async function exportHtml() {
 .md :deep(code) {
   background: var(--s-2);
   padding: 0.14em 0.36em;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   font-family: var(--f-mono);
   font-size: 0.88em;
 }

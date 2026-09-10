@@ -274,7 +274,7 @@ kbd {
   font-size: 10px;
   font-weight: 600;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-sm);
   padding: 1px 5px;
   background: var(--s-2);
   color: var(--ink-3);
@@ -987,7 +987,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .readout .value {
-  font-size: 21px;
+  font-size: var(--t-2xl);
   font-weight: 600;
   line-height: 1.25;
   font-variant-numeric: tabular-nums;
@@ -1105,7 +1105,7 @@ input[type="range"]::-moz-range-thumb {
 .dir-path {
   flex: 1;
   min-width: 0;
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--ink-2);
   direction: rtl;
   text-align: left;

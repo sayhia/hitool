@@ -145,7 +145,7 @@ defineExpose({ choose });
   border-radius: var(--r-sm);
   background: var(--s-1);
   box-shadow: var(--e-1);
-  font-size: 12px;
+  font-size: var(--t-sm);
 }
 
 .ext {
@@ -207,7 +207,7 @@ defineExpose({ choose });
   background: transparent;
   color: var(--ink-3);
   font-family: var(--f-ui);
-  font-size: 12px;
+  font-size: var(--t-sm);
   font-weight: 550;
   cursor: pointer;
   transition: all 0.16s var(--ease);

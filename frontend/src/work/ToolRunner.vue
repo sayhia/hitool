@@ -183,7 +183,7 @@ useWindowKeydown(onKey);
 }
 
 .notice {
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   color: var(--ink-2);
 }
 </style>

@@ -407,7 +407,7 @@ async function extract() {
 .exhex {
   font-size: 8.5px;
   padding: 0 3px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: rgba(255, 255, 255, 0.78);
   color: #161b27;
   user-select: text;
@@ -539,7 +539,7 @@ async function extract() {
 }
 
 .big {
-  font-size: 15px;
+  font-size: var(--t-lg);
   font-weight: 600;
 }
 
@@ -548,7 +548,7 @@ async function extract() {
 }
 
 .small {
-  font-size: 12px;
+  font-size: var(--t-sm);
   opacity: 0.9;
 }
 
@@ -568,7 +568,7 @@ async function extract() {
 .track {
   flex: 1;
   height: 5px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--s-3);
   overflow: hidden;
 }
@@ -667,7 +667,7 @@ async function extract() {
 .mateswatch {
   width: 18px;
   height: 18px;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   border: 1px solid var(--line);
   flex-shrink: 0;
 }

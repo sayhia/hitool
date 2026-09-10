@@ -313,7 +313,7 @@ onMounted(generate);
 .pw {
   flex: 1;
   min-width: 0;
-  font-size: 21px;
+  font-size: var(--t-2xl);
   font-weight: 600;
   line-height: 1.45;
   word-break: break-all;
@@ -360,7 +360,7 @@ onMounted(generate);
 .meter .notch {
   flex: 1;
   height: 6px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--s-3);
   transition: background 0.18s var(--ease-out);
 }
@@ -371,7 +371,7 @@ onMounted(generate);
 
 .stats {
   margin: 8px 0 0;
-  font-size: 12px;
+  font-size: var(--t-sm);
   color: var(--ink-3);
 }
 
@@ -396,7 +396,7 @@ onMounted(generate);
   border-radius: var(--r-sm);
   background: var(--s-1);
   color: var(--ink);
-  font-size: 13px;
+  font-size: var(--t-md);
   text-align: center;
 }
 
@@ -445,7 +445,7 @@ onMounted(generate);
 .hist-row span {
   flex: 1;
   min-width: 0;
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -474,7 +474,7 @@ onMounted(generate);
 }
 
 .hints li {
-  font-size: 12px;
+  font-size: var(--t-sm);
   color: var(--ink-2);
   line-height: 1.55;
 }

@@ -164,7 +164,7 @@ async function pick() {
 .device-btns { display: flex; gap: 2px; }
 .dev-btn {
   padding: 4px 6px; border: 1px solid var(--line-2); background: var(--s-1);
-  border-radius: 4px; cursor: pointer; color: var(--f-2); display: flex;
+  border-radius: var(--r-xs); cursor: pointer; color: var(--f-2); display: flex;
   align-items: center; transition: all 0.12s var(--ease);
 }
 .dev-btn:hover { color: var(--f-1); background: var(--s-2); }

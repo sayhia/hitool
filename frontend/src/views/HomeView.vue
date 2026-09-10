@@ -187,7 +187,7 @@ h1 {
 }
 
 .r-head {
-  font-size: 11px;
+  font-size: var(--t-xs);
   font-weight: 650;
   letter-spacing: 0.02em;
   color: var(--ink-4);

@@ -490,7 +490,7 @@ function swap() {
 /* The row tint says "this line changed"; the mark says which part of it did.
    It has to read as a stronger shade of the same colour, not a new one. */
 .mark {
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   padding: 1px 0;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;

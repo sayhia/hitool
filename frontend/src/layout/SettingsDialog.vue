@@ -661,7 +661,7 @@ async function openDataDir() {
 }
 
 .set-head h1 {
-  font-size: 15px;
+  font-size: var(--t-lg);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
@@ -866,7 +866,7 @@ async function openDataDir() {
   gap: 10px;
   padding: 5px 9px;
   border-bottom: 1px solid var(--line-2);
-  font-size: 11.5px;
+  font-size: var(--t-sm);
 }
 
 .logrow:last-child {
@@ -923,7 +923,7 @@ async function openDataDir() {
 }
 
 .about-ver {
-  font-size: 11px;
+  font-size: var(--t-xs);
   font-weight: 500;
   color: var(--ink-3);
   background: var(--acc-wash);
@@ -993,7 +993,7 @@ async function openDataDir() {
   margin: 2px 0;
 }
 .upd-notes > summary {
-  font-size: 12px;
+  font-size: var(--t-sm);
   color: var(--ink-3);
   cursor: pointer;
   user-select: none;
@@ -1007,7 +1007,7 @@ async function openDataDir() {
   border-radius: var(--r-sm);
   background: var(--s-2);
   font-family: var(--f-mono);
-  font-size: 11.5px;
+  font-size: var(--t-sm);
   line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
@@ -1018,17 +1018,17 @@ async function openDataDir() {
   width: 240px;
   height: 6px;
   border: none;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   background: var(--s-3);
   overflow: hidden;
 }
 .upd-bar::-webkit-progress-bar {
   background: var(--s-3);
-  border-radius: 3px;
+  border-radius: var(--r-xs);
 }
 .upd-bar::-webkit-progress-value {
   background: var(--acc);
-  border-radius: 3px;
+  border-radius: var(--r-xs);
   transition: width 0.2s var(--ease);
 }
 
