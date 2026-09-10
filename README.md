@@ -1,7 +1,7 @@
 # HiTool
 
-多功能桌面工具箱，整合文档、图片、文本、开发与 AI 常用工具，使用 **Go + Wails3 + Vite + Vue 3 + SQLite** 构建。
-67 个工具全部本地运行，文件不出本机。
+多功能桌面工具箱，整合文档、图片、文本、开发等常用工具，使用 **Go + Wails3 + Vite + Vue 3 + SQLite** 构建。
+62 个工具全部本地运行，文件不出本机。
 
 ## 界面骨架
 
@@ -19,8 +19,8 @@
 └──────┴──────────────────────────────────┘
 ```
 
-- **设计语言 v0.7 "Slate"**：中性单色地面、发丝线分割、无阴影扁平、唯一靛蓝强调色；分类七色只作图标小色点
-- **全量工具树**：侧栏一棵树列出全部工具（收藏 + 可折叠分类），顶部过滤框即时拍平匹配，1–9 键展开对应分类
+- **设计语言 v0.7 "Slate"**：中性单色地面、发丝线分割、无阴影扁平、唯一靛蓝强调色；分类六色只作图标小色点
+- **全量工具树**：侧栏一棵树列出全部工具（收藏 + 可折叠分类），顶部过滤框即时拍平匹配，1–6 键展开对应分类
 - **标签即画布头**：标签条兼作窗口拖拽区与检查器开关，无独立命令栏；标题由标签本身承载
 - **标签页保状态**：`KeepAlive` 按 tool id 分键缓存，切走再回来输入还在
 - **三种版面**：`flow`（输入↔结果，铺满窗口）/ `batch`（源 300 + 参数 400 + 产物弹性）/ `single`（单列居中）
@@ -46,7 +46,7 @@
 | `⌘⌥←/→` | 切换标签页 |
 | `⌘1`–`⌘9` | 跳到第 N 个标签 |
 | `Esc` | 取消运行中的任务 |
-| `1`–`9` | 切换分类 |
+| `1`–`6` | 切换分类 |
 
 以上快捷键均可在 **设置 → 通用 → 键盘快捷键** 中重新录制。
 
@@ -60,13 +60,12 @@
 | 开发 | 正则测试（含替换预览）、选择器调试（XPath / CSS）、JSON 格式化（含 JSONPath）、JSON 对比、ID 生成器、测试数据、HTTP 速查、CSV 表格、JSON ⇄ CSV、JSON 转实体、Cron 生成器、哈希校验、Base64、URL 工具、JWT 解码 / 生成、SQL 格式化、YAML ⇄ JSON ⇄ TOML、curl 解析、SemVer 计算器 |
 | 计算器 | BMI、时间戳转换、利息计算、房贷计算、进制转换、日期计算器（差值 / 推算 / 工作日）、提前还款、个税、倒数日 |
 | 小工具 | 密码生成器、二维码（生成 + 识别）、批量重命名、抽奖、密码强度、颜色格式转换 |
-| AI | 润色 / 翻译 / 文档 / 表格 / 长文总结 / 代码解释（OpenAI 兼容接口，流式输出 + Markdown 渲染，会话历史与提示词模板） |
 
 ## 结构
 
 ```
 hitool/
-├── main.go                 # 应用入口：注册 8 个服务，开启原生拖放并转发落点，窗口位置记忆
+├── main.go                 # 应用入口：注册 7 个服务，开启原生拖放并转发落点，窗口位置记忆
 ├── services/               # Go 后端
 │   ├── store.go            #   SQLite（modernc.org/sqlite，纯 Go）：设置 / 收藏 / 历史
 │   ├── system.go           #   目录、对话框、文件读写、打开/定位文件（拖入目录递归展开）
@@ -74,24 +73,23 @@ hitool/
 │   ├── image.go            #   转换压缩（含 WebP）、缩放、水印、图标生成、EXIF、拼接、九宫格
 │   ├── hash.go             #   校验值：一次读取同时喂多个算法
 │   ├── qr.go               #   二维码：skip2/go-qrcode 生成、gozxing 识别
-│   ├── rename.go           #   批量重命名：先出计划，冲突即拒，改名走临时名两阶段
-│   └── ai.go               #   OpenAI 兼容 chat-completions，SSE 流式经事件转发
+│   └── rename.go           #   批量重命名：先出计划，冲突即拒，改名走临时名两阶段
 └── frontend/
     ├── bindings/           # wails3 生成的强类型调用层
     └── src/
         ├── styles/         #   tokens.css（亮/暗双主题令牌）+ base.css（共享组件类）
         ├── stores/         #   tabs（标签页）、inspector、jobs（任务 + 完成通知）、toast、settings
         ├── lib/            #   drop（原生拖放）、i18n、theme（含时段切换）、shortcuts（自定义快捷键）、
-        │                   #   onboarding / update、aiHistory / promptTemplates、tools 注册表
+        │                   #   onboarding / update、tools 注册表
         ├── layout/         #   AppShell / RailNav / CommandBar / TabStrip（拖拽排序）/
         │                   #   CommandPalette / SettingsDialog（含快捷键录制）/
         │                   #   JobDock / ToastDock / DropVeil
-        ├── components/     #   Icon / AiToolBase（历史 + 模板抽屉）/ Onboarding / JsonTree 等
+        ├── components/     #   Icon / Onboarding / JsonTree 等
         ├── work/           #   ToolFrame（唯一框架，三形状）、InspectorSection、
         │                   #   ToolHost（解析 + KeepAlive）、SourceTray、OutputList、
         │                   #   FieldRenderer（声明式控件）、ToolRunner（通用执行器）
-        ├── tools/          #   manifest.ts（9 个清单工具）+ bespoke.ts（58 个特形工具注册表）
-        └── views/          #   首页（收藏 + 最近）/ 分类 + 特形工具 + dev/ + ai/
+        ├── tools/          #   manifest.ts（9 个清单工具）+ bespoke.ts（53 个特形工具注册表）
+        └── views/          #   首页（收藏 + 最近）/ 分类 + 特形工具 + dev/
 ```
 
 开发者工具的算法各自独立成模块，便于测试与复用：`lib/jsonToCode.ts`（JSON→五语言）、
@@ -113,7 +111,7 @@ hitool/
 （`work/ToolRunner.vue`）加 9 条清单（`tools/manifest.ts`）。加一个同类工具只需在清单里加一条，
 不必再写一个页面——图片尺寸、图片转 PDF 都是这样加进来的，各只花了一条清单。
 
-另外 67 个保留为独立组件，因为它们确实有自己的形态：PDF 增强（前端渲染管线）、取色（画布量化）等用 `batch` 版面；开发者工具与 AI 走
+另外 62 个保留为独立组件，因为它们确实有自己的形态：PDF 增强（前端渲染管线）、取色（画布量化）等用 `batch` 版面；开发者工具走
 `flow`；计算器类走 `single`。还有 7 个纯声明式轻工具（大小写转换、HTML 转义、行去重等）由通用面板直接渲染。
 三种版面都由同一个 `ToolFrame` 提供，不存在第二套骨架。
 
@@ -122,13 +120,17 @@ hitool/
 ## 设计系统
 
 v0.5 方向是 **macOS 原生精致风**：毛玻璃工具栏与 Finder 式源列表、发丝级半透明描边、
-层级靠底色明度而非重阴影、Spotlight 式命令面板、系统设置 inset grouped 表单的设置弹窗（左侧竖排 tab 切换通用 / AI / 数据 / 关于）。
+层级靠底色明度而非重阴影、Spotlight 式命令面板、系统设置 inset grouped 表单的设置弹窗（左侧竖排 tab 切换通用 / 数据 / 关于）。
 v0.4 的设计记录见 [docs/design-v0.4.md](docs/design-v0.4.md)。
 
 - 亮色为默认主场，暗色是完整设计的第二套（不是反色），`auto` 跟随系统
-- 主色系统蓝 `#007AFF`（暗色 `#0A84FF`），只出现在主操作、选中态与焦点光晕上；语义色（绿/黄/红）只表示结果，两者不混用
+- 主色紫靛 `#634ecf`（暗色 `#a198e6`），只出现在主操作、选中态与焦点光晕上；语义色（绿/黄/红）只表示结果，两者不混用
 - 圆角 6/8/10/14/pill 分级；阴影为多层低透明度的柔影
-- 首页与分类页磁贴用七分类柔和色图标托（`--tile-*` 令牌）
+- 分类色按 OKLCH 统一明度/彩度带生成，六个色相沿色轮均分（27° / 74° / 148° / 199° / 248° / 337°），
+  相邻间隔 45–70°；主色 285° 正好落在「文本 → 小工具」的空档里，不与任何分类撞色
+- 分类色与语义色分开：文档红避开 `--fail`，图片绿避开 `--ok`，计算器金避开 `--warn`
+- 白字按钮（`--cat-primary`）最差对比度 4.61:1，图标标记对白底最差 3.49:1，暗色标记对面板 8.22:1 起，均达 WCAG AA
+- 首页与分类页磁贴用六分类柔和色图标托（`--tile-*` 令牌）
 - 字体全用系统自带（`-apple-system` + `SF Mono`），不外链，不存在静默回退
 - 所有颜色只经 `styles/tokens.css` 的自定义属性，组件里不出现硬编码色值
 
@@ -141,7 +143,7 @@ wails3 dev      # 开发模式（热重载）
 wails3 build    # 构建，产物 bin/hitool
 wails3 package  # 打包 macOS .app
 go test ./services
-npm test --prefix frontend        # 前端回归（985 项 + 3 跳过）
+npm test --prefix frontend        # 前端回归（991 项 + 3 跳过）
 npm run typecheck --prefix frontend      # vue-tsc，零错误
 ```
 
@@ -153,8 +155,8 @@ wails3 generate bindings -clean=true -ts -i
 
 ## 技术栈与实现要点
 
-- **Go + Wails3 + Vue 3**；67 个工具按声明式清单注册，Vue 组件化渲染
-- 设置、收藏、使用记录、AI 密钥、主题持久化在 **SQLite**
+- **Go + Wails3 + Vue 3**；62 个工具按声明式清单注册，Vue 组件化渲染
+- 设置、收藏、使用记录、主题持久化在 **SQLite**
 - PDF 处理用 Go 侧 pdfcpu（加解密为 AES-256）
 - 拖放拿到的是**真实文件路径**而非浏览器 File 对象，可直接交给 Go 服务，不必读进内存再传回
 - 暂未实现：系统托盘、Whisper 语音识别、YOLO 水印检测

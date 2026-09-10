@@ -5,7 +5,7 @@
  */
 import { ref } from "vue";
 
-export type SettingsTab = "general" | "ai" | "data" | "about";
+export type SettingsTab = "general" | "data" | "about";
 
 export const settingsOpen = ref(false);
 export const settingsTab = ref<SettingsTab>("general");

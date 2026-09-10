@@ -4,7 +4,7 @@
  */
 import { Events } from "@wailsio/runtime";
 import * as SystemService from "@bindings/hitool/services/systemservice";
-import type { AIStreamChunk, ConvertProgress } from "@bindings/hitool/services/models";
+import type { ConvertProgress } from "@bindings/hitool/services/models";
 
 export function inWails(): boolean {
   return typeof (window as any)._wails !== "undefined";
@@ -56,18 +56,10 @@ export async function revealFile(path: string) {
  * and the compiler cannot tell you it has.
  */
 export type ProgressEvt = ConvertProgress;
-export type AIChunkEvt = AIStreamChunk;
 
 /** Subscribe to backend batch progress; returns the unsubscribe function. */
 export function onConvertProgress(handler: (p: ProgressEvt) => void): () => void {
   return Events.On("convert-progress", (ev) => {
-    const d = Array.isArray(ev.data) ? ev.data[0] : ev.data;
-    if (d) handler(d);
-  });
-}
-
-export function onAIStream(handler: (c: AIChunkEvt) => void): () => void {
-  return Events.On("ai-stream", (ev) => {
     const d = Array.isArray(ev.data) ? ev.data[0] : ev.data;
     if (d) handler(d);
   });

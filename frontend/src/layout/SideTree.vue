@@ -356,7 +356,6 @@ const themeIcon = computed(() =>
 .ico.dev { color: var(--cat-dev); }
 .ico.calculator { color: var(--cat-calculator); }
 .ico.creative { color: var(--cat-creative); }
-.ico.ai { color: var(--cat-ai); }
 .ico.fav { color: var(--warn); }
 
 .g-btn.on {

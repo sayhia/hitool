@@ -9,8 +9,7 @@ export type CategoryId =
   | "text"
   | "dev"
   | "calculator"
-  | "creative"
-  | "ai";
+  | "creative";
 
 export interface ToolDef {
   id: string;
@@ -30,7 +29,6 @@ export const CATEGORIES: { id: CategoryId; icon: string }[] = [
   { id: "text", icon: "Type" },
   { id: "calculator", icon: "Calculator" },
   { id: "creative", icon: "Wrench" },
-  { id: "ai", icon: "Sparkles" },
 ];
 
 export const TOOLS: ToolDef[] = [
@@ -109,12 +107,6 @@ export const TOOLS: ToolDef[] = [
   { id: "qr-code", category: "creative", icon: "QrCode", accept: IMAGE_EXT },
   // Takes anything — renaming does not care what is inside the file.
   { id: "batch-rename", category: "creative", icon: "PenLine", accept: [] },
-
-  { id: "ai-polish", category: "ai", icon: "Wand2", accept: [] },
-  { id: "ai-translate", category: "ai", icon: "Languages", accept: [] },
-  { id: "ai-table", category: "ai", icon: "Table", accept: [] },
-  { id: "ai-summarize", category: "ai", icon: "ListTree", accept: [] },
-  { id: "ai-explain", category: "ai", icon: "Code2", accept: [] },
 ];
 
 /**
@@ -143,9 +135,6 @@ export const TOOL_ALIASES: Record<string, { id: string; query?: Record<string, s
   "base64-tool": { id: "codec" },
   "url-tool": { id: "codec" },
   "html-entities": { id: "codec" },
-  // The generic document assistant folded into the three focused AI tools
-  // that each cover one of its modes better than it did.
-  "ai-doc": { id: "ai-summarize" },
 };
 
 export function canonicalToolId(id: string): string {

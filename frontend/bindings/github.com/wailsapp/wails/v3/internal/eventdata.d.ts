@@ -12,7 +12,6 @@ import type * as services$0 from "../../../../../hitool/services/models.js";
 declare module "@wailsio/runtime" {
     namespace Events {
         interface CustomEvents {
-            "ai-stream": services$0.AIStreamChunk;
             "convert-progress": services$0.ConvertProgress;
             "files-dropped": services$0.FilesDropped;
         }

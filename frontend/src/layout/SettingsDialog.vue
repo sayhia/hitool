@@ -32,7 +32,6 @@ import { errText } from "../lib/err";
 import Icon from "../components/Icon.vue";
 import Switch from "../components/Switch.vue";
 import SettingRow from "../components/SettingRow.vue";
-import AiSettings from "./AiSettings.vue";
 
 // Same repo the updater polls (main.go, github.Config.Repository).
 const REPO_URL = "https://github.com/sayhia/hitool";
@@ -124,7 +123,6 @@ async function replayOnboarding() {
 
 const TABS: { id: SettingsTab; label: string; icon: string }[] = [
   { id: "general", label: "settings.general", icon: "SlidersHorizontal" },
-  { id: "ai", label: "settings.tabAi", icon: "Sparkles" },
   { id: "data", label: "settings.data", icon: "Database" },
   { id: "about", label: "settings.about", icon: "Info" },
 ];
@@ -375,8 +373,7 @@ async function openDataDir() {
 
           <div
             ref="body"
-            class="set-body"
-            :class="{ flush: settingsTab === 'ai', 'scroll-y': settingsTab !== 'ai' }"
+            class="set-body scroll-y"
             role="tabpanel"
             :aria-labelledby="`set-tab-${settingsTab}`"
           >
@@ -444,13 +441,6 @@ async function openDataDir() {
                 <p class="block-foot hint">{{ t("keys.hint") }}</p>
               </section>
             </template>
-
-            <!-- Kept alive: a plain v-if destroys the panel on every tab switch,
-                 so coming back re-mounts it and re-runs the PATH scan — the panel
-                 blinks through its empty state before the agents reappear. -->
-            <KeepAlive>
-              <AiSettings v-if="settingsTab === 'ai'" />
-            </KeepAlive>
 
             <!-- Data: history & data directory -->
             <section v-if="settingsTab === 'data'" class="block">
@@ -742,12 +732,6 @@ async function openDataDir() {
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.set-body.flush {
-  padding: 0;
-  overflow: hidden;
-  gap: 0;
 }
 
 /* inset grouped: white cards floating on the grey panel, hairline seams */

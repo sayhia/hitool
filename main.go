@@ -52,7 +52,6 @@ func init() {
 	// Registering event payload types gives the binding generator
 	// strongly-typed JS/TS event APIs.
 	application.RegisterEvent[services.ConvertProgress]("convert-progress")
-	application.RegisterEvent[services.AIStreamChunk]("ai-stream")
 	application.RegisterEvent[services.FilesDropped]("files-dropped")
 }
 
@@ -67,7 +66,6 @@ func main() {
 			application.NewService(services.NewSystemService()),
 			application.NewService(services.NewPDFService(store)),
 			application.NewService(services.NewImageService(store)),
-			application.NewService(services.NewAIService(store)),
 			application.NewService(services.NewHashService(store)),
 			application.NewService(services.NewQRService(store)),
 			application.NewService(services.NewRenameService(store)),

@@ -1,0 +1,5 @@
+[permissions]
+allow = []
+
+[sandbox]
+allow_write = ["/private/tmp/hitool-pw", "${HOME}/.goenv/versions/1.25.9/go-build-host-host-cgo", "${HOME}/Library/Caches/go-build"]
