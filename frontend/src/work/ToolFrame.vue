@@ -145,9 +145,11 @@ onBeforeUnmount(() => {
 }
 
 /* In a batch tool the settings are a short form — give them a readable
-   fixed column instead of letting them stretch across the window. */
+   fixed column instead of letting them stretch across the window. It may
+   shrink when the window is tight so the output list keeps its room. */
 .shape-batch > .pane-main {
-  flex: 0 0 400px;
+  flex: 0 1 400px;
+  min-width: 240px;
 }
 
 /* Only split when there is actually a result pane to split with; a flow tool
@@ -158,7 +160,9 @@ onBeforeUnmount(() => {
 
 .pane-result {
   flex: 1 1 auto;
-  min-width: 0;
+  /* A file/output list below this width is unusable — hold the floor and
+     let the settings column (or the stacking breakpoint) give way. */
+  min-width: 240px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -216,7 +220,26 @@ onBeforeUnmount(() => {
 
 @media (max-width: 1240px) {
   .shape-batch > .pane-main {
-    flex: 0 0 340px;
+    flex: 0 1 340px;
+  }
+}
+
+/* Batch tools carry three columns (source / settings / output). Below this the
+   settings column would squeeze the output list past its floor, so they stack a
+   step earlier than the generic 860px breakpoint — flow tools, which only split
+   in two, keep their side-by-side layout further down. */
+@media (max-width: 1000px) {
+  .work.shape-batch {
+    flex-direction: column;
+  }
+  .work.shape-batch > .source,
+  .work.shape-batch > .pane-main {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+  .work.shape-batch > .pane-result {
+    min-width: 0;
+    min-height: 260px;
   }
 }
 
