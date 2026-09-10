@@ -104,20 +104,20 @@
      Small-area marks (icons, dots): tone-40-ish per category.
      Washes / lines derive; the tool-level scheme is dynamic
      (see --cat-seed in base.css .frame). */
-  --cat-pdf: #d64545;
-  --cat-pdf-bright: #e05252;
-  --cat-image: #2e9152;
-  --cat-image-bright: #3fb567;
-  --cat-text: #4263d0;
-  --cat-text-bright: #5f7ce0;
-  --cat-dev: #6a4fc8;
-  --cat-dev-bright: #8a6fe0;
-  --cat-calculator: #c27414;
-  --cat-calculator-bright: #e8971f;
-  --cat-creative: #c74e7e;
-  --cat-creative-bright: #e0669a;
-  --cat-ai: #0f8a9e;
-  --cat-ai-bright: #31b4c9;
+  --cat-pdf: #cb4645;
+  --cat-pdf-bright: #e0615c;
+  --cat-image: #009349;
+  --cat-image-bright: #25aa5b;
+  --cat-text: #4e71de;
+  --cat-text-bright: #6488f0;
+  --cat-dev: #7a63d7;
+  --cat-dev-bright: #8e7be9;
+  --cat-calculator: #af6600;
+  --cat-calculator-bright: #cc7800;
+  --cat-creative: #c54479;
+  --cat-creative-bright: #d95f8e;
+  --cat-ai: #00899e;
+  --cat-ai-bright: #00a1b8;
 
   --cat-pdf-wash: color-mix(in srgb, var(--cat-pdf) 11%, transparent);
   --cat-pdf-line: color-mix(in srgb, var(--cat-pdf) 32%, transparent);
@@ -259,13 +259,13 @@
     --syn-com: #6b677e;
     --code-bg: #17151f;
 
-    --cat-pdf: #ef8080;
-    --cat-image: #58d57e;
-    --cat-text: #8aa2f5;
-    --cat-dev: #b09af5;
-    --cat-calculator: #f0b04a;
-    --cat-creative: #f088ae;
-    --cat-ai: #4fd0e0;
+    --cat-pdf: #f58b84;
+    --cat-image: #68c584;
+    --cat-text: #8aaaff;
+    --cat-dev: #ab9ffb;
+    --cat-calculator: #e79b4e;
+    --cat-creative: #ef89ad;
+    --cat-ai: #0bc3df;
 
     --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
     --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
@@ -336,13 +336,13 @@
   --syn-com: #6b677e;
   --code-bg: #17151f;
 
-  --cat-pdf: #ef8080;
-  --cat-image: #58d57e;
-  --cat-text: #8aa2f5;
-  --cat-dev: #b09af5;
-  --cat-calculator: #f0b04a;
-  --cat-creative: #f088ae;
-  --cat-ai: #4fd0e0;
+  --cat-pdf: #f58b84;
+  --cat-image: #68c584;
+  --cat-text: #8aaaff;
+  --cat-dev: #ab9ffb;
+  --cat-calculator: #e79b4e;
+  --cat-creative: #ef89ad;
+  --cat-ai: #0bc3df;
 
   --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
   --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
@@ -410,13 +410,13 @@
   --syn-com: #a5a1b2;
   --code-bg: #f4f2fa;
 
-  --cat-pdf: #d64545;
-  --cat-image: #2e9152;
-  --cat-text: #4263d0;
-  --cat-dev: #6a4fc8;
-  --cat-calculator: #c27414;
-  --cat-creative: #c74e7e;
-  --cat-ai: #0f8a9e;
+  --cat-pdf: #cb4645;
+  --cat-image: #009349;
+  --cat-text: #4e71de;
+  --cat-dev: #7a63d7;
+  --cat-calculator: #af6600;
+  --cat-creative: #c54479;
+  --cat-ai: #00899e;
 
   --e-1: 0 1px 2px rgba(18, 14, 40, 0.3), 0 1px 3px 1px rgba(18, 14, 40, 0.12);
   --e-2: 0 1px 2px rgba(18, 14, 40, 0.3), 0 2px 6px 2px rgba(18, 14, 40, 0.13);
