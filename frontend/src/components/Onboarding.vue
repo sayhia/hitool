@@ -31,13 +31,13 @@ function next() {
 </script>
 
 <template>
-  <div class="onb-veil" role="dialog" aria-modal="true">
+  <div class="onb-veil" role="dialog" aria-modal="true" aria-labelledby="onb-title">
     <div class="onb-card">
       <img v-if="step === 0" class="onb-logo" src="/hitool.png" alt="" width="52" height="52" />
       <div v-else class="onb-icon">
         <Icon :name="STEPS[step].icon" />
       </div>
-      <h1>{{ t(STEPS[step].title) }}</h1>
+      <h1 id="onb-title">{{ t(STEPS[step].title) }}</h1>
       <p class="hint">{{ t(STEPS[step].body) }}</p>
 
       <div class="onb-dots" aria-hidden="true">

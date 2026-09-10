@@ -7,7 +7,7 @@ import Icon from "../components/Icon.vue";
 
 <template>
   <transition name="fade">
-    <div v-if="dragActive" class="veil">
+    <div v-if="dragActive" class="veil" role="status" aria-live="polite">
       <div class="frame">
         <div class="badge">
           <Icon name="Download" />

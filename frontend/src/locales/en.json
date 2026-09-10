@@ -739,6 +739,7 @@
     "s4Body": "Tools open as tabs that keep their state — switch away and back, your input is still there. Star favorites for one-click access from the home screen."
   },
   "cmd": {
+    "title": "Command palette",
     "placeholder": "Search tools, output files…",
     "empty": "No matches",
     "navigate": "Select",

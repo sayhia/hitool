@@ -218,12 +218,23 @@ function choose(row?: Row) {
 <template>
   <transition name="fade">
     <div v-if="open" class="pal-veil" @click.self="open = false">
-      <div class="pal" role="dialog" aria-modal="true">
+      <div
+        class="pal"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="t('cmd.title')"
+      >
         <div class="pal-input">
           <Icon name="Search" />
           <input
             ref="inputEl"
             v-model="query"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            aria-controls="pal-list"
+            :aria-activedescendant="rows.length ? `pal-opt-${cursor}` : undefined"
+            :aria-label="t('cmd.title')"
             :placeholder="t('cmd.placeholder')"
             spellcheck="false"
             autocomplete="off"
@@ -235,11 +246,14 @@ function choose(row?: Row) {
           <kbd>ESC</kbd>
         </div>
 
-        <div v-if="rows.length" class="pal-list scroll-y">
+        <div v-if="rows.length" id="pal-list" role="listbox" class="pal-list scroll-y">
           <button
             v-for="(row, i) in rows"
+            :id="`pal-opt-${i}`"
             :key="row.id"
             class="pal-row"
+            role="option"
+            :aria-selected="i === cursor"
             :class="{ on: i === cursor }"
             @click="choose(row)"
             @mousemove="cursor = i"
