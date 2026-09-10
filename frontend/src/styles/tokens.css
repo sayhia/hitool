@@ -1,7 +1,7 @@
 /* ============================================================
    HiTool design tokens — v0.8 "Material You"
    The token layer is rebuilt on Material Design 3 colour roles:
-   eight seed colours (the app indigo + the seven category hues)
+   seven seed colours (the app indigo + the six category hues)
    expand into primary/primary-container/secondary-container and
    surface tiers via color-mix formulas, so light and dark are
    the same scheme mapped onto two tone ramps. Categories ride in
@@ -16,14 +16,13 @@
   color-scheme: light dark;
 
   /* ---- seeds ---- */
-  --md-seed: #4f52c8;
-  --cat-seed-pdf: #d64545;
-  --cat-seed-image: #2e9152;
-  --cat-seed-text: #4263d0;
-  --cat-seed-dev: #6a4fc8;
-  --cat-seed-calculator: #c27414;
-  --cat-seed-creative: #c74e7e;
-  --cat-seed-ai: #0f8a9e;
+  --md-seed: #634ecf;
+  --cat-seed-pdf: #d85f53;
+  --cat-seed-image: #38a050;
+  --cat-seed-text: #2186d7;
+  --cat-seed-dev: #239ca1;
+  --cat-seed-calculator: #be810c;
+  --cat-seed-creative: #c65fae;
 
   /* ---- M3 roles (light, mixed from --md-seed) ----
      Light primary sinks ~20% toward the ink base (M3 tone-40 depth)
@@ -34,7 +33,7 @@
   --on-primary-container: color-mix(in oklch, var(--md-seed) 56%, #14121f);
   --secondary-container: color-mix(in oklch, var(--md-seed) 9%, #f2f1f7);
   --on-secondary-container: color-mix(in oklch, var(--md-seed) 38%, #232031);
-  --on-surface-variant: #7a7688;
+  --on-surface-variant: #676374;
   --inverse-surface: #31303a;
   --inverse-on-surface: #f2eff9;
 
@@ -55,8 +54,8 @@
   /* ---- ink: indigo-tinted neutrals ---- */
   --ink: #1b1a22;
   --ink-2: #4a4757;
-  --ink-3: #7a7688;
-  --ink-4: #a5a1b2;
+  --ink-3: #676374;
+  --ink-4: #848090;
 
   /* ---- outlines: M3 outline / outline-variant ---- */
   --line: rgba(30, 24, 56, 0.11);
@@ -72,15 +71,15 @@
   --acc-wash-2: color-mix(in srgb, var(--primary) 16%, transparent);
   --acc-line: color-mix(in srgb, var(--primary) 34%, transparent);
 
-  --brand-grad: linear-gradient(135deg, #4f52c8 0%, #7a5af5 100%);
+  --brand-grad: linear-gradient(135deg, #634ecf 0%, #9464ee 100%);
   --brand-gold: #c9a46a;
 
   /* ---- semantic (status keeps its own hues) ---- */
-  --ok: #1e8e4d;
+  --ok: #027c3f;
   --ok-bright: #2fb566;
   --ok-wash: color-mix(in srgb, var(--ok) 11%, transparent);
   --ok-line: color-mix(in srgb, var(--ok) 36%, transparent);
-  --warn: #b26e00;
+  --warn: #9d5c00;
   --warn-bright: #f09f2d;
   --warn-wash: color-mix(in srgb, var(--warn-bright) 13%, transparent);
   --warn-line: color-mix(in srgb, var(--warn-bright) 40%, transparent);
@@ -88,7 +87,7 @@
   --fail-bright: #dc362e;
   --fail-wash: color-mix(in srgb, var(--fail-bright) 11%, transparent);
   --fail-line: color-mix(in srgb, var(--fail-bright) 34%, transparent);
-  --info: #2f6fd0;
+  --info: #2c69c7;
   --info-wash: color-mix(in srgb, var(--info) 9%, transparent);
 
   /* ---- syntax (code panes / JSON tree) ---- */
@@ -96,28 +95,26 @@
   --syn-num: #c07a10;
   --syn-key: #1b1a22;
   --syn-kw: #5c5ce6;
-  --syn-punc: #7a7688;
-  --syn-com: #a5a1b2;
+  --syn-punc: #676374;
+  --syn-com: #848090;
   --code-bg: #f4f2fa;
 
   /* ---- category identity marks ----
      Small-area marks (icons, dots): tone-40-ish per category.
      Washes / lines derive; the tool-level scheme is dynamic
      (see --cat-seed in base.css .frame). */
-  --cat-pdf: #cb4645;
-  --cat-pdf-bright: #e0615c;
-  --cat-image: #009349;
-  --cat-image-bright: #25aa5b;
-  --cat-text: #4e71de;
-  --cat-text-bright: #6488f0;
-  --cat-dev: #7a63d7;
-  --cat-dev-bright: #8e7be9;
-  --cat-calculator: #af6600;
-  --cat-calculator-bright: #cc7800;
-  --cat-creative: #c54479;
-  --cat-creative-bright: #d95f8e;
-  --cat-ai: #00899e;
-  --cat-ai-bright: #00a1b8;
+  --cat-pdf: #c74f45;
+  --cat-pdf-bright: #fe9c90;
+  --cat-image: #249041;
+  --cat-image-bright: #70d582;
+  --cat-text: #0077c6;
+  --cat-text-bright: #80c1fe;
+  --cat-dev: #008e93;
+  --cat-dev-bright: #61ced3;
+  --cat-calculator: #ba7d00;
+  --cat-calculator-bright: #edad4c;
+  --cat-creative: #b5509e;
+  --cat-creative-bright: #fa8fe0;
 
   --cat-pdf-wash: color-mix(in srgb, var(--cat-pdf) 11%, transparent);
   --cat-pdf-line: color-mix(in srgb, var(--cat-pdf) 32%, transparent);
@@ -131,8 +128,6 @@
   --cat-calculator-line: color-mix(in srgb, var(--cat-calculator) 36%, transparent);
   --cat-creative-wash: color-mix(in srgb, var(--cat-creative) 11%, transparent);
   --cat-creative-line: color-mix(in srgb, var(--cat-creative) 32%, transparent);
-  --cat-ai-wash: color-mix(in srgb, var(--cat-ai) 12%, transparent);
-  --cat-ai-line: color-mix(in srgb, var(--cat-ai) 34%, transparent);
 
   /* Legacy tile aliases. */
   --tile-pdf: var(--cat-pdf-wash);
@@ -147,8 +142,6 @@
   --tile-calculator-ink: var(--cat-calculator);
   --tile-creative: var(--cat-creative-wash);
   --tile-creative-ink: var(--cat-creative);
-  --tile-ai: var(--cat-ai-wash);
-  --tile-ai-ink: var(--cat-ai);
 
   /* ---- type ---- */
   --f-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
@@ -201,10 +194,8 @@
    ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
-    --primary: var(--md-seed-lift, var(--md-seed));
-    --on-primary: #292552;
     --primary: color-mix(in oklch, var(--md-seed) 52%, #e9e6fa);
+    --on-primary: #292552;
     --primary-container: color-mix(in oklch, var(--md-seed) 38%, #1d1a2c);
     --on-primary-container: color-mix(in oklch, var(--md-seed) 24%, #eae6ff);
     --secondary-container: color-mix(in oklch, var(--md-seed) 22%, #262433);
@@ -226,7 +217,7 @@
     --ink: #e6e2f2;
     --ink-2: #c6c2d8;
     --ink-3: #948fa8;
-    --ink-4: #6b677e;
+    --ink-4: #757188;
 
     --line: rgba(205, 200, 230, 0.13);
     --line-2: rgba(205, 200, 230, 0.06);
@@ -240,7 +231,7 @@
     --acc-wash-2: color-mix(in srgb, var(--primary) 22%, transparent);
     --acc-line: color-mix(in srgb, var(--primary) 40%, transparent);
 
-    --brand-grad: linear-gradient(135deg, #7d80f0 0%, #8f6fff 100%);
+    --brand-grad: linear-gradient(135deg, #a198e6 0%, #b089ff 100%);
     --brand-gold: #e0c48a;
 
     --ok: #43c46a;
@@ -256,16 +247,21 @@
     --syn-key: #e6e2f2;
     --syn-kw: #9297ff;
     --syn-punc: #948fa8;
-    --syn-com: #6b677e;
+    --syn-com: #757188;
     --code-bg: #17151f;
 
-    --cat-pdf: #f58b84;
-    --cat-image: #68c584;
-    --cat-text: #8aaaff;
-    --cat-dev: #ab9ffb;
-    --cat-calculator: #e79b4e;
-    --cat-creative: #ef89ad;
-    --cat-ai: #0bc3df;
+    --cat-pdf: #fe9c90;
+    --cat-pdf-bright: #fe9c90;
+    --cat-image: #70d582;
+    --cat-image-bright: #70d582;
+    --cat-text: #80c1fe;
+    --cat-text-bright: #80c1fe;
+    --cat-dev: #61ced3;
+    --cat-dev-bright: #61ced3;
+    --cat-calculator: #edad4c;
+    --cat-calculator-bright: #edad4c;
+    --cat-creative: #fa8fe0;
+    --cat-creative-bright: #fa8fe0;
 
     --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
     --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
@@ -278,10 +274,8 @@
 }
 
 :root[data-theme="dark"] {
-  --md-seed-lift: color-mix(in srgb, var(--md-seed) 52%, #e9e6fa);
-  --primary: var(--md-seed-lift, var(--md-seed));
-  --on-primary: #292552;
   --primary: color-mix(in oklch, var(--md-seed) 52%, #e9e6fa);
+  --on-primary: #292552;
   --primary-container: color-mix(in oklch, var(--md-seed) 38%, #1d1a2c);
   --on-primary-container: color-mix(in oklch, var(--md-seed) 24%, #eae6ff);
   --secondary-container: color-mix(in oklch, var(--md-seed) 22%, #262433);
@@ -303,7 +297,7 @@
   --ink: #e6e2f2;
   --ink-2: #c6c2d8;
   --ink-3: #948fa8;
-  --ink-4: #6b677e;
+  --ink-4: #757188;
 
   --line: rgba(205, 200, 230, 0.13);
   --line-2: rgba(205, 200, 230, 0.06);
@@ -317,7 +311,7 @@
   --acc-wash-2: color-mix(in srgb, var(--primary) 22%, transparent);
   --acc-line: color-mix(in srgb, var(--primary) 40%, transparent);
 
-  --brand-grad: linear-gradient(135deg, #7d80f0 0%, #8f6fff 100%);
+  --brand-grad: linear-gradient(135deg, #a198e6 0%, #b089ff 100%);
   --brand-gold: #e0c48a;
 
   --ok: #43c46a;
@@ -333,16 +327,21 @@
   --syn-key: #e6e2f2;
   --syn-kw: #9297ff;
   --syn-punc: #948fa8;
-  --syn-com: #6b677e;
+  --syn-com: #757188;
   --code-bg: #17151f;
 
-  --cat-pdf: #f58b84;
-  --cat-image: #68c584;
-  --cat-text: #8aaaff;
-  --cat-dev: #ab9ffb;
-  --cat-calculator: #e79b4e;
-  --cat-creative: #ef89ad;
-  --cat-ai: #0bc3df;
+  --cat-pdf: #fe9c90;
+  --cat-pdf-bright: #fe9c90;
+  --cat-image: #70d582;
+  --cat-image-bright: #70d582;
+  --cat-text: #80c1fe;
+  --cat-text-bright: #80c1fe;
+  --cat-dev: #61ced3;
+  --cat-dev-bright: #61ced3;
+  --cat-calculator: #edad4c;
+  --cat-calculator-bright: #edad4c;
+  --cat-creative: #fa8fe0;
+  --cat-creative-bright: #fa8fe0;
 
   --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
   --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
@@ -360,7 +359,7 @@
   --on-primary-container: color-mix(in oklch, var(--md-seed) 56%, #14121f);
   --secondary-container: color-mix(in oklch, var(--md-seed) 9%, #f2f1f7);
   --on-secondary-container: color-mix(in oklch, var(--md-seed) 38%, #232031);
-  --on-surface-variant: #7a7688;
+  --on-surface-variant: #676374;
   --inverse-surface: #31303a;
   --inverse-on-surface: #f2eff9;
 
@@ -376,8 +375,8 @@
 
   --ink: #1b1a22;
   --ink-2: #4a4757;
-  --ink-3: #7a7688;
-  --ink-4: #a5a1b2;
+  --ink-3: #676374;
+  --ink-4: #848090;
 
   --line: rgba(30, 24, 56, 0.11);
   --line-2: rgba(30, 24, 56, 0.06);
@@ -391,32 +390,31 @@
   --acc-wash-2: color-mix(in srgb, var(--primary) 16%, transparent);
   --acc-line: color-mix(in srgb, var(--primary) 34%, transparent);
 
-  --brand-grad: linear-gradient(135deg, #4f52c8 0%, #7a5af5 100%);
+  --brand-grad: linear-gradient(135deg, #634ecf 0%, #9464ee 100%);
   --brand-gold: #c9a46a;
 
-  --ok: #1e8e4d;
+  --ok: #027c3f;
   --ok-bright: #2fb566;
-  --warn: #b26e00;
+  --warn: #9d5c00;
   --warn-bright: #f09f2d;
   --fail: #b3261e;
   --fail-bright: #dc362e;
-  --info: #2f6fd0;
+  --info: #2c69c7;
 
   --syn-str: #1f8f4e;
   --syn-num: #c07a10;
   --syn-key: #1b1a22;
   --syn-kw: #5c5ce6;
-  --syn-punc: #7a7688;
-  --syn-com: #a5a1b2;
+  --syn-punc: #676374;
+  --syn-com: #848090;
   --code-bg: #f4f2fa;
 
-  --cat-pdf: #cb4645;
-  --cat-image: #009349;
-  --cat-text: #4e71de;
-  --cat-dev: #7a63d7;
-  --cat-calculator: #af6600;
-  --cat-creative: #c54479;
-  --cat-ai: #00899e;
+  --cat-pdf: #c74f45;
+  --cat-image: #249041;
+  --cat-text: #0077c6;
+  --cat-dev: #008e93;
+  --cat-calculator: #ba7d00;
+  --cat-creative: #b5509e;
 
   --e-1: 0 1px 2px rgba(18, 14, 40, 0.3), 0 1px 3px 1px rgba(18, 14, 40, 0.12);
   --e-2: 0 1px 2px rgba(18, 14, 40, 0.3), 0 2px 6px 2px rgba(18, 14, 40, 0.13);
