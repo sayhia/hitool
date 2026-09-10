@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { TOOLS, TOOL_ALIASES, toolById, CATEGORIES } from "../lib/tools";
 import { t, lang } from "../lib/i18n";
@@ -187,12 +187,64 @@ const rows = computed<Row[]>(() => {
 
 watch(open, async (v) => {
   if (v) {
+    returnFocus = document.activeElement as HTMLElement | null;
     query.value = "";
     cursor.value = 0;
+    window.addEventListener("keydown", onKey, true);
     await nextTick();
     inputEl.value?.focus();
+  } else {
+    window.removeEventListener("keydown", onKey, true);
+    returnFocus?.focus?.();
+    returnFocus = null;
   }
 });
+
+onBeforeUnmount(() => window.removeEventListener("keydown", onKey, true));
+
+// ---- focus & keyboard -----------------------------------------------------
+const palEl = ref<HTMLElement | null>(null);
+/** Whatever had focus when the palette opened, so closing hands it back. */
+let returnFocus: HTMLElement | null = null;
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]),' +
+  ' textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function focusables(): HTMLElement[] {
+  if (!palEl.value) return [];
+  // offsetParent is null for hidden nodes — keep invisible stops off the path.
+  return [...palEl.value.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
+    // offsetParent is null for hidden nodes; tabIndex >= 0 is the browser's own
+    // verdict on whether the element is really in the Tab order (a `[-1]` row
+    // still matches `button:not([disabled])`, so the selector alone lies).
+    (el) => el.offsetParent !== null && el.tabIndex >= 0,
+  );
+}
+
+/**
+ * Capture-phase while open: Escape closes from anywhere inside (the rows take
+ * focus-free selection through ↑↓, so focus may never have been in the input),
+ * and Tab wraps at both ends so the modal cannot hand focus to the page behind.
+ */
+function onKey(e: KeyboardEvent) {
+  if (e.key === "Escape") {
+    e.preventDefault();
+    open.value = false;
+    return;
+  }
+  if (e.key !== "Tab") return;
+  const items = focusables();
+  if (!items.length) return;
+  const active = document.activeElement as HTMLElement | null;
+  const inside = !!active && !!palEl.value?.contains(active);
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (e.shiftKey ? !inside || active === first : !inside || active === last) {
+    e.preventDefault();
+    (e.shiftKey ? last : first).focus();
+  }
+}
 
 watch(rows, () => {
   if (cursor.value >= rows.value.length) cursor.value = Math.max(0, rows.value.length - 1);
@@ -219,6 +271,7 @@ function choose(row?: Row) {
   <transition name="fade">
     <div v-if="open" class="pal-veil" @click.self="open = false">
       <div
+        ref="palEl"
         class="pal"
         role="dialog"
         aria-modal="true"
@@ -241,18 +294,18 @@ function choose(row?: Row) {
             @keydown.down.prevent="move(1)"
             @keydown.up.prevent="move(-1)"
             @keydown.enter.prevent="choose()"
-            @keydown.esc.prevent="open = false"
           />
           <kbd>ESC</kbd>
         </div>
 
-        <div v-if="rows.length" id="pal-list" role="listbox" class="pal-list scroll-y">
+        <div v-if="rows.length" id="pal-list" role="listbox" tabindex="-1" class="pal-list scroll-y">
           <button
             v-for="(row, i) in rows"
             :id="`pal-opt-${i}`"
             :key="row.id"
             class="pal-row"
             role="option"
+            tabindex="-1"
             :aria-selected="i === cursor"
             :class="{ on: i === cursor }"
             @click="choose(row)"

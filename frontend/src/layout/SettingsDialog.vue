@@ -242,7 +242,10 @@ function focusables(): HTMLElement[] {
   // v-if'd away, but a collapsed row inside one that is shown would otherwise
   // become an invisible stop on the Tab path.
   return [...panel.value.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
-    (el) => el.offsetParent !== null,
+    // offsetParent is null for hidden nodes; tabIndex >= 0 is the browser's own
+    // verdict on whether the element is really in the Tab order (a `[-1]` row
+    // still matches `button:not([disabled])`, so the selector alone lies).
+    (el) => el.offsetParent !== null && el.tabIndex >= 0,
   );
 }
 
