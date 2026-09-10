@@ -9,7 +9,7 @@
 - **双种子**:应用靛蓝 `#634ecf` 生成品牌方案;6 个分类色各自作为动态色源。
 - **角色公式化**:`tokens.css` 以 `color-mix` 从种子派生 primary/on-primary/primary-container/secondary-container 与表面五层(bg→s-3)、outline 三档;深色主题只翻转混合基准与中性色阶(light: primary=seed;dark: primary=seed 52% 提亮至 tone-80)。
 - **动态分类**:`.frame` 内 `--cat-seed`(ToolFrame 注入 `var(--cat-seed-<id>)`)在元素上下文重算整套分类角色(--cat-primary/containers/state layers),明暗由 knob 变量切换。旧变量 `--cat/--cat-bright/--cat-wash/--cat-line` 保留为派生别名,存量工具引用不断。
-- 静态分类标识(侧栏圆点)保留 tone-40/80 双值;wash/line 改为公式派生。
+- **分类令牌分两层**:`tokens.css` 只保留每分类一个**静态标识色** `--cat-<id>`(侧栏图标/圆点等小面积标记用,暗色块换成亮值);`-bright/-wash/-line` 不再作为静态令牌存在——凡在 `.frame` 内使用的一律由 `--cat-seed` 公式派生,避免两套色板各自漂移。
 
 ## 组件规范(base.css v0.8)
 

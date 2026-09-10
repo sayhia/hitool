@@ -100,48 +100,16 @@
   --code-bg: #f4f2fa;
 
   /* ---- category identity marks ----
-     Small-area marks (icons, dots): tone-40-ish per category.
-     Washes / lines derive; the tool-level scheme is dynamic
-     (see --cat-seed in base.css .frame). */
+     One static tone per category for small-area marks (icons,
+     dots) outside a tool frame. Inside .frame the whole scheme —
+     primary, containers, washes, lines — is derived from
+     --cat-seed instead (see base.css .frame). */
   --cat-pdf: #c74f45;
-  --cat-pdf-bright: #fe9c90;
   --cat-image: #249041;
-  --cat-image-bright: #70d582;
   --cat-text: #0077c6;
-  --cat-text-bright: #80c1fe;
   --cat-dev: #008e93;
-  --cat-dev-bright: #61ced3;
   --cat-calculator: #ba7d00;
-  --cat-calculator-bright: #edad4c;
   --cat-creative: #b5509e;
-  --cat-creative-bright: #fa8fe0;
-
-  --cat-pdf-wash: color-mix(in srgb, var(--cat-pdf) 11%, transparent);
-  --cat-pdf-line: color-mix(in srgb, var(--cat-pdf) 32%, transparent);
-  --cat-image-wash: color-mix(in srgb, var(--cat-image) 11%, transparent);
-  --cat-image-line: color-mix(in srgb, var(--cat-image) 34%, transparent);
-  --cat-text-wash: color-mix(in srgb, var(--cat-text) 11%, transparent);
-  --cat-text-line: color-mix(in srgb, var(--cat-text) 34%, transparent);
-  --cat-dev-wash: color-mix(in srgb, var(--cat-dev) 11%, transparent);
-  --cat-dev-line: color-mix(in srgb, var(--cat-dev) 32%, transparent);
-  --cat-calculator-wash: color-mix(in srgb, var(--cat-calculator) 12%, transparent);
-  --cat-calculator-line: color-mix(in srgb, var(--cat-calculator) 36%, transparent);
-  --cat-creative-wash: color-mix(in srgb, var(--cat-creative) 11%, transparent);
-  --cat-creative-line: color-mix(in srgb, var(--cat-creative) 32%, transparent);
-
-  /* Legacy tile aliases. */
-  --tile-pdf: var(--cat-pdf-wash);
-  --tile-pdf-ink: var(--cat-pdf);
-  --tile-image: var(--cat-image-wash);
-  --tile-image-ink: var(--cat-image);
-  --tile-text: var(--cat-text-wash);
-  --tile-text-ink: var(--cat-text);
-  --tile-dev: var(--cat-dev-wash);
-  --tile-dev-ink: var(--cat-dev);
-  --tile-calculator: var(--cat-calculator-wash);
-  --tile-calculator-ink: var(--cat-calculator);
-  --tile-creative: var(--cat-creative-wash);
-  --tile-creative-ink: var(--cat-creative);
 
   /* ---- type ---- */
   --f-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
@@ -251,17 +219,11 @@
     --code-bg: #17151f;
 
     --cat-pdf: #fe9c90;
-    --cat-pdf-bright: #fe9c90;
     --cat-image: #70d582;
-    --cat-image-bright: #70d582;
     --cat-text: #80c1fe;
-    --cat-text-bright: #80c1fe;
     --cat-dev: #61ced3;
-    --cat-dev-bright: #61ced3;
     --cat-calculator: #edad4c;
-    --cat-calculator-bright: #edad4c;
     --cat-creative: #fa8fe0;
-    --cat-creative-bright: #fa8fe0;
 
     --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
     --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
@@ -331,17 +293,11 @@
   --code-bg: #17151f;
 
   --cat-pdf: #fe9c90;
-  --cat-pdf-bright: #fe9c90;
   --cat-image: #70d582;
-  --cat-image-bright: #70d582;
   --cat-text: #80c1fe;
-  --cat-text-bright: #80c1fe;
   --cat-dev: #61ced3;
-  --cat-dev-bright: #61ced3;
   --cat-calculator: #edad4c;
-  --cat-calculator-bright: #edad4c;
   --cat-creative: #fa8fe0;
-  --cat-creative-bright: #fa8fe0;
 
   --e-1: 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px 1px rgba(0, 0, 0, 0.22);
   --e-2: 0 1px 2px rgba(0, 0, 0, 0.45), 0 2px 6px 2px rgba(0, 0, 0, 0.24);
